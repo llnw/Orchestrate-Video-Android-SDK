@@ -1,0 +1,52 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="ORGANIZATION DETAILS" >
+        <EditTextPreference
+            android:dialogTitle="@string/OrgIDEditPrefDialogTitle"
+            android:key="@string/OrgIDEditPrefKey"
+            android:summary="@string/OrgIDEditPrefSummary"
+            android:title="@string/OrgIDEditPrefTitle" />
+        <EditTextPreference
+            android:defaultValue="@string/AccKeyEditPrefDefValue"
+            android:dialogTitle="@string/AccKeyEditPrefDialogTitle"
+            android:key="@string/AccKeyEditPrefKey"
+            android:summary="@string/AccKeyEditPrefSummary"
+            android:title="@string/AccKeyEditPrefTitle" />
+        <EditTextPreference
+            android:defaultValue="@string/SecKeyEditPrefDefValue"
+            android:dialogTitle="@string/SecKeyEditPrefDialogTitle"
+            android:key="@string/SecKeyEditPrefKey"
+            android:summary="@string/SecKeyEditPrefSummary"
+            android:title="@string/SecKeyEditPrefTitle" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="API END POINTS" >
+        <EditTextPreference
+            android:defaultValue="@string/urlEditPrefDefValue"
+            android:dialogTitle="@string/urlEditPrefDialogTitle"
+            android:key="@string/urlEditPrefKey"
+            android:summary="@string/urlEditPrefSummary"
+            android:title="@string/urlEditPrefTitle" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="WIDEVINE SETTINGS" >
+        <EditTextPreference
+            android:defaultValue="@string/licProxyEditPrefDefValue"
+            android:dialogTitle="@string/licProxyEditPrefDialogTitle"
+            android:key="@string/licProxyEditPrefKey"
+            android:summary="@string/licProxyEditPrefSummary"
+            android:title="@string/licProxyEditPrefTitle" />
+        <EditTextPreference
+            android:defaultValue="@string/portalKeyEditPrefDefValue"
+            android:dialogTitle="@string/portalKeyEditPrefDialogTitle"
+            android:key="@string/portalKeyEditPrefKey"
+            android:summary="@string/portalKeyEditPrefSummary"
+            android:title="@string/portalKeyEditPrefTitle" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="OTHERS" >
+        <ListPreference
+            android:defaultValue="@string/logLevelListPrefDefValue"
+            android:key="@string/logLevelListPrefKey"
+            android:summary="@string/logLevelListPrefSummary"
+            android:title="@string/logLevelListPrefTitle" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

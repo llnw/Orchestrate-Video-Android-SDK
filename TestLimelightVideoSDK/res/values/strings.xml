@@ -1,0 +1,60 @@
+<resources>
+
+    <string name="app_name">TestLimelightVideoSDK</string>
+    <string name="settings">SETTINGS</string>
+    <string name="channel_groups">CHANNEL GROUPS</string>
+    <string name="all_channels">ALL CHANNELS</string>
+    <string name="specific_channels">CHANNELS</string>
+    <string name="all_media">ALL MEDIA</string>
+    <string name="specific_media">MEDIA</string>
+    <string name="play">Play</string>
+    <string name="choose">&#8230;</string>
+    <string name="level">Set Log Level</string>
+    <string name="hint">Please Enter the Video Link/Media Id</string>
+    <string name="player">PLAYER</string>
+    <string name="choose_encoding">Choose Encoding</string>
+    <string name="encodings">Encodings</string>
+    <string name="back_button_label">Back</string>
+    <string name="next_button_label">Next</string>
+    <!-- Optional button to Skip a PreferenceActivity [CHAR LIMIT=20] -->
+    <string name="skip_button_label">Skip</string>
+    <string name="OrgIDEditPrefTitle">Organization ID</string>
+    <string name="OrgIDEditPrefSummary">Click to pop up a field to enter Organization ID</string>
+    <string name="OrgIDEditPrefDialogTitle">Please Enter Organization ID</string>
+    <string name="OrgIDEditPrefKey">OrgIDKey</string>
+    <string name="OrgIDEditPrefDefValue">17fbbde5ce1e43e087bcbfffbf0680ca</string>
+    <string name="AccKeyEditPrefTitle">Access Key</string>
+    <string name="AccKeyEditPrefSummary">Click to pop up a field to enter Access Key</string>
+    <string name="AccKeyEditPrefDialogTitle">Please Enter Access Key</string>
+    <string name="AccKeyEditPrefKey">AccessKeyKey</string>
+    <string name="AccKeyEditPrefDefValue">sB8TWEftj8ZhYXol7pVWFuutJ4M=</string>
+    <string name="SecKeyEditPrefTitle">Secret Key</string>
+    <string name="SecKeyEditPrefSummary">Click to pop up a field to enter Secret Key</string>
+    <string name="SecKeyEditPrefDialogTitle">Please Enter Secret Key</string>
+    <string name="SecKeyEditPrefKey">SecretKeyKey</string>
+    <string name="SecKeyEditPrefDefValue">lR46aeyMmlgTOod17Kl9XqNgaYE=</string>
+    <string name="licProxyEditPrefTitle">License Proxy</string>
+    <string name="licProxyEditPrefSummary">Click to pop up a field to enter License Proxy</string>
+    <string name="licProxyEditPrefDialogTitle">Please Enter License Proxy</string>
+    <string name="licProxyEditPrefKey">licProxyKey</string>
+    <string name="licProxyEditPrefDefValue">https://staging-wlp.lvp.llnw.net/license</string>
+    <string name="portalKeyEditPrefTitle">Portal Key</string>
+    <string name="portalKeyEditPrefSummary">Click to pop up a field to enter Portal Key</string>
+    <string name="portalKeyEditPrefDialogTitle">Please Enter Portal Key</string>
+    <string name="portalKeyEditPrefKey">portalKeyKey</string>
+    <string name="portalKeyEditPrefDefValue">limelight</string>
+    <string name="urlEditPrefTitle">URL</string>
+    <string name="urlEditPrefSummary">Click to pop up a field to enter url</string>
+    <string name="urlEditPrefDialogTitle">Please Enter url</string>
+    <string name="urlEditPrefKey">urlKey</string>
+    <string name="urlEditPrefDefValue">https://staging-api.lvp.llnw.net/rest</string>
+    <string name="logLevelListPrefTitle">Log level</string>
+    <string name="logLevelListPrefSummary">Click to pop up a field to select log level</string>
+    <string name="logLevelListPrefKey">logLevelKey</string>
+    <string name="logLevelListPrefDefValue">0</string>
+    <string name="progressDlgEncodingMessage">Fetching Encodings From Server</string>
+    <string name="progressDlgMediaMessage">Fetching Media From Server</string>
+    <string name="choose_download_options">Choose Download Option</string>
+    <string name="choose_save_options">Choose Save Option</string>
+
+</resources>

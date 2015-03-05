@@ -1,0 +1,25 @@
+
+
+<resources>
+
+   
+    <string-array name="listOptions">
+     <item>Debug/ALL</item>
+     <item>INFO</item>
+     <item>WARN</item>
+     <item>ERROR</item>
+     <item>FATAL</item>
+     <item>OFF</item>
+     </string-array>
+ 
+   <string-array name="listValues">
+     <item>1</item>
+     <item>2</item>
+     <item>3</item>
+     <item>4</item>
+     <item>5</item>
+     <item>6</item>
+   </string-array>
+   
+   
+</resources>
