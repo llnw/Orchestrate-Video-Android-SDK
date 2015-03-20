@@ -21,6 +21,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.Media;
 import com.limelight.videosdk.model.Media.MediaThumbnail;
@@ -160,6 +162,7 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
                     //mMedias = contentService.getAllMedia(ctx);
                 }
                 else{
+                    contentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
                     mMedias = contentService.getAllMediaOfChannel(mChannelId,refresh);
                 }
             } catch (Exception e) {

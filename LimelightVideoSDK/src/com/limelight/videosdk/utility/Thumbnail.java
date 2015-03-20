@@ -2,7 +2,6 @@ package com.limelight.videosdk.utility;
 
 import java.lang.ref.WeakReference;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -17,6 +16,8 @@ import android.widget.ImageView;
  */
 public class Thumbnail {
 
+    static Bitmap sLoadingBitmap = null;
+
     /**
      * To load a bitmap into image view in background.
      * @param ctx
@@ -25,11 +26,17 @@ public class Thumbnail {
      * @param loadingBitmap placeholder or loading bitmap
      */
     public void loadBitmap(Context ctx,String path, ImageView imageView,Bitmap loadingBitmap) {
-        if (cancelPotentialWork(path, imageView)) {
-            final BitmapWorkerTask task = new BitmapWorkerTask(ctx,imageView);
-            final AsyncDrawable asyncDrawable = new AsyncDrawable(ctx.getResources(), loadingBitmap, task);
-            imageView.setImageDrawable(asyncDrawable);
-            task.execute(path);
+        if(ctx != null && imageView != null){
+            if (cancelPotentialWork(path, imageView)) {
+                final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
+                if(loadingBitmap != null)
+                    sLoadingBitmap = loadingBitmap;
+                if(sLoadingBitmap == null)
+                    sLoadingBitmap = BitmapFactory.decodeResource(ctx.getResources(),android.R.drawable.ic_menu_gallery);
+                final AsyncDrawable asyncDrawable = new AsyncDrawable(task);
+                imageView.setImageDrawable(asyncDrawable);
+                task.execute(path);
+            }
         }
     }
 
@@ -61,11 +68,11 @@ public class Thumbnail {
         return null;
     }
 
-    static class AsyncDrawable extends BitmapDrawable {
+    class AsyncDrawable extends BitmapDrawable {
         private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
 
-        public AsyncDrawable(Resources res, Bitmap bitmap,BitmapWorkerTask bitmapWorkerTask) {
-            super(res, bitmap);
+        public AsyncDrawable(BitmapWorkerTask bitmapWorkerTask) {
+            super(sLoadingBitmap);
             bitmapWorkerTaskReference = new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
         }
 
@@ -74,7 +81,7 @@ public class Thumbnail {
         }
     }
 
-    Bitmap decodeSampledBitmapFromResource(Resources res, String path, int reqWidth, int reqHeight) {
+    public Bitmap scaleImage(String path, int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -110,18 +117,22 @@ public class Thumbnail {
     class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
         private final WeakReference<ImageView> imageViewReference;
         private String path = null;
-        private Context context;
-        public BitmapWorkerTask(Context ctx,ImageView imageView) {
+        public BitmapWorkerTask(ImageView imageView) {
             // Use a WeakReference to ensure the ImageView can be garbage collected
             imageViewReference = new WeakReference<ImageView>(imageView);
-            context = ctx;
         }
 
         // Decode image in background.
         @Override
         protected Bitmap doInBackground(String... params) {
             path = params[0];
-            return decodeSampledBitmapFromResource(context.getResources(), path, 100, 100);
+            if(path == null)
+                return null;
+            ImageView i = imageViewReference.get();
+            if(i == null)
+                return scaleImage(path, 100, 100);
+            else
+                return scaleImage(path, i.getWidth(), i.getHeight());
         }
 
         // Once complete, see if ImageView is still around and set bitmap.
@@ -129,6 +140,9 @@ public class Thumbnail {
         protected void onPostExecute(Bitmap bitmap) {
             if (isCancelled()) {
                 bitmap = null;
+            }
+            if(bitmap == null){
+                bitmap = sLoadingBitmap;
             }
             if (imageViewReference != null && bitmap != null) {
                 final ImageView imageView = imageViewReference.get();

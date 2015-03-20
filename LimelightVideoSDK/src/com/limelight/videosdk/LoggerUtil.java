@@ -48,7 +48,7 @@ public class LoggerUtil {
      * @param maxBackupSize Maximum number of backed up log files
      * @param maxFileSize maximum size of log file until rolling
      */
-    public static void configure(String fileName, String filePattern,
+    static void configure(String fileName, String filePattern,
             int maxBackupSize, long maxFileSize) {
 
         sLogConfigurator.setFileName(fileName);
@@ -59,11 +59,12 @@ public class LoggerUtil {
     }
 
     /**
-     * Method to return a logger object
+     * Method to return a logger object.
+     * If the log file does not exists then configure the logger and create a log file.
      * @param name Logger name
      * @return {@link Logger}
      */
-    public static Logger getLogger(Context context,String name) {
+    public synchronized static Logger getLogger(Context context,String name) {
         String filePath = sLogConfigurator.getFileName();
         if(filePath == null && context != null){
             File file = new File(context.getFilesDir(), LoggerUtil.sLoggerName + ".log");

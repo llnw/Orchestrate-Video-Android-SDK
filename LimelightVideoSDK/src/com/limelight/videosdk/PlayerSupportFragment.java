@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import com.limelight.videosdk.Constants.PlayerState;
 import com.limelight.videosdk.ContentService.EncodingsCallback;
+import com.limelight.videosdk.WidevineManager.WVCallback;
 import com.limelight.videosdk.model.Delivery;
 import com.limelight.videosdk.model.Encoding;
 import com.limelight.videosdk.model.PrimaryUse;
-import com.limelight.videosdk.utility.Downloader;
-import com.limelight.videosdk.utility.Setting;
-import com.limelight.videosdk.utility.Downloader.DownLoadCallback;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -22,7 +20,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,11 +80,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private RelativeLayout mPlayerLayout;
     private PlayerControl mPlayerControl;
     private MediaController mediaController;
-    private PlayerState mPlayerState;
+    private PlayerState mPlayerState = PlayerState.stopped;
     private CountDownTimer mTimer;
     private CountDownTimer mBufferingTimer;
-    private Downloader mWidevineDownloader = null;
-    private String mDownloadingUrl = null;
+    private WidevineManager mWidevineManager = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,7 +108,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         mPlayerView.setOnErrorListener(this);
         mPlayerView.setOnCompletionListener(this);
         mLogger = LoggerUtil.getLogger(getActivity(),LoggerUtil.sLoggerName);
-        Setting.initDeviceID(getActivity());
         mPlayerControl = new PlayerControl();
         return mPlayerLayout;
     }
@@ -134,7 +129,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             } catch (ClassCastException e) {
                 if (mLogger != null) {
                     mLogger.error("Activity Not Started");
-                    mLogger.error(e.toString());
                 }
                 return;
             }
@@ -178,9 +172,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         if (mLogger != null) {
-            mLogger.error("Error in media player");
+            mLogger.error("Error in media player" + what + ":"+ extra);
         }
-        Log.i(getClass().getName(), "Error In Media Player" + what + ":"+ extra);
         reset();
         if (mPlayerCallback != null)
             mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), what,"Error In Media Player");
@@ -204,6 +197,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     @Override
     public void onDestroy() {
         super.onDestroy();
+        reset();
         mPlayerView = null;
         mPlayerLayout = null;
         mLogger = null;
@@ -224,8 +218,15 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             if it is encoding URL fetch URL from encoding URL map
             if direct remote URL then play
             if local content URL  then play.*/
+            if (mLogger != null) {
+                mLogger.debug(TAG+" PlayerState:"+mPlayerState.name());
+                mLogger.debug(TAG+" Media play:"+ media);
+            }
             if(URLUtil.isValidUrl(media)){
                 if(URLUtil.isContentUrl(media)){
+                    if (mLogger != null) {
+                        mLogger.debug(TAG+" Local Content: "+media);
+                    }
                     try {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -235,39 +236,115 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             }
                         });
                     } catch (Exception ex) {
-                        Log.e(TAG, "Error During Playback: " + ex.getMessage());
+                        if (mLogger != null) {
+                            mLogger.debug(TAG+" PlayerState: play"+mPlayerState.name());
+                            mLogger.debug(TAG+" Error during playback");
+                        }
                         reset();
                         if (mPlayerCallback != null)
                             mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
                     }
                 }
-                //encoding remote URL
+                //encoding remote URL or widevine remote url
                 else{
-                    final Encoding encoding = ContentService.getEncodingFromUrl(media);
+                    Encoding encoding = ContentService.getEncodingFromUrl(media);
+                    if(encoding == null){
+                        String mimetype = MimeTypeMap.getFileExtensionFromUrl(media);
+                        if("wvm".equalsIgnoreCase(mimetype)){
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" Local widevine Content: "+media);
+                            }
+                            encoding =  new Encoding();
+                            encoding.mEncodingUrl = Uri.parse(media);
+                            String[] paths = media.split("/");
+                            encoding.mMediaID = paths[5];
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" Local widevine Content: media Id : "+encoding.mMediaID);
+                            }
+                            encoding.primaryUse = PrimaryUse.Widevine;
+                        }
+                    }
                     if(encoding != null){
-                        if (encoding.primaryUse.equals(PrimaryUse.WidevineOffline)) {
-                            downloadWidevine(encoding.mEncodingUrl.toString(),encoding.mMediaID,null);
-                        } else if (encoding.primaryUse.equals(PrimaryUse.Widevine)) {
-                            requestRights(encoding.mEncodingUrl.toString(), encoding.mMediaID);
-                        }else {
-                            try {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        setVideoUri(Uri.parse(encoding.mEncodingUrl.toString()));
-                                        //play();
+                        if (PrimaryUse.WidevineOffline.equals(encoding.primaryUse)||PrimaryUse.Widevine.equals(encoding.primaryUse)) {
+                            if(mWidevineManager == null){
+                                mWidevineManager = new WidevineManager(getActivity());
+                            }
+                            mWidevineManager.playWidewineEncodedContent(encoding, new WVCallback() {
+                                @Override
+                                public void onSuccess(final String path) {
+                                    if (mLogger != null) {
+                                        mLogger.debug(TAG+" Remote widevine Content: path : "+path);
                                     }
-                                });
-                            } catch (Exception ex) {
-                                Log.e(TAG, "Error During Playback: " + ex.getMessage());
-                                reset();
-                                if (mPlayerCallback != null)
-                                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
+                                    try {
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                setVideoPath(path);
+                                            }
+                                        });
+                                    } catch (Exception ex) {
+                                        if (mLogger != null) {
+                                            mLogger.debug(TAG+" Remote widevine Content: error in playback");
+                                        }
+                                        reset();
+                                        if (mPlayerCallback != null)
+                                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable throwable) {
+                                    reset();
+                                    if (mPlayerCallback != null)
+                                        mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                                }
+
+                                @Override
+                                public void onProgress(int percentFinished) {
+                                    if (mPlayerCallback != null)
+                                        mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
+                                }
+
+                                @Override
+                                public void onSendMessage(String message) {
+                                    if(mPlayerCallback != null)
+                                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
+                                }
+                            });
+                        } else {
+                            if(null != encoding.mEncodingUrl){
+                                final String url = encoding.mEncodingUrl.toString();
+                                if (mLogger != null) {
+                                    mLogger.debug(TAG+" Encoding remote URL: " + url);
+                                }
+                                try {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            setVideoUri(Uri.parse(url));
+                                            //play();
+                                        }
+                                    });
+                                } catch (Exception ex) {
+                                    if (mLogger != null) {
+                                        mLogger.debug(TAG+" error in playback");
+                                    }
+                                    reset();
+                                    if (mPlayerCallback != null)
+                                        mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
+                                }
+                            }else{
+                                if (mLogger != null) {
+                                    mLogger.debug(TAG+" Encoding Remote url is null");
+                                }
                             }
                         }
                     }
                     //direct remote URL
                     else{
+                        if (mLogger != null) {
+                            mLogger.debug(TAG+" direct remote URL : media" + media);
+                        }
                         try {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
@@ -276,7 +353,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                 }
                             });
                         } catch (Exception ex) {
-                            Log.e(TAG, "Error During Playback: " + ex.getMessage());
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" direct remote URL : error in playback");
+                            }
                             reset();
                             if (mPlayerCallback != null)
                                 mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
@@ -288,9 +367,15 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             //if media ID, fetch encodings and find suitable delivery and play
             else if(media!= null && media.trim().length()>0){
                 String scheme = Uri.parse(media).getScheme();
-                if(scheme!= null && scheme.equalsIgnoreCase("RTSP")){
+                if (mLogger != null) {
+                    mLogger.debug(TAG+" 3gp or delivery media : " + media);
+                }
+                if("RTSP".equalsIgnoreCase(scheme)){
                     setVideoPath(media);
                 }else{
+                    if (mLogger != null) {
+                        mLogger.debug(TAG+" Fetch encodings to get delivery for media id:" + media);
+                    }
                     final ContentService contentService = new ContentService(getActivity());
                     contentService.getAllEncodingsForMediaId(media, new EncodingsCallback() {
 
@@ -304,35 +389,85 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         public void onSuccess(ArrayList<Encoding> encodingList) {
                             final Delivery delivery = contentService.getDeliveryForMedia(encodingList);
                             if(delivery!= null){
-                            if (delivery.mDownloadable) {
-                                downloadWidevine(delivery.mRemoteURL.toString(),delivery.mMediaId,null);
-                            } else if (delivery.mProtected) {
-                                requestRights(delivery.mRemoteURL.toString(),delivery.mMediaId);
-                            }else {
-                                try {
-                                    getActivity().runOnUiThread(new Runnable() {
+                                if (delivery.mProtected) {
+                                    if (mLogger != null) {
+                                        mLogger.debug(TAG+" Delivery is widevine" + media);
+                                    }
+                                    if(mWidevineManager == null){
+                                        mWidevineManager = new WidevineManager(getActivity());
+                                    }
+                                    mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
                                         @Override
-                                        public void run() {
-                                            setVideoUri(Uri.parse(delivery.mRemoteURL.toString()));
-//                                            play();
+                                        public void onSuccess(final String path) {
+                                            if (mLogger != null) {
+                                                mLogger.debug(TAG+" Delivery widevine media path" + path);
+                                            }
+                                            try {
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        setVideoPath(path);
+                                                    }
+                                                });
+                                            } catch (Exception ex) {
+                                                if (mLogger != null) {
+                                                    mLogger.debug(TAG+" Error in playback");
+                                                }
+                                                reset();
+                                                if (mPlayerCallback != null)
+                                                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable throwable) {
+                                            reset();
+                                            if (mPlayerCallback != null)
+                                                mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                                        }
+
+                                        @Override
+                                        public void onProgress(int percentFinished) {
+                                            if (mPlayerCallback != null)
+                                                mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
+                                        }
+
+                                        @Override
+                                        public void onSendMessage(String message) {
+                                            if(mPlayerCallback != null)
+                                                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
                                         }
                                     });
-                                } catch (Exception ex) {
-                                    Log.e(TAG, "Error During Playback: " + ex.getMessage());
-                                    reset();
-                                    if (mPlayerCallback != null)
-                                        mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
                                 }
-                            }
+                                else {
+                                    try {
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                setVideoUri(Uri.parse(delivery.mRemoteURL.toString()));
+                                                //play();
+                                            }
+                                        });
+                                    } catch (Exception ex) {
+                                        if (mLogger != null) {
+                                            mLogger.debug(TAG+" Error in playback");
+                                        }
+                                        reset();
+                                        if (mPlayerCallback != null)
+                                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
+                                    }
+                                }
                             }else{
                                 if (mPlayerCallback != null)
                                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Proper Delivery Found");
-                            
                             }
                         }
                     });
                 }
             }else{
+                if (mLogger != null) {
+                    mLogger.debug(TAG+" Simply play");
+                }
                 play();
             }
         }
@@ -361,6 +496,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     mLogger.error("Player Not Initilized");
                 }
             }
+            if (mLogger != null) {
+                mLogger.debug(TAG+" PlayerState: play :"+mPlayerState.name());
+            }
         }
 
         public void pause() {
@@ -378,14 +516,13 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     mLogger.error("Player Not Initilized");
                 }
             }
+            if (mLogger != null) {
+                mLogger.debug(TAG+" PlayerState: pause: "+mPlayerState.name());
+            }
         }
 
         public void stop() {
             if (mPlayerView != null){
-                /*mPlayerView.stopPlayback();
-                mPlayerState = PlayerState.stopped;
-                mPlayerView.setVideoURI(null);
-                mUri = null;*/
                 reset();
             }
             else {
@@ -438,6 +575,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         mLogger.error("Player Not Initilized");
                     }
                 }
+                if (mLogger != null) {
+                    mLogger.debug(TAG+" Video path: "+mUri.toString());
+                }
             } else {
                 if (mLogger != null) {
                     mLogger.info("Please Check The URI");
@@ -465,6 +605,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Media Player Error");
                     }
                 }
+                if (mLogger != null) {
+                    mLogger.debug(TAG+" Video path: "+mUri.toString());
+                }
             } else {
                 if (mLogger != null) {
                     mLogger.info("Please Check The URI");
@@ -472,83 +615,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
 
-        /**
-         * Method to request rights from license server and then validate 
-         * using DRM engine.
-         * @param uri
-         * @param mediaId
-         */
-        private void requestRights(final String url, final String mediaId) {
-            final Uri uri = Uri.parse(url.toString());
-            WidevineRightsRequester requester = new WidevineRightsRequester(
-                    getActivity(), uri, mediaId,
-                    new WidevineRightsRequester.Callback() {
-                        @Override
-                        public void onSuccess() {
-                            try {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        setVideoUri(uri);
-                                    }
-                                });
-                            } catch (Exception ex) {
-                                Log.e(TAG,"Error During Playback: "+ ex.getMessage());
-                                reset();
-                                if (mPlayerCallback != null)
-                                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
-                            }
-                        }
-        
-                        @Override
-                        public void onError(Throwable throwable) {
-                            reset();
-                            if (mPlayerCallback != null)
-                                mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
-                        }
-                    });
-            if(!requester.mDrmInitFailed){
-                if(mPlayerCallback != null)
-                    mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, "Processing Widevine Rights!");
-                requester.requestRights();
-            }
-        }
-
-        /**
-         * Method to download widevine content and then play it after validating the rights.
-         * @param url
-         * @param mediaId
-         * @param saveDirLocation
-         */
-        private void downloadWidevine(String url, final String mediaId,String saveDirLocation) {
-            mDownloadingUrl = url;
-            mWidevineDownloader = new Downloader(getActivity());
-            mWidevineDownloader.startDownload(url, "video/wvm", saveDirLocation, new DownLoadCallback(){
-
-                @Override
-                public void onSuccess(String path) {
-                        requestRights(path, mediaId);
-                }
-
-                @Override
-                public void onError(Throwable throwable) {
-                    reset();
-                    if (mPlayerCallback != null)
-                        mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), 100,throwable.getMessage());
-                }
-
-                @Override
-                public void onProgress(int percentFinished) {
-                    if (mPlayerCallback != null)
-                        mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
-                }
-            });
-        }
-
         @Override
         public void resume() {
-            // TODO Auto-generated method stub
-            
         }
     }
 
@@ -568,14 +636,19 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             mPlayerView.stopPlayback();
         }else{
             //Special case for 3GP url as it takes long time to play.
-            if(MimeTypeMap.getFileExtensionFromUrl(mUri.toString()).equalsIgnoreCase("3gp")){
+            if(!(URLUtil.isContentUrl(mUri.toString())) && "3gp".equalsIgnoreCase(MimeTypeMap.getFileExtensionFromUrl(mUri.toString()))){
+                if (mLogger != null) {
+                    mLogger.debug(TAG+" 3GP case Uri:" + mUri.toString());
+                }
                 mp.setOnInfoListener(new OnInfoListener() {
                     @Override
                     public boolean onInfo(MediaPlayer mp, int what, int extra) {
                         if(what == MediaPlayer.MEDIA_INFO_BUFFERING_START||
                                 what == MediaPlayer.MEDIA_INFO_BUFFERING_END||
                                 what == MediaPlayer.MEDIA_INFO_METADATA_UPDATE){
-                            Log.i(TAG, "Info now"+": "+what +":"+extra);
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" Info now"+": "+what +":"+extra);
+                            }
                             mPlayerCallback.playerPrepared(mPlayerControl);
                         }
                         return true;
@@ -594,22 +667,40 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mPlayerCallback.playerPrepared(mPlayerControl);
             }
         }
+        if (mLogger != null) {
+            mLogger.debug(TAG+" PlayerState:"+mPlayerState.name());
+        }
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        if (mLogger != null) {
+            mLogger.debug(TAG+" PlayerState:"+mPlayerState.name());
+        }
         mPlayerState = PlayerState.completed;
     }
-
+    /**
+     * Stops the playback.Clears the video path set in player.
+     * Stops the timers running for buffering or preparing if any.
+     * It also stops the wide vine media downloading.
+     */
     private void reset(){
-        mPlayerView.stopPlayback();
-        mPlayerView.setVideoURI(null);
+        if (mLogger != null) {
+            mLogger.debug(TAG+" Reset Called");
+        }
+        if(mPlayerView !=null){
+            mPlayerView.stopPlayback();
+            mPlayerView.setVideoURI(null);
+        }
         mUri = null;
         mPlayerState = PlayerState.stopped;
         stopTimerForPrepare();
         stopTimerForBuffer();
-        if(mWidevineDownloader!= null){
-            mWidevineDownloader.cancelDownload(mDownloadingUrl);
+        if(mWidevineManager!= null){
+            mWidevineManager.cancelDownload();
+        }
+        if (mLogger != null) {
+            mLogger.debug(TAG+" PlayerState:"+mPlayerState.name());
         }
     }
     /**
@@ -631,14 +722,21 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         };
         mBufferingTimer.start();
+        if (mLogger != null) {
+            mLogger.debug(TAG+" Started Timer Buffer");
+        }
     }
 
     /**
      * Method to stop timer for buffering.
      */
     private void stopTimerForBuffer() {
-        if(mBufferingTimer != null)
+        if(mBufferingTimer != null){
+            if (mLogger != null) {
+                mLogger.debug(TAG+" Stopped Timer Buffer");
+            }
             mBufferingTimer.cancel();
+        }
     }
 
     /**
@@ -660,13 +758,20 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         };
         mTimer.start();
+        if (mLogger != null) {
+            mLogger.debug(TAG+" Start Timer Prepare");
+        }
     }
 
     /**
      * Method to stop timer.
      */
     private void stopTimerForPrepare() {
-        if(mTimer != null)
+        if(mTimer != null){
+            if (mLogger != null) {
+                mLogger.debug(TAG+" Stopped Timer Prepare");
+            }
             mTimer.cancel();
+        }
     }
 }

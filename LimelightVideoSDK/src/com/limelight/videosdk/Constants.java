@@ -16,7 +16,7 @@ public class Constants {
     public static final String ACCESS_KEY = "access_key";
     public static final String EXPIRES = "expires";
     public static final long BUFFERING_TIMEOUT = 2*60*1000;
-    public static final long PREPARING_TIMEOUT = 1*60*1000;
+    public static final int PREPARING_TIMEOUT = 1*60*1000;
     //URLS
     public static final String FETCH_ALL_CHANNEL_GROUP_PATH = "/organizations/%s/channelgroups/all.json";
     public static final String FETCH_ALL_CHANNEL_OF_GROUP_PATH = "/organizations/%s/channelgroups/%s/channels.json";
@@ -63,6 +63,10 @@ public class Constants {
     public static final String SORT_BY = "sort_by";
     public static final String SORT_ORDER = "sort_order";
     //JSON Keys end
+    public static final String SORT_BY_UPDATE_DATE = "update_date";
+    public static final String SORT_BY_CREATE_DATE = "create_date";
+    public static final String SORT_ORDER_ASC = "asc";
+    public static final String SORT_ORDER_DESC = "desc";
     /**
      * Various message states.<br>
      * status 0<br>

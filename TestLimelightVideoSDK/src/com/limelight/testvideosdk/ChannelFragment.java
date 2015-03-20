@@ -21,6 +21,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.Channel;
 
@@ -136,6 +138,7 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
             ArrayList<Uri> urls = new ArrayList<Uri>();
             ContentService contentService = new ContentService(ctx);
             try {
+                contentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
                 mChannels = contentService.getAllChannel(refresh);
             } catch (Exception e) {
                 mChannels= null;

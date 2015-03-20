@@ -2,6 +2,8 @@ package com.limelight.videosdk.utility;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Environment;
 import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 import java.io.BufferedInputStream;
@@ -12,8 +14,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+
+import com.limelight.videosdk.Constants;
 
 /**
  * This class facilitates downloading of widevine offline content and thumbnails associated with media and channels.
@@ -21,7 +25,7 @@ import java.util.Set;
  */
 public class Downloader {
 
-    private final Set<DownloadTask> mDownloadTasks = new HashSet<DownloadTask>();
+    private final Set<DownloadTask> mDownloadTasks = new LinkedHashSet<DownloadTask>();
     private Activity mActivity;
 
     /**
@@ -53,13 +57,15 @@ public class Downloader {
      * @param callback
      */
     public void startDownload(String url,String mimetype,String saveDirLocation,DownLoadCallback callback){
+
+        if(Build.VERSION.SDK_INT < 18 && mimetype!= null && mimetype.equalsIgnoreCase("video/wvm") && saveDirLocation == null){
+            if(Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)
+                    && ! (Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED_READ_ONLY)))
+                saveDirLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        }
         if(saveDirLocation == null){
-//          if(Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)
-//                  && ! (Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED_READ_ONLY)))
-//              saveDirLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-//          else
-              saveDirLocation = mActivity.getFilesDir().getPath();
-      }
+            saveDirLocation = mActivity.getFilesDir().getPath();
+        }
 
         File dir = new File(saveDirLocation);
 
@@ -85,6 +91,8 @@ public class Downloader {
             mDownloadTasks.add(task);
             task.execute(url);
         }
+        else
+            callback.onError(new Throwable("URL Invalid"));
     }
 
     public boolean cancelDownload(String url){
@@ -147,6 +155,7 @@ public class Downloader {
             try {
                 URL urlOfFile = new URL(url);
                 URLConnection connection = urlOfFile.openConnection();
+                connection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                 connection.connect();
 
                 int fileLength = connection.getContentLength();
@@ -164,7 +173,9 @@ public class Downloader {
                    if(isCancelled()){
                        output.close();
                        data = null;
+                       mTempFile.delete();
                        mError = new Exception("Cancelled");
+                       break;
                    }
                     total += count;
                     if (total >= nextProgress) {

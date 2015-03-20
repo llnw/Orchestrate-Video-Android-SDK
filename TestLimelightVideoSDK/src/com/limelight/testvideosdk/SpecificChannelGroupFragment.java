@@ -21,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
+
+import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.Channel;
 
@@ -163,6 +165,7 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
                     //channels = contentService.getAllChannel(ctx);
                 }
                 else{
+                    contentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
                     mChannelList = contentService.getAllChannelOfGroup(mGroupId,refresh);
                 }
             } catch (Exception e) {

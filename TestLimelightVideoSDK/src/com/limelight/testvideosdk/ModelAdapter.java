@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.limelight.videosdk.utility.Downloader;
 import com.limelight.videosdk.utility.Thumbnail;
@@ -23,7 +24,8 @@ public class ModelAdapter extends BaseAdapter {
     Downloader mDownloader = null;
     public ModelAdapter(FragmentActivity mActivity) {
         mFragmentActivity = mActivity;
-        mLoadingBitmap = BitmapFactory.decodeResource(mFragmentActivity.getResources(), R.drawable.ic_media_video_poster);
+//        mLoadingBitmap = BitmapFactory.decodeResource(mFragmentActivity.getResources(), R.drawable.ic_media_video_poster);
+        mLoadingBitmap = BitmapFactory.decodeResource(mFragmentActivity.getResources(), android.R.drawable.ic_menu_gallery);
         mDownloader = new Downloader(mFragmentActivity);
     }
     
@@ -35,7 +37,7 @@ public class ModelAdapter extends BaseAdapter {
         mLisArrayList = mList;
         mFragmentActivity = mActivity;
         mUriList = mUri;
-        mLoadingBitmap = BitmapFactory.decodeResource(mFragmentActivity.getResources(), R.drawable.ic_media_video_poster);
+        mLoadingBitmap = BitmapFactory.decodeResource(mFragmentActivity.getResources(), android.R.drawable.ic_menu_gallery);
         mDownloader = new Downloader(mFragmentActivity);
     }
 
@@ -56,7 +58,8 @@ public class ModelAdapter extends BaseAdapter {
 
     class ViewHolder {
         public TextView mTextView;
-        public ImageView image;
+        public ImageView mThumbnailImage;
+        public ProgressBar mProgress;
       }
     
     @Override
@@ -68,7 +71,8 @@ public class ModelAdapter extends BaseAdapter {
             rowView = inflater.inflate(R.layout.list_model, null);
             ViewHolder viewHolder = new ViewHolder();
             viewHolder.mTextView = (TextView) rowView.findViewById(R.id.text);
-            viewHolder.image = (ImageView) rowView.findViewById(R.id.image);
+            viewHolder.mThumbnailImage = (ImageView) rowView.findViewById(R.id.image);
+            viewHolder.mProgress = (ProgressBar) rowView.findViewById(R.id.progressThumbnail);
             rowView.setTag(viewHolder);
         }
         final ViewHolder holder = (ViewHolder) rowView.getTag();
@@ -78,13 +82,18 @@ public class ModelAdapter extends BaseAdapter {
                 @Override
                 public void onSuccess(String path) {
                     Thumbnail t = new Thumbnail();
-                    t.loadBitmap(mFragmentActivity, path, holder.image, mLoadingBitmap);
+                    t.loadBitmap(mFragmentActivity, path, holder.mThumbnailImage, null);
+                    holder.mProgress.setVisibility(View.GONE);
                 }
                 @Override
                 public void onError(Throwable ex) {
+                    holder.mThumbnailImage.setImageBitmap(mLoadingBitmap);
+                    holder.mProgress.setVisibility(View.GONE);
                 }
                 @Override
                 public void onProgress(int percentFinished) {
+                    holder.mThumbnailImage.setImageBitmap(mLoadingBitmap);
+                    holder.mProgress.setVisibility(View.VISIBLE);
                 }
             });
         }

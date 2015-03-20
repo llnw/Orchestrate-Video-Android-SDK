@@ -29,13 +29,11 @@
 
         <ProgressBar
             android:id="@+id/progress"
-            style="@android:style/Widget.Holo.Light.ProgressBar.Large"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"/>
          <ProgressBar
             android:id="@+id/progress_load"
-            style="@android:style/Widget.Holo.Light.ProgressBar.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>

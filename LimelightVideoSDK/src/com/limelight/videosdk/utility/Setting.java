@@ -56,7 +56,7 @@ public class Setting{
      * Device id is required for making requests to DRM engine in case of Widevine content.
      * @param ctx context
      */
-    public static void initDeviceID(Context ctx) {
+    public static String getDeviceID(Context ctx) {
         // Create a device ID, if none exists
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
         if (!preferences.contains(Constants.DEVICE_ID_KEY)) {
@@ -67,6 +67,7 @@ public class Setting{
         }else{
             sDeviceId = preferences.getString(Constants.DEVICE_ID_KEY, "");
         }
+        return sDeviceId;
     }
 
     /**

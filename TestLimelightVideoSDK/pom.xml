@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+ http://maven.apache.org/maven-v4_0_0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ <groupId>com.limelight.testvideosdk</groupId>
+ <artifactId>TestLimelightVideoSDK</artifactId>
+ <version>3.1</version>
+ <packaging>apk</packaging>
+ <name>TestLimelightVideoSDK</name>
+
+ <dependencies>
+  <dependency>
+   <groupId>android</groupId>
+  <artifactId>android</artifactId>
+  <version>4.0_r4</version>
+   <scope>provided</scope>
+  </dependency>
+  <dependency>
+  <groupId>android.support</groupId>
+  <artifactId>compatibility-v13</artifactId>
+  <version>21.0.3</version>
+</dependency>
+<dependency>
+  <groupId>com.limelight.videosdk</groupId>
+  <artifactId>limelightvideosdk</artifactId>
+  <version>3.1</version>
+   <scope>system</scope>
+  <systemPath>${project.basedir}/libs/limelightvideosdk.jar</systemPath>
+</dependency>
+ </dependencies>
+ <build>
+  <finalName>${project.artifactId}</finalName>
+  <sourceDirectory>src</sourceDirectory>
+<!-- <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
+  <assetsDirectory>${basedir}/assets</assetsDirectory>
+  <resourceDirectory>${basedir}/res</resourceDirectory> -->
+  <pluginManagement>
+   <plugins>
+    <plugin>
+     <groupId>com.simpligility.maven.plugins</groupId>
+     <artifactId>android-maven-plugin</artifactId>
+     <version>4.1.0</version>
+     <extensions>true</extensions>
+    </plugin>
+   </plugins>
+  </pluginManagement>
+  <plugins>
+   <plugin>
+    <groupId>com.simpligility.maven.plugins</groupId>
+    <artifactId>android-maven-plugin</artifactId>
+    <configuration>
+        <androidManifestFile>${basedir}/AndroidManifest.xml</androidManifestFile>
+        <assetsDirectory>${basedir}/assets</assetsDirectory>
+        <resourceDirectory>${basedir}/res</resourceDirectory>
+        <nativeLibrariesDirectory>${basedir}/libs</nativeLibrariesDirectory>
+     <sdk>
+      <!-- platform or api level (api level 4 = platform 1.6) -->
+      <platform>19</platform>
+     </sdk>
+    </configuration>
+   </plugin>
+  </plugins>
+ </build>
+</project> 

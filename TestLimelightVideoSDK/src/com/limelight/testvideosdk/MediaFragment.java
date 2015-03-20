@@ -21,6 +21,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.Media;
 import com.limelight.videosdk.model.Media.MediaThumbnail;
@@ -137,6 +139,7 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
             ArrayList<Uri> urls = new ArrayList<Uri>();
             ContentService contentService = new ContentService(ctx);
             try {
+                contentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
 //                mMedias = contentService.searchMedia(ctx, refresh, "and", "4", null, null, null, null, null);
                 mMedias = contentService.getAllMedia(refresh);
             } catch (Exception e) {
