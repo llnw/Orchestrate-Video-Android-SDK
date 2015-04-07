@@ -2,9 +2,11 @@ package com.limelight.testvideosdk;
 
 import java.util.ArrayList;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -121,27 +123,36 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
 
     private static class MediaLoader extends AsyncTaskLoader<ModelHolder> {
 
-        ModelHolder mHolder;
-        Context ctx;
-        boolean refresh = false;
+        private ModelHolder mHolder;
+        private boolean refresh = false;
+        private static ContentService mContentService = null;
+        private Context mContext;
+
         public MediaLoader(Context context, Bundle arg1) {
             super(context);
-            ctx = context;
+            mContext = context;
             if(arg1!= null){
                 refresh = arg1.getBoolean("Refresh", false);
             }
             mHolder = new ModelHolder();
+            if(mContentService == null){
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+                String orgId = preferences.getString(mContext.getResources().getString(R.string.OrgIDEditPrefKey), null);
+                String accessKey = preferences.getString(mContext.getResources().getString(R.string.AccKeyEditPrefKey), null);
+                String secret = preferences.getString(mContext.getResources().getString(R.string.SecKeyEditPrefKey), null);
+                mContentService = new ContentService(mContext,orgId,accessKey,secret);
+            }
         }
 
         @Override
         public ModelHolder loadInBackground() {
             ArrayList<String> data = new ArrayList<String>();
             ArrayList<Uri> urls = new ArrayList<Uri>();
-            ContentService contentService = new ContentService(ctx);
+
             try {
-                contentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
+                mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
 //                mMedias = contentService.searchMedia(ctx, refresh, "and", "4", null, null, null, null, null);
-                mMedias = contentService.getAllMedia(refresh);
+                mMedias = mContentService.getAllMedia(refresh);
             } catch (Exception e) {
                 mMedias = null;
                 mErrorMsg = e.getMessage();
@@ -216,7 +227,7 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
             return;
         if (mPreviousTotalCount == totalItemCount)
             return;
-        boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
+        boolean loadMore = firstVisibleItem + visibleItemCount > totalItemCount;
         if (loadMore){
             mPreviousTotalCount  = totalItemCount;
             loadMore();

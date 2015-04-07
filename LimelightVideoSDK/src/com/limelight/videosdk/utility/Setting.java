@@ -17,25 +17,13 @@ import android.preference.PreferenceManager;
  *
  */
 public class Setting{
-    public static String sOrgId;
-    public static String sAccessKey;
-    public static String sSecret;
-    public static String sApiEndPoint;
-    public static String sLicenseProxy;
-    public static String sPortalkey;
-    public static String sDeviceId;
+    private static final boolean mIsRelease = false;
+    private static String sApiEndPoint = null;
+    private static String sLicenseProxy = null;
+    private static String sPortalkey = null;
+    private static String sDeviceId = null;
+    private static String sAnalyticsEndPoint = null;
 
-    /**
-     * To set the developer account details like organization id, access key and secret.
-     * @param id organization id
-     * @param key access key
-     * @param secret secret
-     */
-    public static void configureAccount(String id,String key,String secret){
-        sOrgId = id;
-        sAccessKey = key;
-        sSecret = secret;
-    }
 
     /**
      * To set widevine specific details like, Limelight API endpoint,
@@ -83,5 +71,73 @@ public class Setting{
                 return false;
         }
         return true;
+    }
+
+    /**
+     * This method returns Content API end point.
+     * If Application has provided Content end point, then provided end point will be used.
+     * Otherwise SDK will use default Content API end point based on Release mode(staging or production) 
+     * @return ContentAPIEndPoint
+     */
+    public static String getApiEndPoint(){
+        if(sApiEndPoint== null){
+            if(mIsRelease){
+                  return Constants.API_ENDPOINT_PROD;
+            }else{
+                  return Constants.API_ENDPOINT_STAGING;
+            }
+        }else{
+            return sApiEndPoint;
+        }
+    }
+
+    /**
+     * This method returns Widevine License Proxy URL.
+     * If Application has provided Widevine License Proxy URL, then provided URL will be used.
+     * Otherwise SDK will use default Widevine License Proxy URL based on Release mode(staging or production) 
+     * @return AnalyticsEndPoint
+     */
+    public static String getLicenseProxyURL(){
+        if(sLicenseProxy== null){
+            if(mIsRelease){
+                  return Constants.LICENSE_PROXY_PROD;
+            }else{
+                  return Constants.LICENSE_PROXY_STAGING;
+            }
+        }else{
+            return sLicenseProxy;
+        }
+    }
+
+    /**
+     * This method returns Portal Key.
+     * If Application has provided Portal Key, then provided key will be used.
+     * Otherwise SDK will use default Portal Key 
+     * @return AnalyticsEndPoint
+     */
+    public static String getPortalKey(){
+        if(sPortalkey== null){
+          return "Limelight";
+        }else{
+            return sPortalkey;
+        }
+    }
+
+    /**
+     * This method returns analytics end point.
+     * If Application has provided analytics end point, then provided end point will be used.
+     * Otherwise SDK will use default analytics end point based on Release mode(staging or production) 
+     * @return AnalyticsEndPoint
+     */
+    public static String getAnalyticsEndPoint(){
+        if(sAnalyticsEndPoint== null){
+            if(mIsRelease){
+                  return Constants.ANALYTICS_ENDPOINT_PROD;
+            }else{
+                  return Constants.ANALYTICS_ENDPOINT_STAGING;
+            }
+        }else{
+            return sAnalyticsEndPoint;
+        }
     }
 }

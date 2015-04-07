@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +21,7 @@ import android.drm.DrmManagerClient.OnEventListener;
 import android.drm.DrmManagerClient.OnInfoListener;
 import android.drm.DrmStore;
 import android.util.Log;
+import com.limelight.videosdk.Constants.WidevineStatus;
 import com.limelight.videosdk.model.Delivery;
 import com.limelight.videosdk.model.Encoding;
 import com.limelight.videosdk.model.PrimaryUse;
@@ -48,6 +48,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
     private Logger mLogger=  null;
     private DrmInfoRequest mDrmInfoRequest = null;
     private FileInputStream mFileStream = null;
+    private ContentService mContentService = null;
 
     public interface WVCallback{
         void onSuccess(String uri);
@@ -56,9 +57,10 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         void onSendMessage(String message);
     }
 
-    WidevineManager(Context ctx){
+    WidevineManager(Context ctx,String media,ContentService svc){
         mContext = ctx;
         mLogger = LoggerUtil.getLogger(mContext,LoggerUtil.sLoggerName);
+        mContentService = svc;
     }
 
     /**
@@ -263,8 +265,8 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      */
     void setMediaCredentials(String mediaID) throws JSONException{
         long clientTime = System.currentTimeMillis() / 1000L;
-        String toSign = String.format("%s|%s|%s|get_license|%s",Setting.sAccessKey, clientTime, mediaID, Setting.sOrgId);
-        String signature = URLAuthenticator.signWithKey(Setting.sSecret, toSign);
+        String toSign = String.format("%s|%s|%s|get_license|%s",mContentService.getAccessKey(), clientTime, mediaID, mContentService.getOrgId());
+        String signature = URLAuthenticator.signWithKey(mContentService.getSecret(), toSign);
         if(signature == null){
             if(mCallback!= null)
                 mCallback.onError(new Throwable("Signing Failed !"));
@@ -272,11 +274,11 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         }
         // add values to credentials
         if(mCredentials != null){
-            mCredentials.put("access_key", Setting.sAccessKey);
+            mCredentials.put("access_key", mContentService.getAccessKey());
             mCredentials.put("client_time", clientTime);
             mCredentials.put("media_id", mediaID);
             mCredentials.put("operation", "get_license");
-            mCredentials.put("organization_id", Setting.sOrgId);
+            mCredentials.put("organization_id", mContentService.getOrgId());
             mCredentials.put("signature", signature);
         }
     }
@@ -286,9 +288,9 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      */
     void setOrganizationCredentials(){
         mDrmInfoRequest = new DrmInfoRequest(DrmInfoRequest.TYPE_RIGHTS_ACQUISITION_INFO, "video/wvm");
-        mDrmInfoRequest.put("WVDRMServerKey", Setting.sLicenseProxy);
-        mDrmInfoRequest.put("WVPortalKey", Setting.sPortalkey);
-        mDrmInfoRequest.put("WVClientKey", Setting.sOrgId);
+        mDrmInfoRequest.put("WVDRMServerKey", Setting.getLicenseProxyURL());
+        mDrmInfoRequest.put("WVPortalKey", Setting.getPortalKey());
+        mDrmInfoRequest.put("WVClientKey", mContentService.getOrgId());
     }
 
     /**
@@ -381,6 +383,9 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         return WidevineStatus.OK;
     }
 
+    /**
+     * This method cancels the widevine offline content download operation.
+     */
     void cancelDownload() {
         if(mWidevineDownloader!= null){
             mLogger.debug(TAG + " cancelDownload : " + mDownloadingUrl);
@@ -506,14 +511,4 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         mFileStream = null;
         mDrmInfoRequest = null;
     }
-    
-    enum WidevineStatus {
-        OK,
-        NotInitialized,
-        AlreadyInitialized,
-        FileNotPresent,
-        NotRegistered,
-        AlreadyRegistered,
-        FileSystemError
-        }
 }

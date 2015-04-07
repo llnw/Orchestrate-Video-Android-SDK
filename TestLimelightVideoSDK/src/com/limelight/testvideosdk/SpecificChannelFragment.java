@@ -2,9 +2,11 @@ package com.limelight.testvideosdk;
 
 import java.util.ArrayList;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -47,9 +49,11 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
         mAdapter= null;
         mListView= null;
     }
+
     public interface SpecificChannelCallback{
         void callback(String id);
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_model, container,false);
@@ -65,8 +69,8 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
         mSwipeLayout.setDistanceToTriggerSync(250);
         mSwipeLayout.setEnabled(false);
         return view;
-}
-    
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -81,7 +85,6 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
         else{
             getActivity().getSupportLoaderManager().initLoader(13, null, this);
         }
-       
     }
 
     private void setListShown(boolean b) {
@@ -140,30 +143,39 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
 
     private static class SpecificMediaLoader extends AsyncTaskLoader<ModelHolder> {
 
-        ModelHolder mHolder;
-        Context ctx;
-        boolean refresh = false;
+        private ModelHolder mHolder;
+        private boolean refresh = false;
+        private static ContentService mContentService = null;
+        private Context mContext;
+
         public SpecificMediaLoader(Context context, Bundle arg1) {
             super(context);
-            ctx = context;
+            mContext = context;
             if(arg1!= null){
                 refresh = arg1.getBoolean("Refresh", false);
             }
             mHolder = new ModelHolder();
+            if(mContentService == null){
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+                String orgId = preferences.getString(mContext.getResources().getString(R.string.OrgIDEditPrefKey), null);
+                String accessKey = preferences.getString(mContext.getResources().getString(R.string.AccKeyEditPrefKey), null);
+                String secret = preferences.getString(mContext.getResources().getString(R.string.SecKeyEditPrefKey), null);
+                mContentService = new ContentService(mContext,orgId,accessKey,secret);
+            }
         }
 
         @Override
         public ModelHolder loadInBackground() {
             ArrayList<String> data = new ArrayList<String>();
             ArrayList<Uri> urls = new ArrayList<Uri>();
-            ContentService contentService = new ContentService(ctx);
+
             try {
                 if(mChannelId == null){
                     //mMedias = contentService.getAllMedia(ctx);
                 }
                 else{
-                    contentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
-                    mMedias = contentService.getAllMediaOfChannel(mChannelId,refresh);
+                    mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
+                    mMedias = mContentService.getAllMediaOfChannel(mChannelId,refresh);
                 }
             } catch (Exception e) {
                 mMedias = null;
@@ -242,7 +254,7 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
             return;
         if (mPreviousTotalCount == totalItemCount)
             return;
-        boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
+        boolean loadMore = firstVisibleItem + visibleItemCount > totalItemCount;
         if (loadMore){
             mPreviousTotalCount  = totalItemCount;
             loadMore();

@@ -169,11 +169,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     
     private void updateValues(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String orgId = preferences.getString(getResources().getString(R.string.OrgIDEditPrefKey), null);
-        String accessKey = preferences.getString(getResources().getString(R.string.AccKeyEditPrefKey), null);
-        String secret = preferences.getString(getResources().getString(R.string.SecKeyEditPrefKey), null);
-        Setting.configureAccount(orgId, accessKey, secret);
-
         String apiEndPoint = preferences.getString(getResources().getString(R.string.urlEditPrefKey), null);
         String portalKey = preferences.getString(getResources().getString(R.string.portalKeyEditPrefKey), null);
         String licenseProxy = preferences.getString(getResources().getString(R.string.licProxyEditPrefKey), null);

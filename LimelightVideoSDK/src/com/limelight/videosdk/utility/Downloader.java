@@ -95,6 +95,11 @@ public class Downloader {
             callback.onError(new Throwable("URL Invalid"));
     }
 
+    /**
+     * This method cancels a downloading operation.
+     * @param url
+     * @return
+     */
     public boolean cancelDownload(String url){
         for(DownloadTask task : mDownloadTasks){
             if(url.equals(task.mUrl)){

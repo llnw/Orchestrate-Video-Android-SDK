@@ -81,6 +81,13 @@ public class Thumbnail {
         }
     }
 
+    /**
+     * This method scales an image as per the requested height and width.
+     * @param path
+     * @param reqWidth
+     * @param reqHeight
+     * @return Scaled Bitmap
+     */
     public Bitmap scaleImage(String path, int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions

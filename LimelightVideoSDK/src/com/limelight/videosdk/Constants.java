@@ -15,7 +15,7 @@ public class Constants {
     public static final String API_URL = "http://api.video.limelight.com/rest";
     public static final String ACCESS_KEY = "access_key";
     public static final String EXPIRES = "expires";
-    public static final long BUFFERING_TIMEOUT = 2*60*1000;
+    public static final long BUFFERING_TIMEOUT = 5*60*1000;
     public static final int PREPARING_TIMEOUT = 1*60*1000;
     //URLS
     public static final String FETCH_ALL_CHANNEL_GROUP_PATH = "/organizations/%s/channelgroups/all.json";
@@ -26,6 +26,12 @@ public class Constants {
     public static final String FETCH_CHANNEL_PROPERTY_PATH = "/organizations/%s/channel/%s/properties.json";
     public static final String FETCH_MEDIA_PROPERTY_PATH = "/organizations/%s/media/%s/properties.json";
     public static final String ENCODING_PATH = "/organizations/%s/media/%s/encodings.json";
+    public static final String API_ENDPOINT_STAGING = "https://staging-api.lvp.llnw.net/rest";
+    public static final String API_ENDPOINT_PROD = "https://staging-api.lvp.llnw.net/rest";
+    public static final String LICENSE_PROXY_STAGING = "https://staging-wlp.lvp.llnw.net/license";
+    public static final String LICENSE_PROXY_PROD = "https://staging-wlp.lvp.llnw.net/license";
+    public static final String ANALYTICS_ENDPOINT_STAGING = "https://staging-wlp.lvp.llnw.net/license";
+    public static final String ANALYTICS_ENDPOINT_PROD = "https://staging-wlp.lvp.llnw.net/license";
     //URLS end
     //JSON Keys
     public static final String TITLE = "title";
@@ -44,6 +50,10 @@ public class Constants {
     public static final String MEDIA_TYPE = "media_type";
     public static final String TAG = "tag";
     public static final String STATE = "state";
+    public static final String ORIGINAL_FILENAME = "original_filename";
+    public static final String CREATED_AFTER = "created_after";
+    public static final String UPDATED_AFTER = "updated_after";
+    public static final String PUBLISHED_AFTER = "published_after";
     //Thumbnail
     public static final String THUMBNAIL = "thumbnails";
     //Encoding
@@ -67,6 +77,10 @@ public class Constants {
     public static final String SORT_BY_CREATE_DATE = "create_date";
     public static final String SORT_ORDER_ASC = "asc";
     public static final String SORT_ORDER_DESC = "desc";
+    //Model type
+    public static final int TYPE_CHANNEL_GROUP = 1;
+    public static final int TYPE_CHANNEL = 2;
+    public static final int TYPE_MEDIA = 3;
     /**
      * Various message states.<br>
      * status 0<br>
@@ -92,5 +106,17 @@ public class Constants {
         stopped,
         completed
     }
-
+    /**
+     * Various Widevine status values
+     * @author kanchan
+     */
+    enum WidevineStatus {
+        OK,
+        NotInitialized,
+        AlreadyInitialized,
+        FileNotPresent,
+        NotRegistered,
+        AlreadyRegistered,
+        FileSystemError
+    }
 }

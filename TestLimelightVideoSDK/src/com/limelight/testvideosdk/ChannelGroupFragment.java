@@ -2,9 +2,11 @@ package com.limelight.testvideosdk;
 
 import java.util.ArrayList;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -120,26 +122,34 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
 
     private static class ChannelGroupLoader extends AsyncTaskLoader<ModelHolder> {
 
-        ModelHolder mHolder;
-        Context ctx;
-        boolean refresh = false;
+        private ModelHolder mHolder;
+        private boolean refresh = false;
+        private static ContentService mContentService = null;
+        private Context mContext;
+
         public ChannelGroupLoader(Context context, Bundle arg1) {
             super(context);
-            ctx = context;
+            mContext = context;
             if(arg1!= null){
                 refresh = arg1.getBoolean("Refresh", false);
             }
             mHolder = new ModelHolder();
+            if(mContentService == null){
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+                String orgId = preferences.getString(mContext.getResources().getString(R.string.OrgIDEditPrefKey), null);
+                String accessKey = preferences.getString(mContext.getResources().getString(R.string.AccKeyEditPrefKey), null);
+                String secret = preferences.getString(mContext.getResources().getString(R.string.SecKeyEditPrefKey), null);
+                mContentService = new ContentService(mContext,orgId,accessKey,secret);
+            }
         }
 
         @Override
         public ModelHolder loadInBackground() {
             ArrayList<String> data = new ArrayList<String>();
             ArrayList<Uri> urls = new ArrayList<Uri>();
-            ContentService contentService = new ContentService(ctx);
             try {
-                contentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
-                mGroups = contentService.getAllChannelGroup(refresh);
+                mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
+                mGroups = mContentService.getAllChannelGroup(refresh);
             } catch (Exception e) {
                 mGroups = null;
                 mErrorMsg = e.getMessage();
@@ -213,7 +223,7 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
             return;
         if (mPreviousTotalCount == totalItemCount)
             return;
-        boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount;
+        boolean loadMore = firstVisibleItem + visibleItemCount > totalItemCount;
         if (loadMore){
             mPreviousTotalCount  = totalItemCount;
             loadMore();

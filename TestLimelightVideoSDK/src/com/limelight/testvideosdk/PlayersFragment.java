@@ -5,8 +5,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,10 +21,10 @@ import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.IPlayerControl;
 import com.limelight.videosdk.PlayerSupportFragment;
@@ -41,6 +41,8 @@ public class PlayersFragment extends Fragment {
     ProgressDialog mProgress = null;
     ProgressDialog mProgressDialog = null;
     CheckBox mDeliveryCheck = null;
+    ContentService mContentService;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -80,21 +82,27 @@ public class PlayersFragment extends Fragment {
 
     private void getAllEncodings(String mediaId) {
         Context context = getActivity().getApplicationContext();
-        ContentService contentService = new ContentService(context);
-        contentService.getAllEncodingsForMediaId(mediaId, new EncodingsCallback() {
+        mContentService = ContentService.getContentService(context, mediaId,Constants.TYPE_MEDIA);
+        if(mContentService != null){
+            mContentService.getAllEncodingsForMediaId(mediaId, new EncodingsCallback() {
 
-            @Override
-            public void onError(Throwable throwable) {
-                hide();
-                showProgress(false,null);
-                showMessage(throwable.getMessage());
-            }
+                @Override
+                public void onError(Throwable throwable) {
+                    hide();
+                    showProgress(false,null);
+                    showMessage(throwable.getMessage());
+                }
 
-            @Override
-            public void onSuccess(ArrayList<Encoding> encodingList) {
-                showEncodingDialog(encodingList);
-            }
-        });
+                @Override
+                public void onSuccess(ArrayList<Encoding> encodingList) {
+                    showEncodingDialog(encodingList);
+                }
+            });
+        }
+        else{
+            showMessage("No Media Library !");
+            showProgress(false, null);
+        }
     }
 
     public void play() {
@@ -115,10 +123,15 @@ public class PlayersFragment extends Fragment {
             }
             else{
                 showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
-                if(mDeliveryCheck.isChecked())
+                String scheme = Uri.parse(mMediaInfo).getScheme();
+                if("RTSP".equalsIgnoreCase(scheme)){
                     mControl.play(mMediaInfo);//used with delivery
-                else{
-                    getAllEncodings(mMediaInfo);
+                }else{
+                    if(mDeliveryCheck.isChecked())
+                        mControl.play(mMediaInfo);//used with delivery
+                    else{
+                        getAllEncodings(mMediaInfo);
+                    }
                 }
             }
         } else
