@@ -33,5 +33,6 @@ TAB_SCROLL = {'settings-tab':3}
 
 
 
-
+FETCHING_MEDIA_MSG = "Fetching Media From Server"
+WIDEVINE_OFFLINE_DOWNLOAD_MSG = "Downloading. Please Wait..."
 

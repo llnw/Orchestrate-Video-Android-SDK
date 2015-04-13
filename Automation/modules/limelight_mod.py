@@ -16,7 +16,8 @@ from logger import info, error, warning, exception, success
 
 from constant import LONG_WAIT, MEDIUM_WAIT, SORT_WAIT, \
                      APPIUM_SERVER, TEST_TARGET_CFG, MAPPER, \
-                     LEFT_MOST_TAB, TAB_SCROLL
+                     LEFT_MOST_TAB, TAB_SCROLL, FETCHING_MEDIA_MSG, \
+                     WIDEVINE_OFFLINE_DOWNLOAD_MSG
 
 import exception_mod
 
@@ -240,6 +241,26 @@ class Limelight(object):
             else:
                 raise exception_mod.GlueCodeNotImplemented
 
+        # If we checking the element of player
+        if check_ele.lower().strip() == "player":
+            info("checking the player controls: %s"%', '.join(varify_data))
+            for ech_ele in varify_data:
+                info("chk :: %s"%ech_ele)
+                for et in range(2):
+                    is_present = self.is_item_visible(ech_ele)
+                    if not is_present: self.click_on("player")
+                    else: break
+
+                if is_present:
+                    msg = "ele: %s is present"%ech_ele
+                else:
+                    msg = "ele: %s is not present"%ech_ele
+
+                if is_present == should_equal:
+                    info(msg)
+                else:
+                    raise Exception(msg)
+
     def go_to_tab_and_select_media(self, tab_name, media_name):
         self.select_tab(tab_name)
         self.set_select_value(tab_name, "", "select", media_name)
@@ -277,6 +298,59 @@ class Limelight(object):
             else:
                 # Click on the encoding element
                 self.click_on("dropdown", generic_param=(encoding_name,))
+
+
+
+    def wait_for_media_fetch_from_server(self):
+        """
+        Wait for the media fetched from the limelight server,
+        Here we are checking if the progrss bar has disabled or not
+        """
+
+        for i in xrange(8):
+            if self.is_item_visible("alert-msg") and \
+             self.get_value("alert-msg") == FETCHING_MEDIA_MSG :
+                info("%s :: is still visible"%FETCHING_MEDIA_MSG)
+                time.sleep(LONG_WAIT)
+            else:
+                info("%s :: is not visible"%FETCHING_MEDIA_MSG)
+                break
+        else:
+            raise Exception("%s ::: msg still visible"%FETCHING_MEDIA_MSG)
+
+    def wait_for_widevine_offline_download(self, encoding_name, play_type):
+        """
+        Wait for the widevine offline data gets downloaded
+        Here we are checking if the progrss bar has disabled or not
+        """
+
+        if play_type.strip().lower() == "local":
+            return
+
+        if encoding_name.strip().lower() == "automatic":
+            strict_check = False
+        elif "widevineoffline" in encoding_name.strip().lower() :
+            strict_check = True
+        else:
+            strict_check = None
+
+        # For other cases we don't need to check this
+        if strict_check != None :
+            for i in xrange(8):
+                if self.is_item_visible("alert-msg") and \
+                 self.get_value("alert-msg") == WIDEVINE_OFFLINE_DOWNLOAD_MSG :
+                    info("%s :: is visible"%WIDEVINE_OFFLINE_DOWNLOAD_MSG)
+                    if strict_check : strict_check = False
+                    time.sleep(LONG_WAIT)
+                else:
+                    info("%s :: not visible"%WIDEVINE_OFFLINE_DOWNLOAD_MSG)
+                    if strict_check:
+                        raise Exception(exception_modod.widevine_error)
+
+                    break
+            else:
+                raise Exception("%s ::: msg still visible"%WIDEVINE_OFFLINE_DOWNLOAD_MSG)
+
 
     @exception_mod.handle_exception
     def perform_video_operations(self, opr, media_type, media_source, encoding_type):
@@ -358,6 +432,14 @@ class Limelight(object):
 
             # Select the encoding from drop down
             self.select_encoding(encoding_type, media_type)
+
+            # Check if the fetching media from server msg disappear
+            self.wait_for_media_fetch_from_server()
+
+            # Check if the widevine download msg is displayer
+            self.wait_for_widevine_offline_download(encoding_type, media_type)
+
+
 
         elif opr.strip().lower() == "pause":
             for et in range(3):

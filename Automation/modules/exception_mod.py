@@ -13,6 +13,8 @@ invalid_combination_msg = "%s"
 equal_success_msg = "Got values as : %s"
 not_equal_success_msg = "Not Expected Value : %s, Got Value: %s"
 
+widevine_error = "The downloading popup is not visible for offline widevine encoding"
+
 # This decorator is to handle the exceptions and print it in log
 def handle_exception(fn):
     def wrapper(*args, **kwargs):
