@@ -148,6 +148,15 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
             ArrayList<String> data = new ArrayList<String>();
             ArrayList<Uri> urls = new ArrayList<Uri>();
             try {
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+                String orgId = preferences.getString(mContext.getResources().getString(R.string.OrgIDEditPrefKey), null);
+                String accessKey = preferences.getString(mContext.getResources().getString(R.string.AccKeyEditPrefKey), null);
+                String secret = preferences.getString(mContext.getResources().getString(R.string.SecKeyEditPrefKey), null);
+                if((mContentService.getOrgId().equalsIgnoreCase(orgId) == false) ||
+                        (mContentService.getAccessKey().equalsIgnoreCase(accessKey) == false) ||
+                        (mContentService.getSecret().equalsIgnoreCase(secret) == false)){
+                    mContentService = new ContentService(mContext,orgId,accessKey,secret);
+                }
                 mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
                 mGroups = mContentService.getAllChannelGroup(refresh);
             } catch (Exception e) {

@@ -15,7 +15,7 @@ public interface IPlayerControl {
      * Call play with media id to fetch the encoding, get the delivery and play the media.<br>
      * Call play with encoding url to play the media for the selected encoding.
      */
-    void play(String data);
+    void play(String data, ContentService contentSrvc);
     /**
      * This method programmatically pause the player.
      */

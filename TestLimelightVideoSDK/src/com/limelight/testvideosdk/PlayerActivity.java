@@ -127,7 +127,7 @@ public class PlayerActivity extends FragmentActivity implements
                 if (mControl != null) {
 //                    mControl.setVideoUri(mUri);
 //                    mControl.play(null);
-                    mControl.play(mUri.toString());
+                    mControl.play(mUri.toString(), null);
                 } else
                     Log.e(getLocalClassName(), "Control is null");
             }
@@ -197,6 +197,6 @@ public class PlayerActivity extends FragmentActivity implements
         mPlayerFragment.setControl(mControl);
         mPlayerFragment.showProgress(false,null);
         mPlayerFragment.show();
-        mControl.play(null);
+        mControl.play(null, null);
     }
 }

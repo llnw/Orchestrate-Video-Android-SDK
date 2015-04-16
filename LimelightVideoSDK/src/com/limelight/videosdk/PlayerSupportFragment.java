@@ -217,7 +217,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private class PlayerControl implements IPlayerControl {
 
         //options are : media id,remote url or local url
-        public void play(final String media) {
+        public void play(final String media, final ContentService contentService) {
             /*if URL is valid, it can be direct remote URL ,encoding remote URL or Local content URL
             if it is encoding URL fetch URL from encoding URL map
             if direct remote URL then play
@@ -248,7 +248,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 else{
                     if (mPlayerCallback != null)
                         mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
-                    ContentService contentService = ContentService.getContentServiceFromEncodingUrl(getActivity(), media);
                     if(contentService != null){
                         Encoding encoding = contentService.getEncodingFromUrl(media);
                         if(encoding != null){
@@ -325,6 +324,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         }
                     }else{
                         //this is direct remote URL
+                    	//TODO: need to handle widevine content offline and online..
                         try {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
@@ -355,7 +355,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     if (mLogger != null) {
                         mLogger.debug(TAG+" Fetch encodings to get delivery for media id:" + media);
                     }
-                    final ContentService contentService = ContentService.getContentService(getActivity(),media,Constants.TYPE_MEDIA);
                     if(contentService == null){
                         if (mLogger != null) {
                             mLogger.debug(TAG+" media URL : "+media);

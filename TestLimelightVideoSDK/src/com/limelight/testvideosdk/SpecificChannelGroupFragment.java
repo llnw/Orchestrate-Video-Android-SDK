@@ -23,7 +23,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
-
 import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.Channel;
@@ -176,6 +175,15 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
                     //channels = contentService.getAllChannel(ctx);
                 }
                 else{
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+                    String orgId = preferences.getString(mContext.getResources().getString(R.string.OrgIDEditPrefKey), null);
+                    String accessKey = preferences.getString(mContext.getResources().getString(R.string.AccKeyEditPrefKey), null);
+                    String secret = preferences.getString(mContext.getResources().getString(R.string.SecKeyEditPrefKey), null);
+                    if((mContentService.getOrgId().equalsIgnoreCase(orgId) == false) ||
+                            (mContentService.getAccessKey().equalsIgnoreCase(accessKey) == false) ||
+                            (mContentService.getSecret().equalsIgnoreCase(secret) == false)){
+                        mContentService = new ContentService(mContext,orgId,accessKey,secret);
+                    }
                     mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
                     mChannelList = mContentService.getAllChannelOfGroup(mGroupId,refresh);
                 }

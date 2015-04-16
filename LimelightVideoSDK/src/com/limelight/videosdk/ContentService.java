@@ -60,11 +60,6 @@ public class ContentService {
     private ArrayList<Media> mMediaList = new ArrayList<Media>();
     private ArrayList<Encoding> mEncodingList = new ArrayList<Encoding>();
 
-    private static ArrayList<Map<Media,ContentService>> mMediaLibrary =  new ArrayList<Map<Media,ContentService>>();
-    private static ArrayList<Map<Channel,ContentService>> mChannelLibrary =  new ArrayList<Map<Channel,ContentService>>();
-    private static ArrayList<Map<ChannelGroup,ContentService>> mChannelGroupLibrary =  new ArrayList<Map<ChannelGroup,ContentService>>();
-    private static ArrayList<Map<Encoding,ContentService>> mEncodingLibrary =  new ArrayList<Map<Encoding,ContentService>>();
-
     private int mPageSize = 500;
     private String[] mSortByValidValues = {Constants.SORT_BY_UPDATE_DATE,Constants.SORT_BY_CREATE_DATE};
     private String[] mSortOrderValidValues = {Constants.SORT_ORDER_ASC,Constants.SORT_ORDER_DESC};
@@ -110,65 +105,6 @@ public class ContentService {
         mAccessKey = access;
         mSecret = secret;
         mLogger = LoggerUtil.getLogger(mContext,LoggerUtil.sLoggerName);
-    }
-
-    /**
-     * This method returns the particular ContentService object which is mapped with the supplied content id.
-     * This mapping is done when content is fetched from server.
-     * @param context Context
-     * @param contentId ChannelGroupId/ChannelId/MediaId
-     * @param modelType TYPE {@link Constants}
-     * @return ContentService
-     */
-    public static synchronized ContentService getContentService(Context context,String contentId,int modelType){
-
-        switch(modelType){
-        case Constants.TYPE_MEDIA:
-            for(Map<Media,ContentService> map :mMediaLibrary){
-                for(Media media : map.keySet()){
-                    if(media.mMediaID.equalsIgnoreCase(contentId)){
-                        return map.get(media);
-                    }
-                }
-            }
-            break;
-        case Constants.TYPE_CHANNEL:
-            for(Map<Channel,ContentService> map :mChannelLibrary){
-                for(Channel channel : map.keySet()){
-                    if(channel.mChannelId.equalsIgnoreCase(contentId)){
-                        return map.get(channel);
-                    }
-                }
-            }
-            break;
-        case Constants.TYPE_CHANNEL_GROUP:
-            for(Map<ChannelGroup,ContentService> map :mChannelGroupLibrary){
-                for(ChannelGroup group : map.keySet()){
-                    if(group.mChannelGroupId.equalsIgnoreCase(contentId)){
-                        return map.get(group);
-                    }
-                }
-            }
-            break;
-        }
-        return null;
-    }
-
-    /**
-     * This method returns the ContentService object which is mapped with the supplied Encoding URL.
-     * This mapping is done when encodings are fetched from server.
-     * @param context
-     * @param url
-     * @return ContentService
-     */
-    public static synchronized ContentService getContentServiceFromEncodingUrl(Context context,String url){
-        for(Map<Encoding,ContentService> map :mEncodingLibrary){
-            for(Encoding enc : map.keySet()){
-                if(enc.mEncodingUrl.toString().equalsIgnoreCase(url))
-                    return map.get(enc);
-            }
-        }
-        return null;
     }
 
     /**
@@ -236,7 +172,6 @@ public class ContentService {
                        }
                    }else{
                        mChannelGroupList.clear();
-                       mChannelGroupLibrary.clear();
                        mHasNext = false;
                        mPageId = 0;
                    }
@@ -315,7 +250,6 @@ public class ContentService {
                         }
                     }else{
                         mChannelGroupList.clear();
-                        mChannelGroupLibrary.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
@@ -400,7 +334,6 @@ public class ContentService {
                         }
                     }else{
                         mChannelList.clear();
-                        mChannelLibrary.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
@@ -477,7 +410,6 @@ public class ContentService {
                                 }
                             }else{
                                 mChannelList.clear();
-                                mChannelLibrary.clear();
                                 mHasNext = false;
                                 mPageId = 0;
                             }
@@ -553,7 +485,6 @@ public class ContentService {
                         }
                     }else{
                         mChannelList.clear();
-                        mChannelLibrary.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
@@ -629,7 +560,6 @@ public class ContentService {
                         }
                     }else{
                         mChannelList.clear();
-                        mChannelLibrary.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
@@ -714,7 +644,6 @@ public class ContentService {
                         }
                     }else{
                         mMediaList.clear();
-                        mMediaLibrary.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
@@ -791,7 +720,6 @@ public class ContentService {
                                 }
                             }else{
                                 mMediaList.clear();
-                                mMediaLibrary.clear();
                                 mHasNext = false;
                                 mPageId = 0;
                             }
@@ -867,7 +795,6 @@ public class ContentService {
                         }
                     }else{
                         mMediaList.clear();
-                        mMediaLibrary.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
@@ -942,7 +869,6 @@ public class ContentService {
                         }
                     }else{
                         mMediaList.clear();
-                        mMediaLibrary.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
@@ -1033,7 +959,6 @@ public class ContentService {
                         }
                     }else{
                         mMediaList.clear();
-                        mMediaLibrary.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
@@ -1145,7 +1070,6 @@ public class ContentService {
                     }
                 }else{
                     mMediaList.clear();
-                    mMediaLibrary.clear();
                     mHasNext = false;
                     mPageId = 0;
                 }
@@ -1408,9 +1332,6 @@ public class ContentService {
                 for(int i=0; i< channelGroupList.size(); i++){
                     ChannelGroup group = gson.fromJson(channelGroupList.get(i),  ChannelGroup.class);
                     mChannelGroupList.add(group);
-                    Map<ChannelGroup, ContentService> map = new HashMap<ChannelGroup, ContentService>();
-                    map.put(group,this);
-                    mChannelGroupLibrary.add(map);
                 }
             }
         }
@@ -1435,9 +1356,6 @@ public class ContentService {
                 for(int i=0; i< channelsList.size(); i++){
                     Channel channel = gson.fromJson(channelsList.get(i),  Channel.class);
                     mChannelList.add(channel);
-                    Map<Channel, ContentService> map = new HashMap<Channel, ContentService>();
-                    map.put(channel,this);
-                    mChannelLibrary.add(map);
                 }
             }
         }
@@ -1502,9 +1420,6 @@ public class ContentService {
                 for(int i=0; i< mediasList.size(); i++){
                     Media media = gson.fromJson(mediasList.get(i),  Media.class);
                     mMediaList.add(media);
-                    Map<Media, ContentService> map = new HashMap<Media, ContentService>();
-                    map.put(media,this);
-                    mMediaLibrary.add(map);
                 }
             }
         }
@@ -1569,9 +1484,6 @@ public class ContentService {
             if(!(encodingObject.get(Constants.VIDEO_BITRATE).isJsonNull()))
                 encoding.mVideoBitRate = Integer.parseInt(encodingObject.get(Constants.VIDEO_BITRATE).getAsString());
             mEncodingList.add(encoding);
-            Map<Encoding, ContentService> map = new HashMap<Encoding, ContentService>();
-            map.put(encoding,this);
-            mEncodingLibrary.add(map);
         }
     }
 

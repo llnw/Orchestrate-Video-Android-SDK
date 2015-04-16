@@ -23,6 +23,7 @@ import com.limelight.testvideosdk.SpecificChannelFragment.SpecificChannelCallbac
 import com.limelight.testvideosdk.SpecificChannelGroupFragment.SpecificChannelGroupCallback;
 import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.Constants.PlayerState;
+import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.IPlayerCallback;
 import com.limelight.videosdk.IPlayerControl;
 import com.limelight.videosdk.model.Media;
@@ -96,11 +97,11 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
     
     MediaCallback mediaCallback = new MediaCallback() {
         @Override
-        public void callback(String id) {
+        public void callback(String id, ContentService svc) {
             mChannelId = id;
             if(mPlayerFragment != null){
                 mPlayerFragment.setEditText(id);
-                mPlayerFragment.play();
+                mPlayerFragment.play(svc);
             }
             mViewPager.setCurrentItem(6);
         }
@@ -121,11 +122,11 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
     };
     SpecificChannelCallback mediaCallback1 = new SpecificChannelCallback() {
         @Override
-        public void callback(String id) {
+        public void callback(String id, ContentService svc) {
             mChannelId = id;
             if(mPlayerFragment != null){
                 mPlayerFragment.setEditText(id);
-                mPlayerFragment.play();
+                mPlayerFragment.play(svc);
             }
             mViewPager.setCurrentItem(6);
         }
@@ -273,7 +274,7 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
                 if (mControl != null) {
                     //mControl.setVideoUri(mUri);
                     //mControl.play(null);
-                    mControl.play(mUri.toString());
+                    mControl.play(mUri.toString(), null);//local  file playback
                 } else
                     Log.e(getLocalClassName(), "Control is null");
             }
@@ -320,7 +321,7 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
             mPlayerFragment.show();
             mPlayerFragment.showKeyboard(false);
         }
-        mControl.play(null);
+        mControl.play(null,null);
     }
 
     @Override

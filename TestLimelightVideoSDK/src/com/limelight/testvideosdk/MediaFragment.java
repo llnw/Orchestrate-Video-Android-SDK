@@ -44,6 +44,7 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
     private MediaCallback mCallback;
     private SwipeRefreshLayout mSwipeLayout;
     private int mPreviousTotalCount = 0;
+    private static ContentService mContentService = null;
 
     public MediaFragment(MediaCallback callback) {
         mCallback = callback;
@@ -52,7 +53,7 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     public interface MediaCallback{
-        void callback(String id);
+        void callback(String id,ContentService svc);
         void addToPlaylist(Media media);
         void removeFromPlaylist(Media media);
     }
@@ -156,7 +157,6 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
 
         private ModelHolder mHolder;
         private boolean refresh = false;
-        private static ContentService mContentService = null;
         private Context mContext;
 
         public MediaLoader(Context context, Bundle arg1) {
@@ -181,6 +181,15 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
             ArrayList<Uri> urls = new ArrayList<Uri>();
 
             try {
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+                String orgId = preferences.getString(mContext.getResources().getString(R.string.OrgIDEditPrefKey), null);
+                String accessKey = preferences.getString(mContext.getResources().getString(R.string.AccKeyEditPrefKey), null);
+                String secret = preferences.getString(mContext.getResources().getString(R.string.SecKeyEditPrefKey), null);
+                if((mContentService.getOrgId().equalsIgnoreCase(orgId) == false) ||
+                        (mContentService.getAccessKey().equalsIgnoreCase(accessKey) == false) ||
+                        (mContentService.getSecret().equalsIgnoreCase(secret) == false)){
+                    mContentService = new ContentService(mContext,orgId,accessKey,secret);
+                }
                 mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
 //                mMedias = contentService.searchMedia(ctx, refresh, "and", "4", null, null, null, null, null);
                 mMedias = mContentService.getAllMedia(refresh);
@@ -236,7 +245,7 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-        mCallback.callback(mMedias.get(position).mMediaID);
+        mCallback.callback(mMedias.get(position).mMediaID, mContentService);
     }
 
     @Override

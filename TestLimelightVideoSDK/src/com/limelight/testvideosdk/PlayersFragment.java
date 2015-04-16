@@ -6,10 +6,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
@@ -101,7 +103,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         play.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                play();
+                play(null);
             }
         });
         mDeliveryCheck = (CheckBox)rootView.findViewById(R.id.deliveryCheck);
@@ -114,8 +116,11 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
     }
 
     private void getAllEncodings(String mediaId) {
-        Context context = getActivity().getApplicationContext();
-        mContentService = ContentService.getContentService(context, mediaId,Constants.TYPE_MEDIA);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String orgId = preferences.getString(getActivity().getResources().getString(R.string.OrgIDEditPrefKey), null);
+        String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
+        String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
+        mContentService = new ContentService(getActivity(),orgId,accessKey,secret);
         if(mContentService != null){
             mContentService.getAllEncodingsForMediaId(mediaId, new EncodingsCallback() {
 
@@ -138,7 +143,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         }
     }
 
-    public void play() {
+    public void play(ContentService svc) {
         showKeyboard(false);
         mEdit.setFocusable(false);
         CharSequence editPath = mEdit.getQuery();
@@ -149,8 +154,8 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             hideController();
             if(URLUtil.isValidUrl(mMediaInfo)) {
                 showProgress(true, "Loading...");
-                //                    mControl.setVideoPath(mMediaInfo);// set the path for player
-                mControl.play(mMediaInfo);
+                //mControl.setVideoPath(mMediaInfo);// set the path for player
+                mControl.play(mMediaInfo,null);
                 mEdit.setFocusable(false);
                 showKeyboard(false);
             }
@@ -158,10 +163,11 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                 showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
                 String scheme = Uri.parse(mMediaInfo).getScheme();
                 if("RTSP".equalsIgnoreCase(scheme)){
-                    mControl.play(mMediaInfo);//used with delivery
+                    mControl.play(mMediaInfo, null);//used with delivery
                 }else{
                     if(mDeliveryCheck.isChecked())
-                        mControl.play(mMediaInfo);//used with delivery
+                    	//This content service object is passed from Media or ALL media tab.
+                        mControl.play(mMediaInfo, svc);//used with delivery
                     else{
                         getAllEncodings(mMediaInfo);
                     }
@@ -309,7 +315,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                             mProgress.setMessage(getResources().getString(R.string.progressDlgMediaMessage));
                             mProgress.show();
                             Encoding enc = encodings.get(which);
-                            mControl.play(enc.mEncodingUrl.toString());
+                            mControl.play(enc.mEncodingUrl.toString(), mContentService);
                             dialog.dismiss();
                     }
                 });
@@ -351,7 +357,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         TextView t = (TextView) arg1.findViewById(R.id.text);
         t.setTextColor(Color.BLUE);
         if(mControl != null){
-            mControl.play(mPlayList.get(position).mMediaID);
+            mControl.play(mPlayList.get(position).mMediaID,mContentService);//TODO after content service fix, this can be null.
             showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
         }
     }
@@ -364,7 +370,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         t.setTextColor(Color.BLUE);
         if(mControl != null){
             if(mAutoPlayCheck.isChecked() && mCurrentPlayPosition <= mPlayList.size()){
-            mControl.play(mPlayList.get(mCurrentPlayPosition).mMediaID);
+            mControl.play(mPlayList.get(mCurrentPlayPosition).mMediaID,mContentService);//TODO after content service fix, this can be null.
             showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
             }
         }
