@@ -16,14 +16,17 @@ import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
+import android.widget.Toast;
+import com.limelight.testvideosdk.MediaFragment.PlaylistCallback;
 import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.Media;
@@ -52,6 +55,8 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
 
     public interface SpecificChannelCallback{
         void callback(String id);
+        void addToPlaylist(Media media);
+        void removeFromPlaylist(Media media);
     }
 
     @Override
@@ -68,6 +73,16 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
         mSwipeLayout.setColorSchemeColors(Color.BLUE,Color.GREEN,Color.RED);
         mSwipeLayout.setDistanceToTriggerSync(250);
         mSwipeLayout.setEnabled(false);
+        Button addAllPlaylist = (Button)view.findViewById(R.id.add_all_playlist);
+        addAllPlaylist.setVisibility(View.VISIBLE);
+        addAllPlaylist.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int i= 0;i<mMedias.size();i++)
+                    mCallback.addToPlaylist(mMedias.get(i));
+                Toast.makeText(getActivity(), "Added To Playlist", 5).show();
+            }
+        });
         return view;
     }
 
@@ -75,7 +90,18 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setEmptyText("No Channel Selected");
-        mAdapter = new ModelAdapter(getActivity());
+        mAdapter = new ModelAdapter(getActivity(),Constants.TYPE_MEDIA,new PlaylistCallback() {
+            @Override
+            public void addToPlaylist(int position) {
+                Toast.makeText(getActivity(), "Added To Playlist", Toast.LENGTH_SHORT).show();
+                mCallback.addToPlaylist(mMedias.get(position));
+            }
+
+            @Override
+            public void removeFromPlaylist(int position) {
+                mCallback.removeFromPlaylist(mMedias.get(position));
+            }
+        });
         setListAdapter(mAdapter);
         setListShown(false);
         if(mChannelId == null){

@@ -8,7 +8,6 @@ import com.limelight.videosdk.WidevineManager.WVCallback;
 import com.limelight.videosdk.model.Delivery;
 import com.limelight.videosdk.model.Encoding;
 import com.limelight.videosdk.model.PrimaryUse;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
@@ -28,7 +27,6 @@ import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
-import android.widget.VideoView;
 
 /**
  * This class is the customized fragment which also contains native android
@@ -70,20 +68,22 @@ import android.widget.VideoView;
  * @author kanchan
  * 
  */
-public class PlayerSupportFragment extends Fragment implements OnErrorListener,OnPreparedListener, OnCompletionListener{
+public class PlayerSupportFragment extends Fragment implements OnErrorListener,OnPreparedListener, OnCompletionListener,IMediaControllerCallback{
     private static final String TAG = PlayerSupportFragment.class.getSimpleName();
-    private VideoView mPlayerView;
+    private VideoPlayerView mPlayerView;
     private Uri mUri;
     private IPlayerCallback mPlayerCallback;
     private Logger mLogger = null;
     private int mPosition = 0;
     private RelativeLayout mPlayerLayout;
     private PlayerControl mPlayerControl;
-    private MediaController mediaController;
+    private MediaController mMediaController;
     private PlayerState mPlayerState = PlayerState.stopped;
     private CountDownTimer mTimer;
     private CountDownTimer mBufferingTimer;
     private WidevineManager mWidevineManager = null;
+    private AnalyticsReporter mReporter = null;
+    private String mMediaId = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,14 +100,16 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         mPlayerLayout = new RelativeLayout(getActivity());
         mPlayerLayout.setBackgroundColor(Color.GRAY);
         mPlayerLayout.setGravity(Gravity.CENTER);
-        mPlayerView = new VideoView(getActivity());
-        mediaController = new MediaController(getActivity());
-        mediaController.setAnchorView(mPlayerView);
-        mPlayerView.setMediaController(mediaController);
+        mPlayerView = new VideoPlayerView(getActivity());
+        mMediaController = new MediaController(getActivity(), true);
+        mMediaController.setAnchorView(mPlayerView);
+        mPlayerView.setMediaController(mMediaController);
         mPlayerLayout.addView(mPlayerView);
         mPlayerView.setOnErrorListener(this);
         mPlayerView.setOnCompletionListener(this);
+        mPlayerView.setMediaControllerCallback(this);
         mLogger = LoggerUtil.getLogger(getActivity(),LoggerUtil.sLoggerName);
+        mReporter = new AnalyticsReporter(getActivity());
         mPlayerControl = new PlayerControl();
         return mPlayerLayout;
     }
@@ -117,7 +119,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
      * So this Method hides the player control bar instantly.
      */
     public void hideMediaController() {
-        mediaController.hide();
+        if(mMediaController != null)
+            mMediaController.hide();
     }
 
     @Override
@@ -133,6 +136,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 return;
             }
         }
+        mReporter.sendStartSession();
         mPlayerCallback.playerAttached(mPlayerControl);
     }
 
@@ -248,6 +252,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     if(contentService != null){
                         Encoding encoding = contentService.getEncodingFromUrl(media);
                         if(encoding != null){
+                            mMediaId = encoding.mMediaID;
                             if (PrimaryUse.WidevineOffline.equals(encoding.primaryUse)||PrimaryUse.Widevine.equals(encoding.primaryUse)) {
                                 if(mWidevineManager == null){
                                     mWidevineManager = new WidevineManager(getActivity(),media,contentService);
@@ -369,6 +374,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 
                         @Override
                         public void onSuccess(ArrayList<Encoding> encodingList) {
+                            mMediaId = media;
                             final Delivery delivery = contentService.getDeliveryForMedia(encodingList);
                             if(delivery!= null){
                                 if (delivery.mProtected) {
@@ -604,13 +610,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // configureLayoutParams();
-    }
-
-
-    @Override
     public void onPrepared(MediaPlayer mp) {
         stopTimerForPrepare();
         if(mPlayerState == PlayerState.paused){
@@ -661,7 +660,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             mLogger.debug(TAG+" PlayerState:"+mPlayerState.name());
         }
         mPlayerState = PlayerState.completed;
+        mReporter.sendMediaComplete(mMediaId,null);
+        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
     }
+
     /**
      * Stops the playback.Clears the video path set in player.
      * Stops the timers running for buffering or preparing if any.
@@ -756,5 +758,20 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
             mTimer.cancel();
         }
+    }
+
+    @Override
+    public void onMediaControllerPlay(long position) {
+        mReporter.sendPlayWithPosition(position,mMediaId,null);
+    }
+
+    @Override
+    public void onMediaControllerPause(long position) {
+        mReporter.sendPauseWithPosition(position,mMediaId,null);
+    }
+
+    @Override
+    public void onMediaControllerSeek(long positionBefore,long positionAfter) {
+        mReporter.sendSeekWithPositionBefore(positionBefore, positionAfter,mMediaId,null);
     }
 }

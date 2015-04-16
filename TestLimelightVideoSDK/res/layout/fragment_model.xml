@@ -37,6 +37,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
+         <Button
+            android:id="@+id/add_all_playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add All To Playlist"
+            android:visibility="gone"
+            android:layout_gravity="center"/>
     </LinearLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

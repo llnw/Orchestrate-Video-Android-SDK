@@ -28,7 +28,7 @@ public class PlayerActivity extends FragmentActivity implements
     private Uri mUri = null;
     private IPlayerControl mControl;
     private PlayersFragment mPlayerFragment = null;
-    SparseArray<Fragment> refer = new SparseArray<Fragment>();
+    private SparseArray<Fragment> mRefer = new SparseArray<Fragment>();
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +53,7 @@ public class PlayerActivity extends FragmentActivity implements
             switch (i) {
             case 0:
                 mPlayerFragment = new PlayersFragment();
-                refer.put(0, mPlayerFragment);
+                mRefer.put(0, mPlayerFragment);
                 return mPlayerFragment;
             case 1:
                 SettingsFragment settingFragment1 = new SettingsFragment();
@@ -87,7 +87,7 @@ public class PlayerActivity extends FragmentActivity implements
     public void playerAttached(IPlayerControl control) {
         mControl = control;
         if (mPlayerFragment == null)
-            mPlayerFragment = (PlayersFragment) refer.get(0);
+            mPlayerFragment = (PlayersFragment) mRefer.get(0);
         mPlayerFragment.setControl(mControl);
         mPlayerFragment.showProgress(false,null);
         mPlayerFragment.setEditText("28ed28ffc8e7438783732dc19fae6bbc");
@@ -103,7 +103,7 @@ public class PlayerActivity extends FragmentActivity implements
         }
         else{
             if (mPlayerFragment == null) {
-                mPlayerFragment = (PlayersFragment) refer.get(0);
+                mPlayerFragment = (PlayersFragment) mRefer.get(0);
             }
             mPlayerFragment.hide();
             mPlayerFragment.showProgress(false,null);
@@ -120,7 +120,7 @@ public class PlayerActivity extends FragmentActivity implements
             if (resultData != null) {
                 mUri = resultData.getData();
                 if (mPlayerFragment == null) {
-                    mPlayerFragment = (PlayersFragment) refer.get(0);
+                    mPlayerFragment = (PlayersFragment) mRefer.get(0);
                 }
                 mPlayerFragment.setEditText(mUri.toString());
                 mPlayerFragment.show();
@@ -142,7 +142,7 @@ public class PlayerActivity extends FragmentActivity implements
     @Override
     public void onPageScrollStateChanged(int page) {
         if (mPlayerFragment == null) {
-            mPlayerFragment = (PlayersFragment) refer.get(0);
+            mPlayerFragment = (PlayersFragment) mRefer.get(0);
         }
         mPlayerFragment.hideController();
         if(page == 0){
@@ -157,7 +157,7 @@ public class PlayerActivity extends FragmentActivity implements
     @Override
     public void onPageScrolled(int page, float arg1, int arg2) {
         if (mPlayerFragment == null) {
-            mPlayerFragment = (PlayersFragment) refer.get(0);
+            mPlayerFragment = (PlayersFragment) mRefer.get(0);
         }
         mPlayerFragment.hideController();
         if(page == 0){
@@ -172,7 +172,7 @@ public class PlayerActivity extends FragmentActivity implements
     @Override
     public void onPageSelected(int page) {
         if (mPlayerFragment == null) {
-            mPlayerFragment = (PlayersFragment) refer.get(0);
+            mPlayerFragment = (PlayersFragment) mRefer.get(0);
         }
         mPlayerFragment.hideController();
         if(page == 0){
@@ -193,7 +193,7 @@ public class PlayerActivity extends FragmentActivity implements
     public void playerPrepared(IPlayerControl control) {
         mControl = control;
         if (mPlayerFragment == null)
-            mPlayerFragment = (PlayersFragment) refer.get(0);
+            mPlayerFragment = (PlayersFragment) mRefer.get(0);
         mPlayerFragment.setControl(mControl);
         mPlayerFragment.showProgress(false,null);
         mPlayerFragment.show();

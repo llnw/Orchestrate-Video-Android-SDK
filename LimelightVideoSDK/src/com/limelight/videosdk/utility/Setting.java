@@ -80,7 +80,7 @@ public class Setting{
      * @return ContentAPIEndPoint
      */
     public static String getApiEndPoint(){
-        if(sApiEndPoint== null){
+        if(sApiEndPoint== null|| "".equals(sApiEndPoint)){
             if(mIsRelease){
                   return Constants.API_ENDPOINT_PROD;
             }else{
@@ -98,7 +98,7 @@ public class Setting{
      * @return AnalyticsEndPoint
      */
     public static String getLicenseProxyURL(){
-        if(sLicenseProxy== null){
+        if(sLicenseProxy== null|| "".equals(sLicenseProxy)){
             if(mIsRelease){
                   return Constants.LICENSE_PROXY_PROD;
             }else{
@@ -116,7 +116,7 @@ public class Setting{
      * @return AnalyticsEndPoint
      */
     public static String getPortalKey(){
-        if(sPortalkey== null){
+        if(sPortalkey== null|| "".equals(sPortalkey)){
           return "Limelight";
         }else{
             return sPortalkey;

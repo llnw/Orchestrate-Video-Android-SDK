@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,9 +19,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.URLUtil;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,18 +35,28 @@ import com.limelight.videosdk.IPlayerControl;
 import com.limelight.videosdk.PlayerSupportFragment;
 import com.limelight.videosdk.ContentService.EncodingsCallback;
 import com.limelight.videosdk.model.Encoding;
+import com.limelight.videosdk.model.Media;
+import com.limelight.testvideosdk.MediaFragment.PlaylistCallback;
 
-public class PlayersFragment extends Fragment {
+public class PlayersFragment extends Fragment implements OnItemClickListener{
 
     private static final int READ_REQUEST_CODE = 50;
     private IPlayerControl mControl;
     private SearchView mEdit;
     private String mMediaInfo;
     private PlayerSupportFragment mPlayer;
-    ProgressDialog mProgress = null;
-    ProgressDialog mProgressDialog = null;
-    CheckBox mDeliveryCheck = null;
-    ContentService mContentService;
+    private ProgressDialog mProgress = null;
+    private ProgressDialog mProgressDialog = null;
+    private CheckBox mDeliveryCheck = null;
+    private CheckBox mAutoPlayCheck = null;
+    private PlaylistAdapter mPlayListAdapter;
+    private ArrayList<Media> mPlayList = new ArrayList<Media>();
+    private RelativeLayout mPlayListNameLayout;
+    private ListView mPlayListView;
+    private RelativeLayout mEditLayout;
+    private RelativeLayout mPlayLayout;
+    private ContentService mContentService;
+    private int mCurrentPlayPosition;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,6 +72,23 @@ public class PlayersFragment extends Fragment {
             }
         });
 
+        mPlayListView = (ListView) rootView.findViewById(R.id.playlist);
+        mPlayListAdapter = new PlaylistAdapter(getActivity(), new PlaylistCallback() {
+            @Override
+            public void removeFromPlaylist(int position) {
+                PlayersFragment.this.removeFromPlaylist(mPlayList.get(position));
+            }
+
+            @Override
+            public void addToPlaylist(int position) {
+            }
+        });
+        mPlayListAdapter.setData(mPlayList);
+        mPlayListView.setAdapter(mPlayListAdapter);
+        mPlayListView.setOnItemClickListener(this);
+        mPlayListNameLayout = (RelativeLayout)rootView.findViewById(R.id.playListNameLayout);
+        mEditLayout = (RelativeLayout)rootView.findViewById(R.id.editLayout);
+        mPlayLayout = (RelativeLayout)rootView.findViewById(R.id.playLayout);
         mProgress = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
         mProgress.setCanceledOnTouchOutside(false);
         mProgressDialog = new ProgressDialog(getActivity());
@@ -73,6 +105,7 @@ public class PlayersFragment extends Fragment {
             }
         });
         mDeliveryCheck = (CheckBox)rootView.findViewById(R.id.deliveryCheck);
+        mAutoPlayCheck = (CheckBox)rootView.findViewById(R.id.is_autoPlay);
         mEdit.setFocusable(false);
         showKeyboard(false);
         mPlayer = new PlayerSupportFragment();
@@ -284,5 +317,56 @@ public class PlayersFragment extends Fragment {
                 encodingDialog.show();
             }
         });
+    }
+
+    public void addToPlaylist(Media media){
+        mPlayListNameLayout.setVisibility(View.VISIBLE);
+        mPlayListView.setVisibility(View.VISIBLE);
+        mPlayLayout.setVisibility(View.GONE);
+        mEditLayout.setVisibility(View.GONE);
+        mPlayList.add(media);
+        mPlayListAdapter.notifyDataSetChanged();
+    }
+
+    public void removeFromPlaylist(Media media){
+        mPlayList.remove(media);
+        if(mPlayList.size()==0){
+            mPlayListNameLayout.setVisibility(View.GONE);
+            mPlayListView.setVisibility(View.GONE);
+            mPlayLayout.setVisibility(View.VISIBLE);
+            mEditLayout.setVisibility(View.VISIBLE);
+        }else{
+            mPlayListNameLayout.setVisibility(View.VISIBLE);
+            mPlayListView.setVisibility(View.VISIBLE);
+            mPlayLayout.setVisibility(View.GONE);
+            mEditLayout.setVisibility(View.GONE);
+        }
+        mPlayListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+        mCurrentPlayPosition = position;
+        mPlayListView.setSelection(mCurrentPlayPosition);
+        TextView t = (TextView) arg1.findViewById(R.id.text);
+        t.setTextColor(Color.BLUE);
+        if(mControl != null){
+            mControl.play(mPlayList.get(position).mMediaID);
+            showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
+        }
+    }
+
+    public void playCompleted() {
+        mCurrentPlayPosition++;
+        mPlayListView.setSelection(mCurrentPlayPosition);
+        View v = mPlayListAdapter.getView(mCurrentPlayPosition, null, null);
+        TextView t = (TextView) v.findViewById(R.id.text);
+        t.setTextColor(Color.BLUE);
+        if(mControl != null){
+            if(mAutoPlayCheck.isChecked() && mCurrentPlayPosition <= mPlayList.size()){
+            mControl.play(mPlayList.get(mCurrentPlayPosition).mMediaID);
+            showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
+            }
+        }
     }
 }

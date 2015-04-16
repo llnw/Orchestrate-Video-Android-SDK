@@ -25,6 +25,7 @@ import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.Constants.PlayerState;
 import com.limelight.videosdk.IPlayerCallback;
 import com.limelight.videosdk.IPlayerControl;
+import com.limelight.videosdk.model.Media;
 
 public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback, OnPageChangeListener,ActionBar.TabListener {
 
@@ -33,16 +34,15 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
     private Uri mUri = null;
     private IPlayerControl mControl;
     private PlayersFragment mPlayerFragment = null;
-    SparseArray<Fragment> refer = new SparseArray<Fragment>();
-    PlayerTestAdapter mPlayerTestAdapter;
+    private SparseArray<Fragment> mRefer = new SparseArray<Fragment>();
+    private PlayerTestAdapter mPlayerTestAdapter;
 
-    ChannelFragment channelFragment;
-    MediaFragment mediaFragment;
-    SpecificChannelGroupFragment channelFragment1;
-    SpecificChannelFragment mediaFragment1;
-    String groupId = null;
-    String channelId = null;
-    String mediaId = null;
+    private ChannelFragment mChannelFragment;
+    private MediaFragment mMediaFragment;
+    private SpecificChannelGroupFragment mSpecificChannelGroupFragment;
+    private SpecificChannelFragment mSpecificChannelFragment;
+    private String mGroupId = null;
+    private String mChannelId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,30 +64,32 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
         actionBar.addTab(actionBar.newTab().setText(mPlayerTestAdapter.getPageTitle(6)).setTabListener(this));
     }
 
-    ChannelGroupCallback callback = new ChannelGroupCallback() {
+    ChannelGroupCallback channelGroupCallback = new ChannelGroupCallback() {
         @Override
         public void callback(String id) {
-            groupId = id;
-            if(channelFragment1 != null)
-            channelFragment1.restartLoader(id);
+            mGroupId = id;
+            if(mSpecificChannelGroupFragment != null)
+                mSpecificChannelGroupFragment.restartLoader(id);
             mViewPager.setCurrentItem(3);
         }
     };
-    ChannelCallback chanelCallback = new ChannelCallback() {
+
+    ChannelCallback channelCallback = new ChannelCallback() {
         @Override
         public void callback(String id) {
-            channelId = id;
-            if(mediaFragment1 != null)
-                mediaFragment1.restartLoader(id);
+            mChannelId = id;
+            if(mSpecificChannelFragment != null)
+                mSpecificChannelFragment.restartLoader(id);
             mViewPager.setCurrentItem(5);
         }
     };
-    SpecificChannelGroupCallback chanelCallback1 = new SpecificChannelGroupCallback() {
+
+    SpecificChannelGroupCallback specificChannelGroupCallback = new SpecificChannelGroupCallback() {
         @Override
         public void callback(String id) {
-            channelId = id;
-            if(mediaFragment1 != null)
-                mediaFragment1.restartLoader(id);
+            mChannelId = id;
+            if(mSpecificChannelFragment != null)
+                mSpecificChannelFragment.restartLoader(id);
             mViewPager.setCurrentItem(5);
         }
     };
@@ -95,23 +97,51 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
     MediaCallback mediaCallback = new MediaCallback() {
         @Override
         public void callback(String id) {
-            channelId = id;
+            mChannelId = id;
             if(mPlayerFragment != null){
                 mPlayerFragment.setEditText(id);
                 mPlayerFragment.play();
             }
             mViewPager.setCurrentItem(6);
         }
+
+        @Override
+        public void addToPlaylist(Media media) {
+            if(mPlayerFragment != null){
+                mPlayerFragment.addToPlaylist(media);
+            }
+        }
+
+        @Override
+        public void removeFromPlaylist(Media media) {
+            if(mPlayerFragment != null){
+                mPlayerFragment.removeFromPlaylist(media);
+            }
+        }
     };
     SpecificChannelCallback mediaCallback1 = new SpecificChannelCallback() {
         @Override
         public void callback(String id) {
-            channelId = id;
+            mChannelId = id;
             if(mPlayerFragment != null){
                 mPlayerFragment.setEditText(id);
                 mPlayerFragment.play();
             }
             mViewPager.setCurrentItem(6);
+        }
+
+        @Override
+        public void addToPlaylist(Media media) {
+            if(mPlayerFragment != null){
+                mPlayerFragment.addToPlaylist(media);
+            }
+        }
+
+        @Override
+        public void removeFromPlaylist(Media media) {
+            if(mPlayerFragment != null){
+                mPlayerFragment.removeFromPlaylist(media);
+            }
         }
     };
 
@@ -132,23 +162,23 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
                 SettingsFragment settingFragment = new SettingsFragment();
                 return settingFragment;
             case 1:
-                ChannelGroupFragment channelGroupFragment = new ChannelGroupFragment(callback);
+                ChannelGroupFragment channelGroupFragment = new ChannelGroupFragment(channelGroupCallback);
                 return channelGroupFragment;
             case 2:
-                channelFragment = new ChannelFragment(chanelCallback);
-                return channelFragment;
+                mChannelFragment = new ChannelFragment(channelCallback);
+                return mChannelFragment;
             case 3:
-                channelFragment1 = new SpecificChannelGroupFragment(chanelCallback1,groupId);
-                return channelFragment1;
+                mSpecificChannelGroupFragment = new SpecificChannelGroupFragment(specificChannelGroupCallback,mGroupId);
+                return mSpecificChannelGroupFragment;
             case 4:
-                mediaFragment = new MediaFragment(mediaCallback);
-                return mediaFragment;
+                mMediaFragment = new MediaFragment(mediaCallback);
+                return mMediaFragment;
             case 5:
-                mediaFragment1 = new SpecificChannelFragment(mediaCallback1,channelId);
-                return mediaFragment1;
+                mSpecificChannelFragment = new SpecificChannelFragment(mediaCallback1,mChannelId);
+                return mSpecificChannelFragment;
             case 6:
                 mPlayerFragment = new PlayersFragment();
-                refer.put(0, mPlayerFragment);
+                mRefer.put(0, mPlayerFragment);
                 return mPlayerFragment;
             default:
                 return null;
@@ -189,50 +219,60 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
             return title;
         }
     }
+
     @Override
     public void playerAttached(IPlayerControl control) {
         mControl = control;
         if (mPlayerFragment == null)
-            mPlayerFragment = (PlayersFragment) refer.get(0);
-        mPlayerFragment.setControl(mControl);
-        mPlayerFragment.showProgress(false,null);
-//        mPlayerFragment.setEditText("28ed28ffc8e7438783732dc19fae6bbc");
+            mPlayerFragment = (PlayersFragment) mRefer.get(0);
+        if (mPlayerFragment != null){
+            mPlayerFragment.setControl(mControl);
+            mPlayerFragment.showProgress(false,null);
+        }
+        //mPlayerFragment.setEditText("28ed28ffc8e7438783732dc19fae6bbc");
     }
 
     @Override
     public void playerMessage(int what, int extra,String msg) {
         if (mPlayerFragment == null) {
-            mPlayerFragment = (PlayersFragment) refer.get(0);
+            mPlayerFragment = (PlayersFragment) mRefer.get(0);
         }
-        if(what == Constants.Message.status.ordinal()){
-            mPlayerFragment.showProgress(true,msg);
-        }
-        else if(what == Constants.Message.progress.ordinal()){
-            mPlayerFragment.showProgress(false,null);
-            mPlayerFragment.showProgressDialog(extra);
-        }
-        else{
-            mPlayerFragment.hide();
-            mPlayerFragment.showProgress(false,null);
-            mPlayerFragment.showMessage(msg);
+        if(mPlayerFragment != null){
+            if(what == Constants.Message.status.ordinal()){
+                if(extra == Constants.PlayerState.completed.ordinal()){
+                    mPlayerFragment.playCompleted();
+                }else{
+                    mPlayerFragment.showProgress(true,msg);
+                }
+            }
+            else if(what == Constants.Message.progress.ordinal()){
+                mPlayerFragment.showProgress(false,null);
+                mPlayerFragment.showProgressDialog(extra);
+            }
+            else{
+                mPlayerFragment.hide();
+                mPlayerFragment.showProgress(false,null);
+                mPlayerFragment.showMessage(msg);
+            }
         }
     }
     @Override
-    public void onActivityResult(int requestCode, int resultCode,
-            Intent resultData) {
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
 
         if (requestCode == READ_REQUEST_CODE
                 && resultCode == Activity.RESULT_OK) {
             if (resultData != null) {
                 mUri = resultData.getData();
                 if (mPlayerFragment == null) {
-                    mPlayerFragment = (PlayersFragment) refer.get(0);
+                    mPlayerFragment = (PlayersFragment) mRefer.get(0);
                 }
-                mPlayerFragment.setEditText(mUri.toString());
-                mPlayerFragment.show();
+                if(mPlayerFragment!= null){
+                    mPlayerFragment.setEditText(mUri.toString());
+                    mPlayerFragment.show();
+                }
                 if (mControl != null) {
-//                    mControl.setVideoUri(mUri);
-//                    mControl.play(null);
+                    //mControl.setVideoUri(mUri);
+                    //mControl.play(null);
                     mControl.play(mUri.toString());
                 } else
                     Log.e(getLocalClassName(), "Control is null");
@@ -244,51 +284,27 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
-    @Override
-    public void onPageScrollStateChanged(int page) {
-        if (mPlayerFragment == null) {
-            mPlayerFragment = (PlayersFragment) refer.get(0);
-        }
-        if (mPlayerFragment != null)
-        mPlayerFragment.hideController();
-        if(page == 7){
-            if(mPlayerFragment.getPlayerState() != PlayerState.stopped.ordinal())//stopped
-            mPlayerFragment.show();
-        }else{
-            if(mPlayerFragment.getPlayerState() != PlayerState.stopped.ordinal())//stopped
-                mControl.pause();
-        }
-    }
 
     @Override
-    public void onPageScrolled(int page, float arg1, int arg2) {
-        if (mPlayerFragment == null) {
-            mPlayerFragment = (PlayersFragment) refer.get(0);
-        }
-        if (mPlayerFragment != null)
-        mPlayerFragment.hideController();
-        if(page == 7){
-            if(mPlayerFragment.getPlayerState() != PlayerState.stopped.ordinal())//stopped
-                mPlayerFragment.show();
-        }else{
-            if(mPlayerFragment.getPlayerState() != PlayerState.stopped.ordinal())//stopped
-                mControl.pause();
-        }
-    }
+    public void onPageScrollStateChanged(int page) {}
+
+    @Override
+    public void onPageScrolled(int page, float arg1, int arg2) {}
 
     @Override
     public void onPageSelected(int page) {
         if (mPlayerFragment == null) {
-            mPlayerFragment = (PlayersFragment) refer.get(0);
+            mPlayerFragment = (PlayersFragment) mRefer.get(0);
         }
-        if (mPlayerFragment != null)
-        mPlayerFragment.hideController();
-        if(page == 7){
-            if(mPlayerFragment.getPlayerState() != PlayerState.stopped.ordinal())//stopped
-            mPlayerFragment.show();
-        }else{
-            if(mPlayerFragment.getPlayerState() != PlayerState.stopped.ordinal())//stopped
-                mControl.pause();
+        if (mPlayerFragment != null){
+            mPlayerFragment.hideController();
+            if(page == 7){
+                if(mPlayerFragment.getPlayerState() != PlayerState.stopped.ordinal())//stopped
+                    mPlayerFragment.show();
+            }else{
+                if(mPlayerFragment.getPlayerState() != PlayerState.stopped.ordinal())//stopped
+                    mControl.pause();
+            }
         }
         getActionBar().setSelectedNavigationItem(page);
     }
@@ -297,12 +313,14 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
     public void playerPrepared(IPlayerControl control) {
         mControl = control;
         if (mPlayerFragment == null)
-            mPlayerFragment = (PlayersFragment) refer.get(0);
-        mPlayerFragment.setControl(mControl);
-        mPlayerFragment.showProgress(false,null);
-        mPlayerFragment.show();
+            mPlayerFragment = (PlayersFragment) mRefer.get(0);
+        if (mPlayerFragment != null) {
+            mPlayerFragment.setControl(mControl);
+            mPlayerFragment.showProgress(false,null);
+            mPlayerFragment.show();
+            mPlayerFragment.showKeyboard(false);
+        }
         mControl.play(null);
-        mPlayerFragment.showKeyboard(false);
     }
 
     @Override

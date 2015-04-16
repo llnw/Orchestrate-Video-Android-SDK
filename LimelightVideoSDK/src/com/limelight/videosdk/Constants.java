@@ -27,11 +27,11 @@ public class Constants {
     public static final String FETCH_MEDIA_PROPERTY_PATH = "/organizations/%s/media/%s/properties.json";
     public static final String ENCODING_PATH = "/organizations/%s/media/%s/encodings.json";
     public static final String API_ENDPOINT_STAGING = "https://staging-api.lvp.llnw.net/rest";
-    public static final String API_ENDPOINT_PROD = "https://staging-api.lvp.llnw.net/rest";
+    public static final String API_ENDPOINT_PROD = "https://play.video.limelight.com/rest";
     public static final String LICENSE_PROXY_STAGING = "https://staging-wlp.lvp.llnw.net/license";
-    public static final String LICENSE_PROXY_PROD = "https://staging-wlp.lvp.llnw.net/license";
-    public static final String ANALYTICS_ENDPOINT_STAGING = "https://staging-wlp.lvp.llnw.net/license";
-    public static final String ANALYTICS_ENDPOINT_PROD = "https://staging-wlp.lvp.llnw.net/license";
+    public static final String LICENSE_PROXY_PROD = "https://wlp.video.limelight.com/license";
+    public static final String ANALYTICS_ENDPOINT_STAGING = "https://staging-mcs.lvp.llnw.net/r/MetricsCollectionService/recordMetricsEvent";
+    public static final String ANALYTICS_ENDPOINT_PROD = "https://production-mcs.lvp.llnw.net/r/MetricsCollectionService/recordMetricsEvent";
     //URLS end
     //JSON Keys
     public static final String TITLE = "title";
