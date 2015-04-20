@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ public class PlaylistAdapter extends BaseAdapter {
     Bitmap mLoadingBitmap = null;
     Downloader mDownloader = null;
     PlaylistCallback mCallback;
+    private int mPosition = -1;
 
     public PlaylistAdapter(FragmentActivity mActivity) {
         mFragmentActivity = mActivity;
@@ -41,6 +43,10 @@ public class PlaylistAdapter extends BaseAdapter {
     public void setData(ArrayList<Media> list){
        mPlayList = list;
     }
+
+    public void setCurrentPlayingPosition(int position){
+        mPosition = position;
+     }
 
     @Override
     public int getCount() {
@@ -80,6 +86,11 @@ public class PlaylistAdapter extends BaseAdapter {
         }
         final ViewHolder holder = (ViewHolder) rowView.getTag();
         holder.mTextView.setText(mPlayList.get(position).mTitle);
+        if(mPosition == position){
+            holder.mTextView.setTextColor(Color.BLUE);
+        }else{
+            holder.mTextView.setTextColor(Color.BLACK);
+        }
         if(mPlayList.get(position)!= null && mPlayList.get(position).mThumbnail!= null && mPlayList.get(position).mThumbnail.mUrl!= null){
             mDownloader.startDownload(mPlayList.get(position).mThumbnail.mUrl.toString(), null, null, new Downloader.DownLoadCallback(){
                 @Override

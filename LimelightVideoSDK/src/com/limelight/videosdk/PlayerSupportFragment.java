@@ -257,9 +257,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         if(encoding != null){
                             mMediaId = encoding.mMediaID;
                             if (PrimaryUse.WidevineOffline.equals(encoding.primaryUse)||PrimaryUse.Widevine.equals(encoding.primaryUse)) {
-                                if(mWidevineManager == null){
-                                    mWidevineManager = new WidevineManager(getActivity(),media,contentService);
-                                }
+                                mWidevineManager = new WidevineManager(getActivity(),media,contentService);
                                 mWidevineManager.playWidewineEncodedContent(encoding, new WVCallback() {
                                     @Override
                                     public void onSuccess(final String path) {
@@ -336,9 +334,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                     mLogger.debug(TAG+" Local widevine Content: media Id : "+delivery.mMediaId);
                                 }
                                 delivery.mProtected = true;
-                                if(mWidevineManager == null){
-                                    mWidevineManager = new WidevineManager(getActivity(), media,contentService);
-                                }
+                                mWidevineManager = new WidevineManager(getActivity(), media,contentService);
                                 mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
                                     @Override
                                     public void onSuccess(final String path) {
@@ -378,12 +374,23 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                 });
                             }
                             else {
-                                if (mPlayerCallback != null)
-                                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"InValid Media !");
+                                //this is direct remote URL
+                                try {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            setVideoPath(media);
+                                            return;
+                                        }
+                                    });
+                                } catch (Exception ex) {
+                                    playerError();
+                                    return;
+                                }
                             }
                         }
                     }else{
-                        //this is direct remote URL
+                        //play directly
                         try {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
@@ -439,9 +446,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                     if (mLogger != null) {
                                         mLogger.debug(TAG+" Delivery is widevine" + media);
                                     }
-                                    if(mWidevineManager == null){
-                                        mWidevineManager = new WidevineManager(getActivity(), media,contentService);
-                                    }
+                                    mWidevineManager = new WidevineManager(getActivity(), media,contentService);
                                     mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
                                         @Override
                                         public void onSuccess(final String path) {
