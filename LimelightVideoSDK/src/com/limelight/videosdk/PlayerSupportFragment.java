@@ -226,6 +226,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mLogger.debug(TAG+" PlayerState:"+mPlayerState.name());
                 mLogger.debug(TAG+" Media play:"+ media);
             }
+                if(mPlayerView != null && mPlayerState!= PlayerState.stopped){
+                    mPlayerView.stopPlayback();
+                    mPlayerState = PlayerState.stopped;
+                }
+                
             if(URLUtil.isValidUrl(media)){
                 //Local content URL
                 if(URLUtil.isContentUrl(media)){
@@ -319,8 +324,69 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                 }
                             }
                         }else{
+                            String mimetype = MimeTypeMap.getFileExtensionFromUrl(media);
+                            if("wvm".equalsIgnoreCase(mimetype)){
+                                if (mLogger != null) {
+                                    mLogger.debug(TAG+" widevine direct url Content: "+media);
+                                }
+                                Delivery delivery =  new Delivery();
+
+                                delivery.mRemoteURL = Uri.parse(media);
+
+
+
+                                String[] paths = media.split("/");
+                                delivery.mMediaId = paths[5];
+                                if (mLogger != null) {
+                                    mLogger.debug(TAG+" Local widevine Content: media Id : "+delivery.mMediaId);
+                                }
+                                delivery.mProtected = true;
+
+                                if(mWidevineManager == null){
+                                    mWidevineManager = new WidevineManager(getActivity(), media,contentService);
+                                }
+                                mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
+                                    @Override
+                                    public void onSuccess(final String path) {
+                                        if (mLogger != null) {
+                                            mLogger.debug(TAG+" Delivery widevine media path" + path);
+                                        }
+                                        try {
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    setVideoPath(path);
+                                                }
+                                            });
+                                        } catch (Exception ex) {
+                                            playerError();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable throwable) {
+                                        reset();
+                                        if (mPlayerCallback != null)
+                                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                                    }
+
+                                    @Override
+                                    public void onProgress(int percentFinished) {
+                                        if (mPlayerCallback != null)
+                                            mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
+                                    }
+
+                                    @Override
+                                    public void onSendMessage(String message) {
+                                        if(mPlayerCallback != null)
+                                            mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
+                                    }
+                                });
+                            }
+                            else {
                             if (mPlayerCallback != null)
                                 mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"InValid Media !");
+                        }
                         }
                     }else{
                         //this is direct remote URL
