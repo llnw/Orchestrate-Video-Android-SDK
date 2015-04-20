@@ -57,8 +57,9 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
     private ListView mPlayListView;
     private RelativeLayout mEditLayout;
     private RelativeLayout mPlayLayout;
-    private ContentService mContentService;
-    private int mCurrentPlayPosition;
+    private int mCurrentPlayPosition = 0;
+    private boolean mIsPlaylistPlaying = false;
+    private AdapterView mPlaylistParentView = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -103,7 +104,12 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         play.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                play(null);
+            	SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String orgId = preferences.getString(getActivity().getResources().getString(R.string.OrgIDEditPrefKey), null);
+                String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
+                String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
+                ContentService contentService = new ContentService(getActivity(),orgId,accessKey,secret);                
+                play(contentService);
             }
         });
         mDeliveryCheck = (CheckBox)rootView.findViewById(R.id.deliveryCheck);
@@ -115,14 +121,9 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         return rootView;
     }
 
-    private void getAllEncodings(String mediaId) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String orgId = preferences.getString(getActivity().getResources().getString(R.string.OrgIDEditPrefKey), null);
-        String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
-        String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
-        mContentService = new ContentService(getActivity(),orgId,accessKey,secret);
-        if(mContentService != null){
-            mContentService.getAllEncodingsForMediaId(mediaId, new EncodingsCallback() {
+    private void getAllEncodings(String mediaId, final ContentService contentService) {
+        if(contentService != null){
+        	contentService.getAllEncodingsForMediaId(mediaId, new EncodingsCallback() {
 
                 @Override
                 public void onError(Throwable throwable) {
@@ -133,7 +134,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
 
                 @Override
                 public void onSuccess(ArrayList<Encoding> encodingList) {
-                    showEncodingDialog(encodingList);
+                    showEncodingDialog(encodingList, contentService);
                 }
             });
         }
@@ -144,6 +145,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
     }
 
     public void play(ContentService svc) {
+        mIsPlaylistPlaying = false;
         showKeyboard(false);
         mEdit.setFocusable(false);
         CharSequence editPath = mEdit.getQuery();
@@ -155,7 +157,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             if(URLUtil.isValidUrl(mMediaInfo)) {
                 showProgress(true, "Loading...");
                 //mControl.setVideoPath(mMediaInfo);// set the path for player
-                mControl.play(mMediaInfo,null);
+                mControl.play(mMediaInfo,svc);
                 mEdit.setFocusable(false);
                 showKeyboard(false);
             }
@@ -169,7 +171,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                     	//This content service object is passed from Media or ALL media tab.
                         mControl.play(mMediaInfo, svc);//used with delivery
                     else{
-                        getAllEncodings(mMediaInfo);
+                        getAllEncodings(mMediaInfo, svc);
                     }
                 }
             }
@@ -285,7 +287,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         return mPlayer.getCurrentPlayState();
     }
 
-    public void showEncodingDialog(final ArrayList<Encoding> encodings){
+    public void showEncodingDialog(final ArrayList<Encoding> encodings, final ContentService svc){
         final ArrayList<String> list = new ArrayList<String>();
         for(Encoding enc: encodings){
             list.add(enc.primaryUse.name()+" "+enc.mAudioBitRate+" X"+ enc.mVideoBitRate+"kbps"+" "+enc.mHeight+"X"+enc.mWidth);
@@ -315,7 +317,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                             mProgress.setMessage(getResources().getString(R.string.progressDlgMediaMessage));
                             mProgress.show();
                             Encoding enc = encodings.get(which);
-                            mControl.play(enc.mEncodingUrl.toString(), mContentService);
+                            mControl.play(enc.mEncodingUrl.toString(), svc);
                             dialog.dismiss();
                     }
                 });
@@ -352,27 +354,49 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+        mPlaylistParentView = arg0;
+        if(mCurrentPlayPosition != position){
+            View view = mPlaylistParentView.getChildAt(mCurrentPlayPosition);
+            TextView tv = (TextView) view.findViewById(R.id.text);
+            tv.setTextColor(Color.BLACK);
+        }
         mCurrentPlayPosition = position;
-        mPlayListView.setSelection(mCurrentPlayPosition);
-        TextView t = (TextView) arg1.findViewById(R.id.text);
-        t.setTextColor(Color.BLUE);
+        View view = mPlaylistParentView.getChildAt(mCurrentPlayPosition);
+        TextView tv = (TextView) view.findViewById(R.id.text);
+        tv.setTextColor(Color.BLUE);
         if(mControl != null){
-            mControl.play(mPlayList.get(position).mMediaID,mContentService);//TODO after content service fix, this can be null.
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String orgId = preferences.getString(getActivity().getResources().getString(R.string.OrgIDEditPrefKey), null);
+            String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
+            String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
+            ContentService contentService = new ContentService(getActivity(),orgId,accessKey,secret);
+            mControl.play(mPlayList.get(position).mMediaID,contentService);//TODO after content service fix, this can be null.
             showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
         }
+        mIsPlaylistPlaying = true;
     }
 
     public void playCompleted() {
+        if(mIsPlaylistPlaying){
+            View view = mPlaylistParentView.getChildAt(mCurrentPlayPosition);
+            TextView tv = (TextView) view.findViewById(R.id.text);
+            tv.setTextColor(Color.BLACK);
+            if(mControl != null){
+                if(mAutoPlayCheck.isChecked() && (mCurrentPlayPosition +1) < mPlayList.size()){
         mCurrentPlayPosition++;
         mPlayListView.setSelection(mCurrentPlayPosition);
-        View v = mPlayListAdapter.getView(mCurrentPlayPosition, null, null);
+                    View v = mPlaylistParentView.getChildAt(mCurrentPlayPosition);
         TextView t = (TextView) v.findViewById(R.id.text);
         t.setTextColor(Color.BLUE);
-        if(mControl != null){
-            if(mAutoPlayCheck.isChecked() && mCurrentPlayPosition <= mPlayList.size()){
-            mControl.play(mPlayList.get(mCurrentPlayPosition).mMediaID,mContentService);//TODO after content service fix, this can be null.
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String orgId = preferences.getString(getActivity().getResources().getString(R.string.OrgIDEditPrefKey), null);
+                String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
+                String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
+                ContentService contentService = new ContentService(getActivity(),orgId,accessKey,secret);
+            mControl.play(mPlayList.get(mCurrentPlayPosition).mMediaID,contentService);
             showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
             }
         }
     }
+}
 }
