@@ -14,12 +14,12 @@ Feature: Navigation Feature and data validation
         | Some Sample Videos   |
         | Kanchan              |
         | Protected Content    |
-        | Maru Madness         |
+        | Maru Madnes          |
       When I select Rebaca Channel Group as value for channel-group in CHANNEL GROUPS page
       Then the CURRENT tab should have following channel -
         | channel              |
         | Some Sample Videos   |
-        | Maru Madness         |
+        | Maru Madnes         |
       When I select Some Sample Videos as value for channel in CHANNELS page
       Then the CURRENT tab should have following media -
         | media                   |

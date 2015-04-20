@@ -2,10 +2,10 @@
 # Name:        limelight
 # Purpose:
 #
-# Author:      gouri
+# Author:      Rebaca
 #
 # Created:     16-03-2015
-# Copyright:   (c) gouri 2015
+# Copyright:   (c) Rebaca 2015
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ import time
 from logger import info, error, warning, exception
 from constant import LIME_LIGHT_OBJ, LONG_WAIT, MEDIUM_WAIT, SORT_WAIT
 
+ret_data = {}
 
 @given('the application has launched')
 def step_impl(context):
@@ -56,9 +57,30 @@ def step_impl(context, opr, tab_name):
 def step_impl(context, opr, media_type, media_source, encoding_type):
     """
     @args :
+          opr : play/pause/resume/seek-xx:xx/forwarded/reversed/attempt-to-play
+          media_type : local/remote/media-name
+          media_source : file-name/url/media-id/media-tab
+          encoding_type: encoding-name/automatic/no-select
     """
     global LIME_LIGHT_OBJ
-    LIME_LIGHT_OBJ.perform_video_operations(opr, media_type, media_source, encoding_type)
+    tmp_dic = LIME_LIGHT_OBJ.perform_video_operations(opr, media_type,
+                                                      media_source,
+                                                      encoding_type)
+    ret_data.update(tmp_dic)
+
+
+@when('I apply {action_itm} {perform} on the {target}')
+def step_impl(context, action_itm, perform, target):
+    """
+    @args :
+          action_itm : home-button/app-icon/screen
+          perform    : press/orientation
+          target     : application/device
+    """
+    global LIME_LIGHT_OBJ
+    LIME_LIGHT_OBJ.perform_device_operations(action_itm.strip(),
+                                             perform.strip(),
+                                             target.strip())
 
 
 @then('value of {target_ele} in {page_name} page should be {val}')
@@ -84,9 +106,22 @@ def step_impl(context, check_ele, op, table_header):
     global LIME_LIGHT_OBJ
     LIME_LIGHT_OBJ.check_contains(check_ele, [str(row[table_header.lower()]) for row in context.table], should_equal)
 
+@then('player should {opr} the playback from {source_type} to duration {duration} in {state} state')
+def step_impl(context, opr, source_type, duration, state):
+    """
+    @args :
+          opr         : operations - play/pause/resume/continue-playing/
+                        remain-pause/seek/forwarded/reversed
+          source_type : Source of play - file/url/mediaId/media-tab
+          duration    : Duration of play (min:sec)
+          state       : State of the player - play/pause
+    """
+    global LIME_LIGHT_OBJ
+    LIME_LIGHT_OBJ.check_player(opr, source_type, duration, state, ret_data)
+
 @then('exit from the application')
 def step_impl(context):
-    '''This will exit the application'''
+    """ This will exit the application """
     global LIME_LIGHT_OBJ
     LIME_LIGHT_OBJ.exit_app()
     LIME_LIGHT_OBJ = None

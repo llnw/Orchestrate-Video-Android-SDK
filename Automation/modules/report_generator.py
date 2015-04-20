@@ -2,10 +2,10 @@
 # Name:        report_generator
 # Purpose:
 #
-# Author:      gouri
+# Author:      Rebaca
 #
 # Created:     06-02-2015
-# Copyright:   (c) gouri 2015
+# Copyright:   (c) Rebaca 2015
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 

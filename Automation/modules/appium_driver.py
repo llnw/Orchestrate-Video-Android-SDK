@@ -1,33 +1,24 @@
 #-------------------------------------------------------------------------------
-# Name:        Appium Lib
-# Purpose:
-#
-# Author:      gouri
-#
+# Name:        appium_driver.py
+# Purpose:     This module is use to communicating with the limelight app using
+#              the Appium application. The Appium application install on a
+#              remote MAC machine. We will run the script in our local machine
+#              using this library, this library is basically communicating with
+#              that remote machine, where Appium is running and android device
+#              has plugged in or the emulator is running.
+# Author:      Rebaca
 # Created:     09-02-2015
-# Copyright:   (c) gouri 2015
-# Licence:     <your licence>
+# Copyright:   (c) Rebaca 2015
 #-------------------------------------------------------------------------------
-'''
-This module is use to communicating with the limelight app using the Appium
-application. The Appium application install on a remote MAC machine.
-We will run the script in our local machine using this library, this library
-is basically communicating with that remote machine, where Appium is running
-and android device has plugged in or the emulator is running.
 
-To start emulator : emulator -avd <emulator name>
-e.g. emulator -avd MyAVD
-'''
 import sys
 import os
 import datetime
 import random
 import pickle
-#import selenium
 from appium import webdriver
 from time import sleep
 import ConfigParser
-
 from logger import info, error, warning, exception
 
 def input_handlar(fn):
@@ -57,8 +48,7 @@ def input_handlar(fn):
 class Driver(object):
 
     def __init__(self, remote_host, platform, version, device_name):
-        '''
-        '''
+        """  Initialize the driver object """
         self.remote_host_url = 'http://%s/wd/hub'%remote_host
         if not sys.argv[-1].endswith("dump_file.pkl"):
             sys.argv.append(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_dump_file.pkl"))
@@ -71,14 +61,14 @@ class Driver(object):
 
 
     def load_config_data(self):
+        """ Load the element configuration data from element-path.cfg file """
         self.config_data = ConfigParser.ConfigParser()
-        self.config_data.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..',
-                                 'config', 'element-path.cfg'))
+        self.config_data.read(os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                              '..', 'config', 'element-path.cfg'))
         self.config_data = {ek: dict(ev) for ek, ev in dict(self.config_data._sections).iteritems()}
 
     def test_on(self, platform, version, device_name):
-        '''
-        '''
+        """ Set the desire capabilities according to the targeted platform """
         if platform.lower().strip() == "android":
             self.desired_caps['platformName'] = 'Android'
             self.desired_caps['platformVersion'] = str(version)
@@ -91,38 +81,52 @@ class Driver(object):
             self.desired_caps['deviceName'] = device_name
             info("TEST ON IOS ::: %s" % self.desired_caps)
 
-
     def set_up(self):
-        "Setup for the test"
+        """
+        Connect with the appium and set implicitly wait to find an element.
+        This will also launch the application in the device.
+        """
         info("CONNECTING APPIUM ON %s"%self.remote_host_url)
         self.driver = webdriver.Remote(self.remote_host_url, self.desired_caps)
-        self.driver.implicitly_wait(10)
+        self.driver.implicitly_wait(1)#10
         info("CONNECTED APPIUM ON %s"%self.remote_host_url)
 
     def exit_testcase(self):
+        """ Depricated function """
         fp = open(self.dump_file_name, 'wb')
         pickle.dump(self.driver, fp)
         fp.close()
         return self.dump_file_name
 
     def start_testcase(self):
+        """ Depricated function """
         fp = open(self.dump_file_name, 'rb')
         self.driver = pickle.load(fp)
         fp.close()
 
     def tear_down(self):
-        "Tear down the test"
+        """ Tear down the driver """
         self.driver.quit()
 
     def refresh_driver(self):
+        """ Refresh the driver """
         self.driver.refresh()
 
     def take_screenshot(self, fileName=""):
+        """ Take the screenshot from the device """
         screenShotFileName = "Screenshot-%d.png"%self.screen_shot_file_num if not fileName else fileName
         self.screen_shot_file_num += 1
         return self.driver.save_screenshot(screenShotFileName)
 
     def value_should_contains(self, ele, expected_value, generic_param=()):
+        """
+        Check if the element value contains a particular value
+        @arg :
+        ele            : name of the element (whoes entry is in element-path.cfg)
+                         or the element object
+        expected_value : expected value that the element value should contains
+        generic_param  : dynamic xpath/id variable
+        """
         ele_obj = self.get_element(ele, generic_param=generic_param)
         if str(ele_obj.text).strip() not in str(expected_value).strip():
             msg = "ele: %s::%s, actual val recv: %s, val doesn't contains: %s"
@@ -130,27 +134,42 @@ class Driver(object):
                                    ele_obj.text, expected_value))
 
     def value_should_be(self, ele, expected_value, generic_param=()):
+        """
+        Check element has the same value that we provided
+        @arg :
+        ele            : name of the element (whoes entry is in element-path.cfg)
+                         or the element object
+        expected_value : expected value
+        generic_param  : dynamic xpath/id variable
+        """
         ele_obj = self.get_element(ele, generic_param=generic_param)
         if str(ele_obj.text).strip() != str(expected_value).strip():
             raise Exception("Expected value: %s, Got value: %s"%(expected_value,
                                                                  ele_obj.text))
 
     def get_element_by_xpath(self, ele_xpath):
+        """ Get an element by its xpath """
         obj =  self.driver.find_elements_by_xpath(ele_xpath)
         if not obj : raise Exception("Element not found for xpath: %s"%ele_xpath)
         return obj if isinstance(obj, list) else [obj]
 
     def get_element_by_id(self, ele_id):
+        """ Get an element by its id """
         obj = self.driver.find_elements_by_id(ele_id)
         if not obj : raise Exception("Element not found for id: %s"%ele_id)
         return obj if isinstance(obj, list) else [obj]
 
     def get_element_by_link_text(self, text):
+        """ Get an element by link text """
         obj = self.driver.find_elements_by_link_text(text) # find_element_by_link_text
         if not obj : raise Exception("Element not found for text: %s"%text)
         return obj if isinstance(obj, list) else [obj]
 
     def find_element(self, ele_data, generic_param=()):
+        """
+        Find a element by xpath/id/link-text according to the data that
+        provided in configuration file
+        """
         if 'xpath' in ele_data:
             ele_obj_list = self.get_element_by_xpath(ele_data['xpath']%generic_param)
         elif 'id' in ele_data:
@@ -162,6 +181,7 @@ class Driver(object):
         return ele_obj_list
 
     def get_elements(self, ele, generic_param=()):
+        """ Get the elements with same element details """
         ele = str(ele).strip()
         if ele in self.config_data:
             ele_data = self.config_data[ele]
@@ -175,6 +195,7 @@ class Driver(object):
             raise Exception("Element %s not found in config file"%ele)
 
     def get_element(self, ele, generic_param=()):
+        """ Get the element using the element details """
         ele = str(ele).strip()
         ele_obj = None
         if ele in self.config_data:
@@ -245,6 +266,7 @@ class Driver(object):
             raise Exception("Element %s not found in config file"%ele)
 
     def get_element_my_algo(self, ele, generic_param=()):
+        """ depreciated function """
         if str(ele) in self.config_data:
             ele_data = self.config_data[str(ele)]
             frm_pt, to_pt, itr = [], [], 1
@@ -268,7 +290,7 @@ class Driver(object):
                 for ech_scroll in xrange(tot_scroll):
                     try:
                         ele_obj_list = self.find_element(ele_data, generic_param=generic_param)
-                        break # If got the element then don't need to do furthur scroll
+                        break # If got the element then don't need to do further scroll
                     except Exception as ex :
                         if ech_scroll == tot_scroll - 1:
                             # If is is last turn then raise the exception;
@@ -294,8 +316,8 @@ class Driver(object):
                 v_to_pt = ele_data['vertical-to-point'].split(',')
                 v_to_pt = [int(i) for i in v_to_pt if i]
 
-                # When the window move from up to down the vertical cordinate will be same
-                # when we move down to up then the vertical cordinate will exchange
+                # When the window move from up to down the vertical coordinate will be same
+                # when we move down to up then the vertical coordinate will exchange
                 # the from will be to and the to will be from
                 for ech_h_slide in xrange(h_scroll_num):
                     # Horizontal slide
@@ -306,7 +328,7 @@ class Driver(object):
                             break
                         except Exception as ex :
                             if ech_v_slide == v_scroll_num - 1:
-                                # Don't perform the last scroll becos the it won't enter the loop
+                                # Don't perform the last scroll because the it won't enter the loop
                                 pass
                             else:
                                 self.scroll('V', direction=None, frm_pt=v_frm_pt[:2], to_pt=v_to_pt[:2])
@@ -330,10 +352,27 @@ class Driver(object):
 
 
     def click_on(self, ele, generic_param=()):
+        """
+        If you provide element name then:
+           It will get the details entry for this element from element-path.cfg
+           and then get that element and click on that
+        If you provide an element object then it will click on that element.
+        If click successful then it will return the element object.
+        @arg :
+        ele           : name of the element (whose entry is in element-path.cfg)
+                        or the element object
+        generic_param : dynamic xpath/id variable
+        """
         ele_obj = self.get_element(ele, generic_param=generic_param)
         ele_obj.click()
+        return ele_obj
 
     def clear_value(self, ele_obj):
+        """
+        Clear out the element text
+        @arg :
+        ele_obj : element object that text need to clear out
+        """
         for i in range(7):
             try:
                 txt = str(ele_obj.text).strip()
@@ -347,21 +386,50 @@ class Driver(object):
                 warning("Got exception while clear out value :: " + str(ex))
 
     def set_value(self, ele, val, generic_param=()):
+        """
+        Set a value to a GUI element, raise exception if the element
+        does not present.
+        @arg :
+        ele           : name of the element (whose entry is in element-path.cfg)
+                        or the element object
+        generic_param : dynamic xpath/id variable
+        """
         ele_obj = self.get_element(ele, generic_param=generic_param)
         self.clear_value(ele_obj)
         ele_obj.set_text(str(val))
 
 
     def get_value(self, ele, generic_param=()):
+        """
+        Get the value of an element
+        @arg :
+        ele            : name of the element (whose entry is in element-path.cfg)
+                         or the element object
+        generic_param  : dynamic xpath/id variable
+        """
         ele_obj = self.get_element(ele, generic_param=generic_param)
         return str(ele_obj.text).strip()
 
     def get_values(self, ele, generic_param=()):
+        """
+        Get the value of all matched elements
+        @arg :
+        ele            : name of the element (whose entry is in element-path.cfg)
+                         or the element object
+        generic_param  : dynamic xpath/id variable
+        """
         ele_obj_list = self.get_elements(ele, generic_param=generic_param)
         ele_obj_list_text = [str(ei.text).strip() for ei in ele_obj_list]
         return ele_obj_list
 
     def touch_on(self, xCordinate, yCordinate, tapDur=0.5):
+        """
+        Touch a particular co-ordinate on GUI of the application
+        @arg :
+        xCordinate : x coordinate of tap point
+        yCordinate : x coordinate of tap point
+        tapDur     : duration of tapping
+        """
         self.driver.execute_script("mobile: tap", {"tapCount": 1,
                                                    "touchCount": 1,
                                                    "duration": tapDur,
@@ -369,11 +437,25 @@ class Driver(object):
                                                    "y": int(yCordinate)})
 
     def should_visible(self, ele, generic_param=()):
+        """
+        Check if an element is visible, raise exception if it is not.
+        @arg :
+        ele            : name of the element (whose entry is in element-path.cfg)
+                         or the element object
+        generic_param  : dynamic xpath/id variable
+        """
         ele_obj = self.get_element(ele, generic_param=generic_param)
         if not ele_obj.is_displayed():
             raise Exception("Element %s is not visiable"%ele)
 
     def should_not_visible(self, ele, generic_param=()):
+        """
+        Check if an element is not visible, raise exception if it is.
+        @arg :
+        ele            : name of the element (whose entry is in element-path.cfg)
+                         or the element object
+        generic_param  : dynamic xpath/id variable
+        """
         try:
             ele_obj = self.get_element(ele, generic_param=generic_param)
             if ele_obj.is_displayed():
@@ -382,60 +464,85 @@ class Driver(object):
             info(str(ex))
 
     def wait_for(self, secs):
+        """ Wait for some seconds """
         sleep(secs)
 
-    def home_button_press(self):
+    def native_key_press(self, key):
+        """
+        Simulate the native key press:
+        @args:
+        key : the key that you want to simulate
+        """
         KEY_CODE = {
-                 'KEYCODE_VOLUME_DOWN': 25,
-                 'KEYCODE_VOLUME_MUTE ': 164,
-                 'KEYCODE_VOLUME_UP' : 24,
-                 'KEYCODE_HOME' : 3
+                 'VOLUME_DOWN': 25,
+                 'VOLUME_MUTE ': 164,
+                 'VOLUME_UP' : 24,
+                 'HOME' : 3
         }
-        self.driver.press_keycode(KEY_CODE['KEYCODE_HOME'])
+        self.driver.press_keycode( KEY_CODE[key.upper().strip()] )
 
-    def re_launch_limelight_app(self):
+    def re_launch_limelight_app(self, app_display_name):
+        """
+        Re launch the application from the device menu
+        @args:
+        app_display_name : Application name that is displaying in menu
+        """
         self.click_on("phone-menu")
-        self.wait_for(3)
-        for ech_element in self.driver.find_elements_by_class_name("android.widget.TextView"):
-            if str(ech_element.text).strip() == "TestLimelightVideoSDK":
-                ech_element.click()
-                break
-        self.wait_for(3)
+        from_point, to_point = None, None
+        app_icn = "android.widget.TextView"
+        set_coordinate = True
 
-    def rorate_device(self, typ):
-        # {u'status': 0, u'sessionId': u'48e6ef5f-8113-4418-88f2-537538a46169', u'value': u'LANDSCAPE'}
-        # {u'status': 0, u'sessionId': u'53a017b6-3839-433e-a851-4ba1861b398e', u'value': u'PORTRAIT'}
-        self.wait_for(5)
-        info(str(self.driver.execute('getScreenOrientation')))
-        self.wait_for(5)
-        info(str(self.driver.execute('setScreenOrientation', {'orientation': 'LANDSCAPE'})))
-        self.wait_for(15)
-        info(":::::: Applied the LANDSCAPE ::::::")
-        info(str(self.driver.execute('getScreenOrientation')))
-        self.wait_for(5)
-        info(str(self.driver.execute('setScreenOrientation', {'orientation': 'PORTRAIT'})))
-        self.wait_for(15)
-        '''
-        {u'status': 0, u'sessionId': u'73dc3f1e-fb57-47d4-a6f4-b741e31091f4',
-                    u'value': u'PORTRAIT'}
-        {u'status': 0, u'sessionId': u'73dc3f1e-fb57-47d4-a6f4-b741e31091f4',
-                    u'value': u'Rotation (LANDSCAPE) successful.'}
-        :::::: Applied the LANDSCAPE ::::::
-        {u'status': 0, u'sessionId': u'73dc3f1e-fb57-47d4-a6f4-b741e31091f4',
-                    u'value': u'LANDSCAPE'}
-        {u'status': 0, u'sessionId': u'73dc3f1e-fb57-47d4-a6f4-b741e31091f4',
-                    u'value': u'Rotation (PORTRAIT) successful.'}
-        '''
+        for ech_try in range(3):
+
+            for ech_element in self.driver.find_elements_by_class_name(app_icn):
+                x = int(ech_element.location['x'])
+                y = int(ech_element.location['y'])
+                if set_coordinate:
+                    if not from_point or from_point[1] == y:
+                        from_point = [x, y]
+                    elif from_point[1] < y:
+                        from_point[1] = y
+                        to_point = [from_point[0]/2, y]
+                        set_coordinate = False
+
+                if str(ech_element.text).strip() == app_display_name:
+                    ech_element.click()
+                    return True
+            self.scroll("H", direction=None, frm_pt=from_point, to_pt=to_point)
+        # If controll reach here then then app-icon not found
+        return False
+
+    def get_current_orientation(self):
+        """ Get the current orientation of the device """
+        ret_data = self.driver.execute('getScreenOrientation')
+        return str(ret_data.get('value'))
+
+    def rorate_device(self):
+        """
+        Rotate the device:
+        If the device is in horizontal then make it vertical and vice versa
+        Output of setScreenOrientation:
+        {u'status': 0, u'sessionId': u'48e6ef5f-8113-4418-88f2-537538a46169',
+         u'value': u'LANDSCAPE'}
+        {u'status': 0, u'sessionId': u'53a017b6-3839-433e-a851-4ba1861b398e',
+         u'value': u'PORTRAIT'}
+        """
+        orientation_map = {'LANDSCAPE':'PORTRAIT', 'PORTRAIT':'LANDSCAPE'}
+        change_from = self.get_current_orientation()
+        change_to = orientation_map[change_from]
+        out_put = self.driver.execute( 'setScreenOrientation',
+                                       {'orientation': change_to})
+        return change_from, change_to, out_put
 
     def scroll(self, scrol_typ, direction=None, frm_pt=(), to_pt=()):
         """Scroll horizontally or vertically in a particular direction from a
         from point to a to point
 
-        :Args:
+        @args:
          - scrol_typ - Type of scroll, expected values are :
                      H - for horizontal
                      V - for vertical
-         - direction - Which direction we should scrol, expected values are :
+         - direction - Which direction we should scroll, expected values are :
                      L2R - Left to right
                      R2L - Right to left
                      U2D - Up to down
@@ -495,18 +602,34 @@ class Driver(object):
         #self.wait_for(1)
 
     def show_current_activity(self):
+        """Showing the current activity"""
         info("show_current_activity :: " + str(self.driver.current_activity))
 
     def contains(self, sub_list, big_list):
+        """
+        Check if a big list contains the small list and
+        return True/False accordingly
+        @args:
+        sub_list : The list that we want to search
+        big_list : The big list where we want to search
+        """
         for i in xrange(len(big_list)-len(sub_list)+1):
             for j in xrange(len(sub_list)):
                 if big_list[i+j] != sub_list[j]: break
                 else: return i, i+len(sub_list)
         return False
 
-
-    ## Scrolling til the end of top, new element comes from top
     def scrol_bottom_to_top(self, retry=2, indx=None, ret_all_data=False):
+        """
+        Scrolling till the end of top, new element comes from top in gui
+        @args:
+        retry         : number of retries
+        indx          : from which part we need to drag down, useful
+                      for refresh a tab
+        ret_all_data  : if u want to fetch all data during the scroll,
+           so that u will have a list of values that came while scroll
+
+        """
         ele = "//android.widget.ListView[1]//android.widget.TextView[1]"
 
         ele_obj = self.get_element_by_xpath(ele)
@@ -596,8 +719,13 @@ class Driver(object):
 
     def scrol_right_to_left(self, retry=2, indx=None, ret_all_data=False):
         ele = "//android.widget.HorizontalScrollView[1]/android.widget.LinearLayout[1]//android.widget.TextView[1]"
-
-        ele_obj = self.get_element_by_xpath(ele)
+        for echtry in range(4):
+            try:
+                ele_obj = self.get_element_by_xpath(ele)
+                break
+            except Exception as ee:
+                warning(str(ee))
+                self.wait_for(1)
         list_text = list_text_old = [ei.text for ei in ele_obj]
 
         indx = len(ele_obj)/2 if indx == None else indx
@@ -631,7 +759,14 @@ class Driver(object):
     def scrol_left_to_right(self, retry=2, indx=None, ret_all_data=False):
         ele = "//android.widget.HorizontalScrollView[1]/android.widget.LinearLayout[1]//android.widget.TextView[1]"
 
-        ele_obj = self.get_element_by_xpath(ele)
+        for echtry in range(4):
+            try:
+                ele_obj = self.get_element_by_xpath(ele)
+                break
+            except Exception as ee:
+                warning(str(ee))
+                self.wait_for(1)
+
         list_text = list_text_old = [ei.text for ei in ele_obj]
 
         indx = -len(ele_obj)/2 if indx == None else indx
@@ -672,119 +807,3 @@ class Driver(object):
 
     def tap_on(self, point_x, point_y):
         self.driver.swipe(point_x, point_y, point_x, point_y)
-
-
-if __name__ == "__main__":
-    obj =  Driver("192.168.50.177:4723", "android", "4.4", "MyAVD")
-    obj.set_up()
-    '''
-    obj.home_button_press()
-    obj.wait_for(10)
-    obj.re_launch_limelight_app()
-
-    obj.rorate_device('landscape')
-    obj.wait_for(5)
-    #obj.rorate_device('potrait')
-    obj.wait_for(5)
-
-    obj.scroll()
-    obj.get_element_by_xpath("//android.view.View[1]/android.widget.FrameLayout[1]/android.widget.HorizontalScrollView[1]/android.widget.LinearLayout[1]/android.app.ActionBar.Tab[3]/android.widget.TextView[1]")[0].click()
-    obj.wait_for(10)
-    obj.scroll(h_scroll=False, v_scroll=True)
-    '''
-    ## Scrolling testing
-    '''
-    try:
-        obj.click_on('All-Media-Tab')
-        print "obj.click_on('All-Media-Tab')"
-        obj.show_current_activity()
-
-        obj.wait_for(10)
-        obj.click_on('Code-Rush-video') # # Close-ups-video
-        obj.wait_for(10)
-        obj.click_on('Encoder-PopUp-Cancel-Button')
-        obj.wait_for(10)
-        obj.click_on('Delivery-Check-box')
-        obj.wait_for(5)
-        obj.click_on('Player-Play-Button')
-        obj.wait_for(10)
-    except Exception, e:
-        raise
-    finally:
-        obj.tear_down()
-    '''
-    ## Scrolling to the end
-    '''
-    try:
-        obj.click_on("tab-item-right-half", generic_param=("ALL MEDIA",))
-        obj.wait_for(10)
-
-        print "-"*100
-        op = obj.scrol_top_to_bottom(ret_all_data=True)
-        print "obj.scrol_top_to_bottom::::", op
-        print "-- Reached button --"
-
-        print "-"*100
-        op = obj.scrol_bottom_to_top(ret_all_data=True)
-        print "obj.scrol_bottom_to_top::::", op
-        print "-- Reached top --"
-
-        print "-"*100
-        op = obj.scrol_left_to_right(ret_all_data=True)
-        print "obj.scrol_left_to_right::::", op
-        print "-- Reached right --"
-
-        print "-"*100
-        op = obj.scrol_right_to_left(ret_all_data=True)
-        print "obj.scrol_right_to_left::::", op
-        print "-- Reached left --"
-
-    except Exception, e:
-        raise
-    finally:
-        obj.tear_down()
-    '''
-
-    ## Refreshing the page by pull it down
-    '''
-    try:
-        obj.click_on("tab-item-right-half", generic_param=("ALL MEDIA",))
-        obj.wait_for(10)
-        obj.refresh_by_pull_down()
-        print "-- Refresh the video By pull down --"
-        #obj.refresh_by_pull_up()
-        #print "-- Refresh the video By pull it up --"
-
-    except Exception, e:
-        raise
-    finally:
-        obj.tear_down()
-    '''
-    # seekbar
-    try:
-        obj.click_on("tab-item-right-half", generic_param=("PLAYER", ))
-        obj.click_on("browse-button")
-        obj.click_on("toggle-menu-button")
-        obj.click_on("toggle-menu-left-side-links",
-                 generic_param=("Downloads",))
-        obj.click_on("file-link-in-menu", generic_param=("tGsMo2013-1.mp4",))
-        obj.click_on("player")
-        #obj.set_value("player-seekbar", "2:00")
-        ele_obj = obj.get_element("player-seekbar")
-        print "ele_obj.size:::", ele_obj.size
-        print "ele_obj.location:::", ele_obj.location
-        print "ele_obj.set_value:::", ele_obj.set_value
-        print "ele_obj.text:::", ele_obj.text
-        print "ele_obj.submit:::", ele_obj.submit
-        x, y = int(ele_obj.location['x']), int(ele_obj.location['y'])
-        print "Starting tap on (x, y):", x, y
-        obj.tap_on(x, y)
-
-        x = x + int(ele_obj.size['width'])/2
-        print "Again tap on (x, y):", x, y
-        obj.tap_on(x, y)
-        sleep(15)
-    except Exception, e:
-        raise
-    finally:
-        obj.tear_down()

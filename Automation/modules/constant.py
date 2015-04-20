@@ -11,7 +11,8 @@ APPIUM_SERVER = "%s:%s"%(ser_ip, ser_port)
 TEST_TARGET_CFG = {
  'os': str(config_data.get('Device-Under-Test', 'os')).strip(),
  'os-version': str(config_data.get('Device-Under-Test', 'version')).strip(),
- 'device-name': str(config_data.get('Device-Under-Test', 'device-name')).strip()
+ 'device-name': str(config_data.get('Device-Under-Test', 'device-name')).strip(),
+ 'app-name': str(config_data.get('App', 'title')).strip(),
 }
 
 LIME_LIGHT_OBJ = None
@@ -36,3 +37,8 @@ TAB_SCROLL = {'settings-tab':3}
 FETCHING_MEDIA_MSG = "Fetching Media From Server"
 WIDEVINE_OFFLINE_DOWNLOAD_MSG = "Downloading. Please Wait..."
 
+SCREEN_SHOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                               '..', 'screenShots')
+
+FORWARD_SEC = 15
+REVERSE_SEC = 5

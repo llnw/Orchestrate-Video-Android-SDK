@@ -2,10 +2,10 @@
 # Name:        logger
 # Purpose:     currently it is giving the console log
 #
-# Author:      gouri
+# Author:      Rebaca
 #
 # Created:     26-03-2015
-# Copyright:   (c) gouri 2015
+# Copyright:   (c) Rebaca 2015
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
