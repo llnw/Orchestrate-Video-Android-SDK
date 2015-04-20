@@ -226,11 +226,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mLogger.debug(TAG+" PlayerState:"+mPlayerState.name());
                 mLogger.debug(TAG+" Media play:"+ media);
             }
-                if(mPlayerView != null && mPlayerState!= PlayerState.stopped){
-                    mPlayerView.stopPlayback();
-                    mPlayerState = PlayerState.stopped;
-                }
-                
+            if(media != null && mPlayerView != null && mPlayerState!= PlayerState.stopped){
+                mPlayerView.stopPlayback();
+                mPlayerState = PlayerState.stopped;
+            }
             if(URLUtil.isValidUrl(media)){
                 //Local content URL
                 if(URLUtil.isContentUrl(media)){
@@ -330,18 +329,13 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                     mLogger.debug(TAG+" widevine direct url Content: "+media);
                                 }
                                 Delivery delivery =  new Delivery();
-
                                 delivery.mRemoteURL = Uri.parse(media);
-
-
-
                                 String[] paths = media.split("/");
                                 delivery.mMediaId = paths[5];
                                 if (mLogger != null) {
                                     mLogger.debug(TAG+" Local widevine Content: media Id : "+delivery.mMediaId);
                                 }
                                 delivery.mProtected = true;
-
                                 if(mWidevineManager == null){
                                     mWidevineManager = new WidevineManager(getActivity(), media,contentService);
                                 }
@@ -384,13 +378,12 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                 });
                             }
                             else {
-                            if (mPlayerCallback != null)
-                                mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"InValid Media !");
-                        }
+                                if (mPlayerCallback != null)
+                                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"InValid Media !");
+                            }
                         }
                     }else{
                         //this is direct remote URL
-                    	//TODO: need to handle widevine content offline and online..
                         try {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
