@@ -1,26 +1,36 @@
+# pylint: disable=W0703, W0612, C0301, C0103, W0142, W1401
+"""
 #-------------------------------------------------------------------------------
-# Name:        limelight_mod.py
-# Purpose:     From glue code these functions will get called
-# Author:      Rebaca
-# Created:     18-03-2015
-# Copyright:   (c) Rebaca 2015
-# Licence:     <your licence>
+# Name       :  limelight_mod
+# Purpose    :  From glue code these functions will get called
+# Author     :  Rebaca
+# Created    :  18-03-2015
+# Copyright  :  (c) Rebaca 2015
 #-------------------------------------------------------------------------------
-
+"""
 import re
+import os
 import time
 import datetime
-from appium_driver import *
-from logger import info, error, warning, exception, success
+from appium_driver import Driver
+from logger import info, error, warning, success
 from constant import LONG_WAIT, MEDIUM_WAIT, SORT_WAIT, \
                      APPIUM_SERVER, TEST_TARGET_CFG, MAPPER, \
-                     LEFT_MOST_TAB, TAB_SCROLL, FETCHING_MEDIA_MSG, \
+                     LEFT_MOST_TAB, FETCHING_MEDIA_MSG, \
                      WIDEVINE_OFFLINE_DOWNLOAD_MSG, SCREEN_SHOT_DIR, \
                      FORWARD_SEC, REVERSE_SEC
 import exception_mod
 import OpenCvLib
 
+TAB_POINT = None
+NEXT_TAB_POINT = None
+
+
 class Limelight(object):
+    """
+    Limelight interface layer from here the main driver function will
+    be called
+    """
     def __init__(self):
         self.__obj = None
 
@@ -39,10 +49,10 @@ class Limelight(object):
         try:
             self.__obj.set_up()
         except Exception as ex :
-            resn = ex.__dict__.get('reason')
-            resn = resn if resn else str(ex)
-            error("app launch failed : %s" % str(resn))
-            raise Exception(resn)
+            reason = ex.__dict__.get('reason')
+            reason = reason if reason else str(ex)
+            error("App launch failed : %s" % str(reason))
+            raise Exception(reason)
         success("App Launched.")
 
     def exit_app(self):
@@ -78,7 +88,7 @@ class Limelight(object):
         """
         Select the tab whose name has been provided
         @arg:
-             tab_name : display name of the tab
+            tab_name : display name of the tab
         """
         info("SELECT TAB => %s" % (tab_name))
 
@@ -103,10 +113,10 @@ class Limelight(object):
            and then get that element and click on that
         If you provide an element object then it will click on that element.
         If click successful then it will return the element object.
-        @arg :
-        ele           : name of the element (whose entry is in element-path.cfg)
-                        or the element object
-        generic_param : dynamic xpath/id variable
+        @args :
+            element : name of the element (whose entry is in element-path.cfg)
+                      or the element object
+            generic_param : dynamic xpath/id variable
         """
         if type(element) == str:
             info("Clicking on : %s :: %s"%(element, generic_param))
@@ -117,10 +127,10 @@ class Limelight(object):
     def should_visible(self, element_name, generic_param=()):
         """
         Check if an element is visible, raise exception if it is not
-        @arg :
-        element_name  : name of the element (whose entry is in element-path.cfg)
-                        or the element object
-        generic_param : dynamic xpath/id variable
+        @args :
+            element_name  : name of the element (whose entry is in element-path.cfg)
+                            or the element object
+            generic_param : dynamic xpath/id variable
         """
         info("Clicking Visibility :: %s :: %s"%(element_name, generic_param))
         self.__obj.should_visible(element_name, generic_param=generic_param)
@@ -129,10 +139,11 @@ class Limelight(object):
         """
         Set a value to a GUI element, raise exception if the element
         does not present.
-        @arg :
-        element_name  : name of the element (whose entry is in element-path.cfg)
-                        or the element object
-        generic_param : dynamic xpath/id variable
+        @args :
+            element_name  : name of the element (whose entry is in element-path.cfg)
+                            or the element object
+            value : value to set for the GUI element                
+            generic_param : dynamic xpath/id variable
         """
         info("Setting Value :: %s :: %s ::: value=%s"%(element_name,
                                                        generic_param, value))
@@ -141,41 +152,42 @@ class Limelight(object):
     def value_should_be(self, element_name, value, generic_param=()):
         """
         Check element has the same value that we provided
-        @arg :
-        element_name   : name of the element (whose entry is in element-path.cfg)
-                         or the element object
-        value          : expected value
-        generic_param  : dynamic xpath/id variable
+        @args :
+            element_name   : name of the element (whose entry is in element-path.cfg)
+                             or the element object
+            value          : expected value
+            generic_param  : dynamic xpath/id variable
         """
-        info("Checking exact value :: %s :: %s :::: value=%s"%(element_name,
-                                                         generic_param, value))
-        self.__obj.value_should_be(element_name, value, generic_param=generic_param)
+        info("Checking exact value :: %s :: %s :::: value=%s" % \
+                             (element_name, generic_param, value))
+        self.__obj.value_should_be(element_name, value,
+                                   generic_param=generic_param)
 
     def value_should_contains(self, element_name, value, generic_param=()):
         """
         Check if the element value contains a particular value
-        @arg :
-        element_name   : name of the element (whose entry is in element-path.cfg)
-                         or the element object
-        value          : expected value that the element value should contains
-        generic_param  : dynamic xpath/id variable
+        @args :
+            element_name   : name of the element (whose entry is in element-path.cfg)
+                             or the element object
+            value          : expected value, that the element value should contains
+            generic_param  : dynamic xpath/id variable
         """
-        info("Check ele value should have :: %s :: %s ::::value=%s"%(element_name,
-                                                         generic_param, value))
+        info("Check element value should have :: %s :: %s ::::value=%s" % \
+                                  (element_name, generic_param, value))
         self.__obj.value_should_contains(element_name, value,
                                          generic_param=generic_param)
 
     def scrol_top_to_bottom(self, **kwargs):
-        """ Scroll from top to buttom """
+        """ Scroll from top to bottom """
         return self.__obj.scrol_top_to_bottom(**kwargs)
 
     def get_value(self, element_name, generic_param=()):
         """
         Get the value of an element
-        @arg :
-        element_name   : name of the element (whose entry is in element-path.cfg)
-                         or the element object
-        generic_param  : dynamic xpath/id variable
+        @args :
+            element_name   : name of element (whose entry is in element-path.cfg)
+                             or the element object
+            generic_param  : dynamic xpath/id variable
         """
         return self.__obj.get_value(element_name, generic_param=generic_param)
 
@@ -190,10 +202,10 @@ class Limelight(object):
     def is_item_visible(self, element_name, generic_param=()):
         """
         Return True if item is visible else False
-        @arg :
-        element_name  : name of the element (whose entry is in element-path.cfg)
-                        or the element object
-        generic_param : dynamic xpath/id variable
+        @args :
+            element_name  : name of element (whose entry is in element-path.cfg)
+                            or the element object
+            generic_param : dynamic xpath/id variable
         """
         info("Is item :: %s::%s visible"%(element_name, generic_param))
         visible = False
@@ -207,23 +219,23 @@ class Limelight(object):
 
     def get_element_details(self, element_name, generic_param=()):
         """
-        Get the element details like width, height, cordinates etc.
-        @arg :
-        element_name  : name of the element (whose entry is in element-path.cfg)
-                        or the element object
-        generic_param : dynamic xpath/id variable
+        Get the element details like width, height, coordinates etc.
+        @args :
+            element_name  : name of element (whose entry is in element-path.cfg)
+                            or the element object
+            generic_param : dynamic xpath/id variable
         """
         ele_obj = self.__obj.get_element( element_name,
                                           generic_param=generic_param)
         return { 'width': int(ele_obj.size['width']),
                  'height': int(ele_obj.size['height']),
-                 'x-cordinate' : int(ele_obj.location['x']),
-                 'y-cordinate' : int(ele_obj.location['y']),
+                 'x-coordinate' : int(ele_obj.location['x']),
+                 'y-coordinate' : int(ele_obj.location['y']),
                  'obj' : ele_obj
                }
 
     def take_screenshot(self):
-        """ Take screenshot from the device and save it in hard disk """
+        """ Take screen shot from the device and save it in hard disk """
         f_nam = datetime.datetime.now().strftime("SS-%Y_%m_%d_%H_%M_%S.png")
         f_nam = os.path.join(SCREEN_SHOT_DIR, f_nam)
         self.__obj.take_screenshot(f_nam)
@@ -232,6 +244,15 @@ class Limelight(object):
 
     def perform_home_btn_press(self):
         """ Perform home key press """
+        global TAB_POINT
+        global NEXT_TAB_POINT
+        if TAB_POINT == None or NEXT_TAB_POINT == None:
+            tmp = self.get_element_details( MAPPER['media'],
+                                            generic_param=("MEDIA", ))
+            TAB_POINT = (tmp['x-coordinate'], tmp['y-coordinate'])
+            tmp = self.get_element_details( MAPPER['player'],
+                                            generic_param=("PLAYER", ))
+            NEXT_TAB_POINT = (tmp['x-coordinate'], tmp['y-coordinate'])
         self.__obj.native_key_press('HOME')
 
     def perform_mute_btn_press(self):
@@ -247,12 +268,12 @@ class Limelight(object):
         self.__obj.native_key_press('VOLUME_DOWN')
 
     def relaunch_app_frm_menu(self):
-        """ Click on menue and then click on the application to launch it """
+        """ Click on menu and then click on the application to launch it """
         if self.__obj.re_launch_limelight_app(TEST_TARGET_CFG['app-name']):
             self.wait_for_app_to_launch()
-            success("app is launched")
+            success("App is re-launched")
         else:
-            raise Exception("Application not launched")
+            raise Exception("App not launched")
 
     def rotate_device(self):
         """
@@ -271,14 +292,18 @@ class Limelight(object):
         Wait for the application to launch. sometime app takes time to launch
         """
         for ech_try in range(6):
-            if not self.is_item_visible("app-title"):
-                info('wait for app to launch')
+            if not self.is_item_visible("app-title") :
+                info('Wait for app to launch')
+                self.__obj.tap_on(*TAB_POINT)
+                time.sleep(4)
+                self.__obj.tap_on(*NEXT_TAB_POINT)
                 time.sleep(4)
             else:
-                info('app is launched')
+                info('App is launched')
                 break
         else:
-            raise Exception("app not launched")
+            #raise Exception("app not launched")
+            info("App not launched")
 
     @exception_mod.handle_exception
     def refresh_tab(self, tab_name):
@@ -288,33 +313,36 @@ class Limelight(object):
 
     @exception_mod.handle_exception
     def scroll_down(self, tab_name):
-        pass
+        """ Scroll down """
+        self.__obj.refresh_by_pull_up()
 
     @exception_mod.handle_exception
-    def set_select_value(self, tab_name, tel, op, vl):
+    def set_select_value(self, tab_name, tel, operation, vl):
         """
         Set/Select a particular element/value from a tab
         @args:
-        tab_name : name of the tab
-        tel      : target element
-        op       : operation , set/select
-        vl       : set/select a value
+            tab_name      : name of the tab
+            tel           : target element
+            operation     : operation , set / select
+            vl            : set/select a value
         """
-        info("SET/SELECT VALUE => %s value %s for %s ON %s" %(op, vl, tel, tab_name))
+        info("SET/SELECT VALUE => %s value %s for %s ON %s" % \
+                     (operation, vl, tel, tab_name))
 
         # For settings page
         if "setting" in tab_name.lower():
-            self.click_on("setting-elements-level", generic_param=(tel,))
+            self.click_on("setting-elements-level", generic_param=(tel , ))
             info("Clicked => %s" %tel)
-            if op.lower().strip() == "set":
+            if operation.lower().strip() == "set":
                 self.should_visible("setting-popup-title")
                 self.set_value("setting-popup-textbox", vl)
                 self.click_on('setting-popup-ok-btn')
-            elif op.lower().strip() == "select":
+            elif operation.lower().strip() == "select":
                 self.should_visible("setting-popup-title")
-                self.click_on("setting-log-level-dropdown", generic_param=(vl,))
+                self.click_on("setting-log-level-dropdown",
+                              generic_param=(vl , ))
             else:
-                raise exception_mod.InvalidKeyWordUsed(operation = op)
+                raise exception_mod.InvalidKeyWordUsed(operation=operation)
 
         # For channel groups page
         elif "channel groups" in tab_name.lower() or \
@@ -322,31 +350,31 @@ class Limelight(object):
              "channels" in tab_name.lower() or \
              "all media" in tab_name.lower() or \
              "media" in tab_name.lower() :
-            if op.lower().strip() == "select":
+            if operation.lower().strip() == "select":
                 self.click_on("data-list-item", generic_param=(vl,))
             else:
-                raise exception_mod.InvalidKeyWordUsed(operation = op)
+                raise exception_mod.InvalidKeyWordUsed(operation = operation)
 
         # For player page
         elif "player" in tab_name.lower():
-            if op.lower().strip() == "set":
+            if operation.lower().strip() == "set":
                 self.click_on(tel)
                 self.set_value(tel, vl)
             else:
-                raise exception_mod.InvalidKeyWordUsed(operation = op)
+                raise exception_mod.InvalidKeyWordUsed(operation=operation)
         else:
             raise exception_mod.GlueCodeNotImplemented
 
-        info("DONE => %s value %s for %s ON %s" %(op, vl, tel, tab_name))
+        info("DONE => %s value %s for %s ON %s" %(operation, vl, tel, tab_name))
 
     @exception_mod.handle_exception
     def verify_value(self, tab_name, tel, vl):
         """
         Verify a value for an element of a tab
         @args:
-        tab_name : name of the tab that need to select
-        tel      : target element
-        vl       : value that need to verify
+            tab_name : name of the tab that need to select
+            tel      : target element
+            vl       : value that need to verify
         """
         info("CHECK VALUE => %s = %s" %(tel, vl))
         if "setting" in tab_name.lower():
@@ -356,48 +384,55 @@ class Limelight(object):
 
     @exception_mod.handle_exception
     def perform_oper_on_tab(self, tab_name, oper):
-        """ perform a operation on a tab """
+        """ perform a operation on a tab
+        @args:
+            tab_name    :   name of the tab
+            oper        :   operations - select / refresh / scroll-down
+        """
         self.select_tab(tab_name)
         if oper.strip().lower() == "select" :
             pass
         elif oper.strip().lower() == "refresh" :
             self.refresh_tab(tab_name)
         elif oper.strip().lower() == "scroll-down" :
-            self.scroll_down()
+            self.scroll_down(tab_name)
         else:
             raise exception_mod.GlueCodeNotImplemented
 
     def compare_two_list(self, list1, list2):
-        return reduce(lambda v1, v2: v1 and v2, map(lambda ei: ei in list1, list2))
+        """ List comparison helper function"""
+        return reduce( lambda v1, v2: v1 and v2,
+                       map(lambda ei: ei in list1, list2))
 
     @exception_mod.handle_exception
-    def check_contains(self, check_ele, varify_data, should_equal):
-        """ """
+    def check_contains(self, check_ele, verify_data, should_equal):
+        """ match the data from device with the data from feature file"""
         # If we checking the data of a tab
         if check_ele.lower().strip().endswith(" tab"):
-            tab_name = re.search("(\S+)\s+TAB", check_ele, flags=re.IGNORECASE).group(1)
+            tab_name = re.search( "(\S+)\s+TAB", check_ele,
+                                  flags=re.IGNORECASE).group(1)
 
             self.select_tab(tab_name)
 
             data_got = self.scrol_top_to_bottom(ret_all_data=True)
             data_got = [] if data_got == None else data_got
-
-            stat = self.compare_two_list(data_got, varify_data)
+            stat = self.compare_two_list(data_got, verify_data)
             if should_equal and not stat:
-                raise exception_mod.NotEqualException(varify_data, data_got)
+                raise exception_mod.NotEqualException(verify_data, data_got)
             elif not should_equal and stat:
                 raise exception_mod.EqualException(data_got)
             elif should_equal and stat:
                 success(exception_mod.equal_success_msg%data_got)
             elif not should_equal and not stat:
-                success(exception_mod.not_equal_success_msg%(varify_data,data_got))
+                success(exception_mod.not_equal_success_msg%( verify_data,
+                                                              data_got))
             else:
                 raise exception_mod.GlueCodeNotImplemented
 
         # If we checking the element of player
         if check_ele.lower().strip() == "player":
-            info("checking the player controls: %s"%', '.join(varify_data))
-            for ech_ele in varify_data:
+            info("checking the player controls: %s"%', '.join(verify_data))
+            for ech_ele in verify_data:
                 info("chk :: %s"%ech_ele)
                 for et in range(2):
                     is_present = self.is_item_visible(ech_ele)
@@ -405,23 +440,49 @@ class Limelight(object):
                     else: break
 
                 if is_present:
-                    msg = "ele: %s is present"%ech_ele
+                    msg = "element: %s is present"%ech_ele
                 else:
-                    msg = "ele: %s is not present"%ech_ele
+                    msg = "element: %s is not present"%ech_ele
 
                 if is_present == should_equal:
                     info(msg)
                 else:
                     raise Exception(msg)
 
+        # If the checking the element of a popup
+        if check_ele.lower().strip() == "popup":
+            data_got = self.scrol_top_to_bottom( ret_all_data=True,
+                                                 scroll_ele_typ="popup")
+            data_got = [] if data_got == None else data_got
+            stat = self.compare_two_list(data_got, verify_data)
+            if should_equal and not stat:
+                raise exception_mod.NotEqualException(verify_data, data_got)
+            elif not should_equal and stat:
+                raise exception_mod.EqualException(data_got)
+            elif should_equal and stat:
+                success(exception_mod.equal_success_msg%data_got)
+            elif not should_equal and not stat:
+                success(exception_mod.not_equal_success_msg%(verify_data,
+                                                             data_got))
+            else:
+                raise exception_mod.GlueCodeNotImplemented
+
     def go_to_tab_and_select_media(self, tab_name, media_name):
+        """
+        TBD
+        @args:
+            tab_name : name of the tab
+            media_name : name of the media
+        """
         self.select_tab(tab_name)
         self.set_select_value(tab_name, "", "select", media_name)
 
     def select_encoding(self, encoding_name, play_type):
         """
-        encoding_name : encoding-name/automatic/no-select
-        play_type : local/remote
+        Selects the encoding type
+        @args:
+            encoding_name : encoding-name/automatic/no-select
+            play_type : local/remote
         """
         if play_type.strip().lower() == "local":
             if encoding_name.strip().lower() == "local":
@@ -443,14 +504,14 @@ class Limelight(object):
             elif encoding_name.strip().lower() == "automatic":
                 info("Select automatic encoding.")
                 # Click on cancel button
-                self.click_on("popup-button", generic_param=("Cancel",))
+                self.click_on("popup-button", generic_param=("Cancel", ))
                 # Select the delivery check box
-                self.click_on("check-box", generic_param=("Delivery",))
+                self.click_on("check-box", generic_param=("Delivery", ))
                 # Click on the play button
                 self.click_on("play-button")
             else:
                 # Click on the encoding element
-                self.click_on("dropdown", generic_param=(encoding_name,))
+                self.click_on("dropdown", generic_param=(encoding_name, ))
 
     def wait_for_any_alert_popup_get_close(self):
         """
@@ -458,11 +519,15 @@ class Limelight(object):
         """
 
         for i in xrange(30):
-            if self.is_item_visible("alert-msg") :
-                info("%s :: alert popup still visible"%self.get_value("alert-msg"))
-                time.sleep(SORT_WAIT)
-            else:
-                info("alert popup is not visible")
+            try:
+                if self.is_item_visible("alert-msg") :
+                    info("%s :: alert popup still visible" % \
+                         self.get_value("alert-msg"))
+                    time.sleep(SORT_WAIT)
+                else:
+                    info("alert popup is not visible")
+                    break
+            except :
                 break
         else:
             raise Exception("alert popup still visible")
@@ -470,24 +535,30 @@ class Limelight(object):
     def wait_for_media_fetch_from_server(self):
         """
         Wait for the media fetched from the limelight server,
-        Here we are checking if the progrss bar has disabled or not
+        Here we are checking if the progress bar has disabled or not
         """
 
         for i in xrange(30):
-            if self.is_item_visible("alert-msg") and \
-             self.get_value("alert-msg") == FETCHING_MEDIA_MSG :
-                info("%s :: is still visible"%FETCHING_MEDIA_MSG)
-                time.sleep(SORT_WAIT)
-            else:
-                info("%s :: is not visible"%FETCHING_MEDIA_MSG)
+            try:
+                if self.is_item_visible("alert-msg") and \
+                 self.get_value("alert-msg") == FETCHING_MEDIA_MSG :
+                    info("%s :: is still visible"%FETCHING_MEDIA_MSG)
+                    time.sleep(SORT_WAIT)
+                else:
+                    info("%s :: is not visible"%FETCHING_MEDIA_MSG)
+                    break
+            except :
                 break
         else:
             raise Exception("%s ::: msg still visible"%FETCHING_MEDIA_MSG)
 
-    def wait_for_widevine_offline_download(self, encoding_name, play_type):
+    def wait_for_offline_download(self, encoding_name, play_type):
         """
-        Wait for the widevine offline data gets downloaded
-        Here we are checking if the progrss bar has disabled or not
+        Wait for the off-line data gets downloaded
+        Here we are checking if the progress bar has disabled or not
+        @args:
+            encoding_name : TBD
+            play_type : TBD
         """
 
         if play_type.strip().lower() == "local":
@@ -503,52 +574,63 @@ class Limelight(object):
         # For other cases we don't need to check this
         if strict_check != None :
             for i in xrange(30):
-                if self.is_item_visible("alert-msg") and \
-                 self.get_value("alert-msg") == WIDEVINE_OFFLINE_DOWNLOAD_MSG :
-                    info("%s :: is visible"%WIDEVINE_OFFLINE_DOWNLOAD_MSG)
-                    if strict_check : strict_check = False
-                    time.sleep(SORT_WAIT)
-                else:
-                    info("%s :: not visible"%WIDEVINE_OFFLINE_DOWNLOAD_MSG)
-                    if strict_check:
-                        raise Exception(exception_modod.widevine_error)
+                try:
+                    if self.is_item_visible("alert-msg") and \
+                     self.get_value("alert-msg") == WIDEVINE_OFFLINE_DOWNLOAD_MSG :
+                        info("%s :: is visible"%WIDEVINE_OFFLINE_DOWNLOAD_MSG)
+                        if strict_check : strict_check = False
+                        time.sleep(SORT_WAIT)
+                    else:
+                        info("%s :: not visible"%WIDEVINE_OFFLINE_DOWNLOAD_MSG)
+                        # currently commented out this raise
+                        #if strict_check:
+                        #    raise Exception(exception_mod.widevine_error)
 
+                        break
+                except Exception as excp :
+                    info(str(excp))
                     break
             else:
-                raise Exception("%s ::: msg still visible"%WIDEVINE_OFFLINE_DOWNLOAD_MSG)
-
+                raise Exception("%s ::: msg still visible" % \
+                                WIDEVINE_OFFLINE_DOWNLOAD_MSG)
 
     @exception_mod.handle_exception
-    def perform_video_operations(self, opr, media_type, media_source, encoding_type):
+    def perform_video_operations(self, opr, media_type, media_source,
+                                 encoding_type):
         """
-        opr : play/pause/resume/seek-xx:xx/forwarded/reversed/attempt-to-play
-        media_type : local/remote/media-name
-                   local -> Play from the memory card of the device
-                   remote -> Play the remote url/media id
-                   media-name -> if we want to play it from all media/media tab
-        media_source : "menuelink/file-name"/url/media-id/media-tab
-        encoding_type : encoding-name/automatic/no-select
+        @args:
+            opr : play/pause/resume/seek-xx:xx/forwarded/reversed/attempt-to-play
+            media_type : local/remote/media-name
+                         local -> Play from the memory card of the device
+                         remote -> Play the remote url/media id
+                         media-name -> if we want to play it from all media/media tab
+            media_source : "menulink/file-name"/url/media-id/media-tab
+            encoding_type : encoding-name/automatic/no-select
         """
-        ret_data = {'bfr_elapsed_time': None, 'aftr_elapsed_time': None}
+        ret_data = {'bfr_elapsed_time': None,
+                    'aftr_elapsed_time': None,
+                    'encoding_type': encoding_type}
 
         info("Performing the video operations with parameters - ")
-        pmsg = "opration=%s, media_type=%s, media_source=%s, encoding_type=%s"
+        pmsg = "operation=%s, media_type=%s, media_source=%s, encoding_type=%s"
         info(pmsg%(opr, media_type, media_source, encoding_type))
 
         if opr.strip().lower() == "play":
 
-            # If play has paased then encoding_type should not "no-select"
+            # If play has passed then encoding_type should not "no-select"
             if encoding_type.lower().strip() == "no-select":
-                msg = "for opration is %s, encoding selection should not %s"%(opr, encoding_type)
+                msg = "for operation is %s, encoding selection should not %s" % \
+                       (opr, encoding_type)
                 raise exception_mod.InvalidCombination(**{'MSG':msg})
 
-            # Local encoding type is only when we play a local file from sd card
+            # Local encoding type is only when we play a local file from SD card
             if encoding_type.lower().strip() == "local" and \
                media_type.strip().lower() != "local":
                 msg = "local encoding is only when you play a local file"
                 raise exception_mod.InvalidCombination(**{'MSG':msg})
 
-            # For playing a local file then encoding should only be 'automatic'/'local'
+            # For playing a local file then encoding should only be
+            # 'automatic'/'local'
             if media_type.strip().lower() == "local" and \
                encoding_type.lower().strip() not in ['automatic', 'local']:
                 msg = "for playing a local file encoding type should be automatic/local"
@@ -560,7 +642,7 @@ class Limelight(object):
                 self.select_tab("PLAYER")
                 # Click on browse button
                 self.click_on("browse-button")
-                # Check on toggle menue button
+                # Check on toggle menu button
                 self.click_on("toggle-menu-button")
                 # Click on Downloads link
                 self.click_on("toggle-menu-left-side-links",
@@ -576,23 +658,26 @@ class Limelight(object):
                     self.click_on("local-video-view-menu-option-link",
                                   generic_param=("List view",))
                 else:
-                    # back so that the menue disappear
+                    # back so that the menu disappear
                     self.back()
                 # Click on the file
                 self.click_on("file-link-in-menu", generic_param=(file_name,))
                 # Click The file name is came in search text box
-                #self.value_should_contains("media-id-text-box", file_name) # failure
+                #self.value_should_contains("media-id-text-box", file_name)
+                # failure
 
             elif media_type.strip().lower() == "remote":
                 self.select_tab("PLAYER")
                 info("Set url/media-id=%s"%(media_source))
                 # Set url/ media id
-                self.set_select_value("player", "media-id-text-box", "set", media_source)
+                self.set_select_value("player", "media-id-text-box",
+                                      "set", media_source)
                 # Click on the play button
                 self.click_on("play-button")
 
             else:
-                info("Go to tab=%s and select media=%s"%(media_source, media_type))
+                info("Go to tab=%s and select media=%s" % (media_source,
+                                                           media_type))
                 # Go to a tab and select the media
                 self.go_to_tab_and_select_media(media_source, media_type)
 
@@ -606,14 +691,22 @@ class Limelight(object):
             self.wait_for_media_fetch_from_server()
 
             # Check if the widevine download msg is displayer
-            self.wait_for_widevine_offline_download(encoding_type, media_type)
+            self.wait_for_offline_download(encoding_type, media_type)
 
             # wait for any alert popup like widevine rights
             self.wait_for_any_alert_popup_get_close()
 
-            self.click_on("player")
-            ret_data['aftr_elapsed_time'] = self.get_value('player-elapsed-time')
+            for ech_try in range(4):
+                if self.is_item_visible('player-elapsed-time'):
+                    try:
+                        ret_data['aftr_elapsed_time'] = \
+                          self.get_value('player-elapsed-time')
+                        break
+                    except Exception as ex:
+                        info(str(ex))
 
+                self.click_on("player")
+                info("player elapsed time not found, retrying again")
 
         elif opr.strip().lower() == "pause":
             for et in range(3):
@@ -660,6 +753,7 @@ class Limelight(object):
                     # Click on the forward button
                     self.click_on("player-forward-button")
                     ret_data['aftr_elapsed_time'] = self.get_value('player-elapsed-time')
+
                     break
                 except Exception as ex:
                     warning(str(ex))
@@ -699,9 +793,9 @@ class Limelight(object):
 
                     ele_details = self.get_element_details("player-seekbar")
                     x_cal = (float(ele_details['width']) / tot_vdo_sec) * seek_to_sec
-                    go_to_x = ele_details['x-cordinate'] + x_cal #+ 6
+                    go_to_x = ele_details['x-coordinate'] + x_cal #+ 6
                     go_to_x = int(round(go_to_x))
-                    go_to_y = ele_details['y-cordinate']
+                    go_to_y = ele_details['y-coordinate']
                     ret_data['bfr_elapsed_time'] = self.get_value('player-elapsed-time')
                     # Seek the value
                     self.tap_on(go_to_x, go_to_y)
@@ -709,11 +803,11 @@ class Limelight(object):
                     break
                 except Exception as ex:
                     warning(str(ex))
-                    warning("seekbar get invisible so quick")
+                    warning("seek bar get invisible so quick")
                     continue
 
         elif opr.strip().lower() == "attempt-to-play":
-            # If attempt-to-play has paased then encoding_type should be "no-select"
+            # If attempt-to-play has passed then encoding_type should be "no-select"
             if encoding_type.lower().strip() != "no-select":
                 raise exception_mod.InvalidKeyWordUsed(**{'encoding selection':encoding_type,
                                                         'operation':opr})
@@ -740,7 +834,12 @@ class Limelight(object):
         return ret_data
 
     def verify_elapsed_time(self, duration, shud_diff=False):
-        """Get elapsed time & match with passed duration"""
+        """
+        Get elapsed time & match with passed duration
+        @args:
+            duration : TBD
+            shud_diff : TBD
+        """
         if not self.is_item_visible("player-elapsed-time"):
             self.click_on('player')
         elapse_time = self.get_value("player-elapsed-time")
@@ -751,36 +850,41 @@ class Limelight(object):
         duration_sec = int(duration_sec[0]) * 60 + int(duration_sec[1])
         if shud_diff:
             if 0 <= (elapse_time_sec - duration_sec) < 3:
-                raise Exception("elspse-time: prev=%s, now=%s"%(duration,
+                raise Exception("elapse-time: prev=%s, now=%s"%(duration,
                                                                 elapse_time))
             else:
-                info("elspse-time: prev=%s, now=%s"%(duration, elapse_time))
+                info("elapse-time: prev=%s, now=%s"%(duration, elapse_time))
 
         else:
             if -5 <= (elapse_time_sec - duration_sec) < 10:
-                info("got elspse time=%s, passed %s"%(elapse_time,
+                info("got elapse time=%s, passed %s"%(elapse_time,
                                                        duration))
             else:
-                raise Exception("got elspse time=%s; expected=%s"%(elapse_time,
+                raise Exception("got elapse time=%s; expected=%s"%(elapse_time,
                                                                     duration))
 
         return elapse_time
 
     def check_player_btn_icon(self, btn):
-        """Take screenshot with player control bar & check given button icon"""
+        """Take screen shot with player control bar & check given button icon"""
         img_btn = os.path.join(SCREEN_SHOT_DIR, "player_btn", "%s.png"%btn)
         info("chk img_btn %s present"%img_btn)
         screen_shot = self.tk_screen_shot_of_player(wth_plyr_cntrl=True)
         obj_opencv = OpenCvLib.OpenCvLibrary()
         try:
             if obj_opencv.search_picture_in_picture(screen_shot, img_btn):
-               success("%s icon present in screen"%btn)
+                success("%s icon present in screen"%btn)
         except Exception as e:
             error(str(e))
             raise Exception("%s btn icon chk failed in screen."%btn)
 
     def tk_screen_shot_of_player(self, wth_plyr_cntrl, only_player=False):
-        """Take the screen shot with or without player control"""
+        """
+        Take the screen shot with or without player control
+        @args:
+            wth_plyr_cntrl : TBD
+            only_player : TBD
+        """
         if only_player:
             msg = "take screen shot of player"
         else:
@@ -793,6 +897,8 @@ class Limelight(object):
             except Exception as ex :
                 warning(str(ex))
                 time.sleep(2)
+        else:
+            raise Exception("not able to access player")
 
         if wth_plyr_cntrl:
             if not self.is_item_visible("player-controller-container"):
@@ -804,12 +910,17 @@ class Limelight(object):
             self.click_on(player_ele_data['obj'])
         screen_shot = self.take_screenshot()
         if only_player:
-           obj_opencv = OpenCvLib.OpenCvLibrary()
-           y1 = player_ele_data['y-cordinate']
-           x1 = player_ele_data['x-cordinate']
-           y2 = y1 + player_ele_data['height']
-           x2 = x1 + player_ele_data['width']
-           obj_opencv.crop_file(screen_shot, y1, y2, x1, x2)
+            obj_opencv = OpenCvLib.OpenCvLibrary()
+            y1 = player_ele_data['y-coordinate']
+            x1 = player_ele_data['x-coordinate']
+            y2 = y1 + player_ele_data['height']
+            x2 = x1 + player_ele_data['width']
+
+            orientation_map = {'LANDSCAPE': (x1, x2, y1, y2),
+                               'PORTRAIT': (y1, y2, x1, x2)}
+            current_orientation = self.__obj.get_current_orientation()
+            obj_opencv.crop_file(screen_shot,
+                                 *orientation_map[str(current_orientation)])
         return screen_shot
 
     def check_player_is_playing(self, data, skip_step=[]):
@@ -819,21 +930,25 @@ class Limelight(object):
               skip_step : the steps u want to skip
         Steps:
         1. Check pause button icon
-        2. Take screenshot of the player without player control bar
+        2. Take screen shot of the player without player control bar
         3. Wait for some time to take the next screen shot
-        4. Take screenshot of whole screen without player control bar
+        4. Take screen shot of whole screen without player control bar
         5. Verify the screen shots are different
         6. Check elapsed time has changed
         """
         bfr_elapsed_time = data['bfr_elapsed_time']
         aftr_elapsed_time = data['aftr_elapsed_time']
+        if not aftr_elapsed_time:
+            if not self.is_item_visible("player-elapsed-time"):
+                self.click_on('player')
+            aftr_elapsed_time = self.get_value("player-elapsed-time")
 
         if '1' not in skip_step:
             # Check pause button icon
             self.check_player_btn_icon('pause')
 
         if '2' not in skip_step:
-            # Take screenshot of the player without player control bar
+            # Take screen shot of the player without player control bar
             sc_sht = self.tk_screen_shot_of_player(wth_plyr_cntrl=False,
                                                    only_player=True)
 
@@ -842,7 +957,7 @@ class Limelight(object):
             time.sleep(3)
 
         if '4' not in skip_step:
-            # Take screenshot of whole screen without player control bar
+            # Take screen shot of whole screen without player control bar
             sc_sht1 = self.tk_screen_shot_of_player(wth_plyr_cntrl=False)
 
         if '5' not in skip_step:
@@ -867,15 +982,27 @@ class Limelight(object):
         Steps:
         1. Verify elapsed time, time should not change
         2. Check play button icon
-        3. Take screenshot of the player without player control bar
+        3. Take screen shot of the player without player control bar
         4. Wait for some time to take the next screen shot
-        5. Take screenshot of whole screen without player control bar
+        5. Take screen shot of whole screen without player control bar
         6. Verify the screen shots are same
         7. Check elapsed time has not changed
 
         """
         bfr_elapsed_time = data['bfr_elapsed_time']
         aftr_elapsed_time = data['aftr_elapsed_time']
+
+        if not bfr_elapsed_time:
+            if not self.is_item_visible("player-elapsed-time"):
+                self.click_on('player')
+            aftr_elapsed_time = self.get_value("player-elapsed-time")
+            time.sleep(1)
+
+        if not aftr_elapsed_time:
+            if not self.is_item_visible("player-elapsed-time"):
+                self.click_on('player')
+            aftr_elapsed_time = self.get_value("player-elapsed-time")
+
 
         # Verify elapsed time, time should not change
         if '1' not in skip_step:
@@ -897,7 +1024,7 @@ class Limelight(object):
         if '2' not in skip_step:
             self.check_player_btn_icon('play')
 
-        # Take screenshot without player control bar
+        # Take screen shot without player control bar
         if '3' not in skip_step:
             sc_sht = self.tk_screen_shot_of_player(wth_plyr_cntrl=False,
                                                    only_player=True)
@@ -906,7 +1033,7 @@ class Limelight(object):
         if '4' not in skip_step:
             time.sleep(3)
 
-        # Take screenshot of whole screen without player control bar
+        # Take screen shot of whole screen without player control bar
         if '5' not in skip_step:
             sc_sht1 = self.tk_screen_shot_of_player(wth_plyr_cntrl=False)
 
@@ -924,23 +1051,23 @@ class Limelight(object):
         if '7' not in skip_step:
             self.verify_elapsed_time(aftr_elapsed_time, shud_diff=False)
 
-    def check_player_is_resumed(self, data):
+    def check_player_is_resumed(self, data, skip_step=[]):
         """
         @args :
-              data    : data from previous grammar
+              data : data from previous grammar
         Steps:
         1. Check pause button icon
-        2. Take screenshot of the player without player control bar
+        2. Take screen shot of the player without player control bar
         3. Wait for some time to take the next screen shot
-        4. Take screenshot of whole screen without player control bar
+        4. Take screen shot of whole screen without player control bar
         5. Verify the screen shots are different
         6. Check elapsed time has changed
         """
         #bfr_elapsed_time = data['bfr_elapsed_time']
         #aftr_elapsed_time = data['aftr_elapsed_time']
-        self.check_player_is_playing(data)
+        self.check_player_is_playing(data, skip_step=skip_step)
 
-    def check_player_is_forwarded(self, data, state):
+    def check_player_is_forwarded(self, data, state, skip_step=[]):
         """
         @args :
               data    : data from previous grammar
@@ -948,10 +1075,10 @@ class Limelight(object):
         Steps:
         1. Verify elapsed time, time is move forward with a certain range
         2. Check pause/play button icon according to player state
-        3. Take screenshot of the player without player control bar
+        3. Take screen shot of the player without player control bar
         4. Wait for some time to take the next screen shot
-        5. Take screenshot of whole screen without player control bar
-        6. verify the screen shot are different/same accroding to player state
+        5. Take screen shot of whole screen without player control bar
+        6. verify the screen shot are different/same according to player state
         7. Check elapsed time has changed/remain same according to play/pause
         """
         bfr_elapsed_time = data['bfr_elapsed_time']
@@ -963,7 +1090,7 @@ class Limelight(object):
         bfr_elapsed_time_sec = int(bfr_elapsed_time_sec[0]) * 60 + int(bfr_elapsed_time_sec[1])
         aftr_elapsed_time_sec = aftr_elapsed_time.split(':')
         aftr_elapsed_time_sec = int(aftr_elapsed_time_sec[0]) * 60 + int(aftr_elapsed_time_sec[1])
-        if FORWARD_SEC <= (aftr_elapsed_time_sec - bfr_elapsed_time_sec) < FORWARD_SEC+5:
+        if FORWARD_SEC <= (aftr_elapsed_time_sec - bfr_elapsed_time_sec) < FORWARD_SEC+7:
             msg = "on click forward btn elapse time change as expect. prev: %s, after: %s"
             success(msg%(bfr_elapsed_time, aftr_elapsed_time))
         else:
@@ -971,29 +1098,31 @@ class Limelight(object):
             raise Exception(msg%(bfr_elapsed_time, aftr_elapsed_time))
 
         # perform the steps according to state : play/pause
-        if state == 'play': self.check_player_is_playing(data)
-        else: self.check_player_is_paused(data, skip_step=['1'])
+        if state == 'play':
+            self.check_player_is_playing( data, skip_step=skip_step)
+        else:
+            skip_step.append('1')
+            self.check_player_is_paused( data, skip_step=skip_step)
 
-
-    def check_player_is_reversed(self, data, state):
+    def check_player_is_reversed(self, data, state, skip_step=[]):
         """
         @args :
               data    : data from previous grammar
               state   : play/pause
         Steps:
-        1. Verify elapsed time, time is move backword with a certain range
+        1. Verify elapsed time, time is move backwards with a certain range
         2. Check pause/play button icon according to player state
-        3. Take screenshot of the player without player control bar
+        3. Take screen shot of the player without player control bar
         4. Wait for some time to take the next screen shot
-        5. Take screenshot of whole screen without player control bar
-        6. verify the screen shot are different/same accroding to player state
+        5. Take screen shot of whole screen without player control bar
+        6. verify the screen shot are different/same according to player state
         7. Check elapsed time has changed/remain same according to play/pause
         """
         bfr_elapsed_time = data['bfr_elapsed_time']
         aftr_elapsed_time = data['aftr_elapsed_time']
 
-        # Verify elapsed time, time is move backword with a certain range
-        info('verify elapsed time, time is move backword with a certain range')
+        # Verify elapsed time, time is move backward with a certain range
+        info('verify elapsed time, time is move backward with a certain range')
         bfr_elapsed_time_sec = bfr_elapsed_time.split(':')
         bfr_elapsed_time_sec = int(bfr_elapsed_time_sec[0]) * 60 + int(bfr_elapsed_time_sec[1])
         aftr_elapsed_time_sec = aftr_elapsed_time.split(':')
@@ -1007,10 +1136,13 @@ class Limelight(object):
             raise Exception(msg%(bfr_elapsed_time, aftr_elapsed_time))
 
         # perform the steps according to state : play/pause
-        if state == 'play': self.check_player_is_playing(data)
-        else: self.check_player_is_paused(data, skip_step=['1'])
+        if state == 'play':
+            self.check_player_is_playing( data, skip_step=skip_step)
+        else:
+            skip_step.append('1')
+            self.check_player_is_paused( data, skip_step=skip_step)
 
-    def check_player_is_seeking(self, duration, data, state):
+    def check_player_is_seeking(self, duration, data, state, skip_step=[]):
         """
         @args :
               duration: duration that passed from front end
@@ -1019,10 +1151,10 @@ class Limelight(object):
         Steps:
         1. Verify elapsed time, aftr_elapsed_time ~= duration
         2. Check pause/play button icon according to player state
-        3. Take screenshot of the player without player control bar
+        3. Take screen shot of the player without player control bar
         4. Wait for some time to take the next screen shot
-        5. Take screenshot of whole screen without player control bar
-        6. verify the screen shot are different/same accroding to player state
+        5. Take screen shot of whole screen without player control bar
+        6. verify the screen shot are different/same according to player state
         7. Check elapsed time has changed/remain same according to play/pause
         """
         aftr_elapsed_time = data['aftr_elapsed_time']
@@ -1042,8 +1174,11 @@ class Limelight(object):
             raise Exception(msg%(aftr_elapsed_time, duration))
 
         # perform the steps according to state : play/pause
-        if state == 'play': self.check_player_is_playing(data)
-        else: self.check_player_is_paused(data, skip_step=['1'])
+        if state == 'play':
+            self.check_player_is_playing(data, skip_step=skip_step)
+        else:
+            skip_step.append('1')
+            self.check_player_is_paused(data, skip_step=skip_step)
 
     @exception_mod.handle_exception
     def check_player(self, operation, vdo_src_typ, duration, player_state, ret_data):
@@ -1060,38 +1195,110 @@ class Limelight(object):
         if operation.lower().strip() == "play" and \
            player_state.lower().strip() == "play":
             '''Checking play'''
-            self.check_player_is_playing(ret_data)
+            # For protected content skip image comparison
+            if ("widevine" in ret_data['encoding_type'].lower()) or \
+               ( "automatic" in ret_data['encoding_type'].lower() and \
+                 vdo_src_typ.lower().strip() != "file"):
+                skip_step = ['2', '4', '5']
+            else:
+                skip_step = []
+            self.check_player_is_playing(ret_data, skip_step=skip_step)
 
         elif operation.lower().strip() == "pause" and \
            player_state.lower().strip() == "pause":
             '''Checking pause'''
-            self.check_player_is_paused(ret_data)
+            # For protected content skip image comparison
+            if ("widevine" in ret_data['encoding_type'].lower()) or \
+               ( "automatic" in ret_data['encoding_type'].lower() and \
+                 vdo_src_typ.lower().strip() != "file"):
+                skip_step = ['3', '5', '6']
+            else:
+                skip_step = []
+            self.check_player_is_paused(ret_data, skip_step=skip_step)
 
         elif operation.lower().strip() == "resume" and \
            player_state.lower().strip() == "play":
             '''Checking resume'''
-            self.check_player_is_resumed(ret_data)
+            # For protected content skip image comparison
+            if ("widevine" in ret_data['encoding_type'].lower()) or \
+               ( "automatic" in ret_data['encoding_type'].lower() and \
+                 vdo_src_typ.lower().strip() != "file"):
+                skip_step = ['2', '4', '5']
+            else:
+                skip_step = []
+            self.check_player_is_resumed(ret_data, skip_step=skip_step)
 
         elif operation.lower().strip() == "forwarded":
             '''Checking forwarded with play/pause state'''
-            self.check_player_is_forwarded(ret_data, player_state.lower().strip())
+            # For protected content skip image comparison
+            if ("widevine" in ret_data['encoding_type'].lower()) or \
+               ( "automatic" in ret_data['encoding_type'].lower() and \
+                 vdo_src_typ.lower().strip() != "file"):
+                if player_state.lower().strip() == "play":
+                    skip_step = ['2', '4', '5']
+                else:
+                    skip_step = ['3', '5', '6']
+            else:
+                skip_step = []
+
+            self.check_player_is_forwarded(ret_data,
+                                           player_state.lower().strip(),
+                                           skip_step=skip_step)
 
         elif operation.lower().strip() == "reversed":
             '''Checking reversed with play/pause state'''
-            self.check_player_is_reversed(ret_data, player_state.lower().strip())
+            # For protected content skip image comparison
+            if ("widevine" in ret_data['encoding_type'].lower()) or \
+               ( "automatic" in ret_data['encoding_type'].lower() and \
+                 vdo_src_typ.lower().strip() != "file"):
+                if player_state.lower().strip() == "play":
+                    skip_step = ['2', '4', '5']
+                else:
+                    skip_step = ['3', '5', '6']
+            else:
+                skip_step = []
+
+            self.check_player_is_reversed( ret_data,
+                                           player_state.lower().strip(),
+                                           skip_step=skip_step)
 
         elif operation.lower().strip() == "seek":
-            '''Checking play'''
+            '''Checking seek'''
+            # For protected content skip image comparison
+            if ("widevine" in ret_data['encoding_type'].lower()) or \
+               ( "automatic" in ret_data['encoding_type'].lower() and \
+                 vdo_src_typ.lower().strip() != "file"):
+                if player_state.lower().strip() == "play":
+                    skip_step = ['2', '4', '5']
+                else:
+                    skip_step = ['3', '5', '6']
+            else:
+                skip_step = []
             self.check_player_is_seeking(duration, ret_data,
-                                         player_state.lower().strip())
+                                         player_state.lower().strip(),
+                                         skip_step=skip_step)
 
         elif operation.lower().strip() == "continue-playing":
             '''Checking play'''
-            self.check_player_is_playing(ret_data)
+            # For protected content skip image comparison
+            if ("widevine" in ret_data['encoding_type'].lower()) or \
+               ( "automatic" in ret_data['encoding_type'].lower() and \
+                 vdo_src_typ.lower().strip() != "file"):
+                skip_step = ['2', '4', '5']
+            else:
+                skip_step = []
+            self.check_player_is_playing(ret_data, skip_step=skip_step)
 
         elif operation.lower().strip() == "remain-pause":
             '''Checking pause'''
-            self.check_player_is_paused(ret_data)
+            # For protected content skip image comparison
+            if ("widevine" in ret_data['encoding_type'].lower()) or \
+               ( "automatic" in ret_data['encoding_type'].lower() and \
+                 vdo_src_typ.lower().strip() != "file"):
+                skip_step = ['3', '5', '6']
+            else:
+                skip_step = []
+            self.check_player_is_paused(ret_data, skip_step=skip_step)
 
     @exception_mod.handle_exception
     def perform_device_operations(self, action_itm, perform, target):

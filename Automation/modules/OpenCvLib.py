@@ -1,3 +1,14 @@
+"""
+#-------------------------------------------------------------------------------
+# Name       :  OpenCvLib
+# Purpose    :  OpenCV wrapper
+#
+# Author     :  Rebaca
+#
+# Created    :  26-03-2015
+# Copyright  :  (c) Rebaca 2015
+#-------------------------------------------------------------------------------
+"""
 import sys, os, time, datetime
 import cv2
 import numpy as np
@@ -26,9 +37,9 @@ class OpenCvLibrary(object):
 
             curTim = cap.get(cv2.CAP_PROP_POS_MSEC)
             if curTim >= takScrnShtAftrSec * 1000 :
-                # Taking the screenshot, ans save the
+                # Taking the screen shot, ans save the
                 cv2.imwrite(scrnShtFilPth, newFrame)
-                # Showing the screenshot
+                # Showing the screen shot
                 img = cv2.imread(scrnShtFilPth,1)
                 #cv2.imshow('Screen Shot',img)
                 #cv2.waitKey(1) # 1
@@ -58,11 +69,15 @@ class OpenCvLibrary(object):
 
 
     def crop_file(self, file_name, y1, y2, x1, x2):
+        """
+        # y1 -> top, y2 -> bottom,
+        # x1 -> left, x2 -> right
+        """
         img = cv2.imread(file_name)
         img = img[y1:y2, x1:x2]
         cv2.imwrite(file_name, img)
-        # 80,437 ::: 640, 360
-        #template = template[437:797, 80:720] # Chropping
+        #cv2.imshow("", img)
+        #cv2.waitKey(1)
 
 
     def search_picture_in_picture(self, sourceFile, searchPic):
@@ -96,9 +111,9 @@ class OpenCvLibrary(object):
         cv2.destroyAllWindows()
         '''
         if mtchFound:
-            print "Mathced"
+            print "Matched"
         else:
-            print "Not Mathced"
+            print "Not Matched"
         '''
         return mtchFound
         '''
@@ -188,7 +203,7 @@ class OpenCvLibrary(object):
             cv2.destroyAllWindows()
             raise Exception("No able to capture video from device.")
 
-        # When everything is over then relese the memory
+        # When everything is over then release the memory
         cap.release()
         out.release()
         cv2.destroyAllWindows()
@@ -240,7 +255,7 @@ class OpenCvLibrary(object):
 
 if __name__ == "__main__":
     obj = OpenCvLibrary()
-    #obj.capture_video(30, 'capture.avi')
-    img1 = "E:\\LimelightSDKAutomation\\screenShots\\SS-2015_04_14_18_47_08.png"
-    img2 = "E:\\LimelightSDKAutomation\\screenShots\\SS-2015_04_14_18_47_08-1.png"
-    print ">>>>>>>>>", obj.crop_file(img2, 437, 797, 80, 720)
+    img1 = "E:\\LimelightSDKAutomation\\screenShots\\1.png"
+    print ">>>>>>>>>", obj.crop_file(img1, 320, 960, 170, 530)
+    # y1 -> top, y2 -> bottom,
+    # x1 -> left, x2 -> right

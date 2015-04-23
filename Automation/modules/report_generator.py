@@ -1,27 +1,38 @@
+"""
 #-------------------------------------------------------------------------------
-# Name:        report_generator
-# Purpose:
+# Name       :  report_generator
+# Purpose    :  generate html report
 #
-# Author:      Rebaca
+# Author     :  Rebaca
 #
-# Created:     06-02-2015
-# Copyright:   (c) Rebaca 2015
-# Licence:     <your licence>
+# Created    :  06-02-2015
+# Copyright  :  (c) Rebaca 2015
 #-------------------------------------------------------------------------------
-
+"""
 import json
 
 def format_argument(argument):
+    """ To format the argument that send from feature file """
     return_format = ""
     for each in argument:
         if isinstance(each, dict):
-            for k, v in each.iteritems():
-                return_format += str(k) + " = " + str(v) + "<br />"
+            for _ky, _vl in each.iteritems():
+                return_format += str(_ky) + " = " + str(_vl) + "<br />"
         elif isinstance(each, list):
-             return_format += "<br />".join(each)
+            return_format += "<br />".join(each)
     return return_format
 
+def humanize_time(secs):
+    """ Convert seconds to human readable time format """
+    mins, secs = divmod(secs, 60)
+    hours, mins = divmod(mins, 60)
+    return '%02d:%02d:%02d' % (hours, mins, round(secs))   
+    
 def report_generator(file_name, op_html):
+    """
+    This function generates the html report and save it
+    to the file op_html
+    """
     with open(file_name) as json_data:
         data = json.load(json_data)
         data = [data] if not isinstance(data, list) else data
@@ -54,7 +65,7 @@ def report_generator(file_name, op_html):
        border: 1px solid slategray;
        padding: 4px;
        /*font-family: Helvetica,sans-serif;*/
-       min-width: 90px;
+       min-width: 140px;
        vertical-align: top;
     }
     .passed {
@@ -109,70 +120,67 @@ def report_generator(file_name, op_html):
         cursor: pointer;
     }
     </style>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script type="text/javascript"
+    src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js">
+    </script>
     <script type="text/javascript">
 
     $( document ).ready(function() {
         $(".stepsTable").toggle();
         $('.togBtn').click(function(){
-            $(this).parent().parent().next().children().next().children(".stepsTable").toggle();
+            $(this).parent().parent().next().children()
+            .next().children(".stepsTable").toggle();
             if ($(this).text() === 'Show Steps') {
                 $(this).text('Hide Steps');
             } else {
                 $(this).text('Show Steps');
             }
         });
-        /*
-        $('.err-msg-link').click(function(){
-            $(this).next(".full-err-msg").toggle();
-        });
-        */
-        $('.err-msg-link').click(function(){
-            var msg = "<pre>"+$(this).next(".full-err-msg").html()+"</pre>";
-            var w = window.open('', '', 'width=600,height=400,resizeable,scrollbars');
-            w.document.write(msg);
-            w.document.close(); // needed for chrome and safari
-        });
-    });
 
-    </script>
-    </head>
-    <body>
+    $('.err-msg-link').click(function(){
+      var msg = "<pre>"+$(this).next(".full-err-msg").html()+"</pre>";
+      var w = window.open('', '', 'width=600,height=400,resizeable,scrollbars');
+      w.document.write(msg);
+      w.document.close(); // needed for chrome and safari
+    });
+   });
+
+  </script>
+  </head>
+  <body>
     """
     for ech_dict in data:
-        tmp_html = """<table class="tab-%s feature-table" cellspacing="1">""" %ech_dict['status']
+        feature_duration = 0
+        tmp_html = """<table class="tab-%s feature-table" cellspacing="1">""" \
+                   % ech_dict['status']
         tmp_html += """<tr><td class="key">Feature : </td>
-                       <td><h4>%s</h4></td></tr>"""%ech_dict.get('name', '')
+                       <td><h4>%s</h4></td></tr>""" % ech_dict.get('name', '')
         for ech_itm in ["tag", "location"]:
             tmp_html += """
-              <tr><td class="key">%s</td>
+              <tr><td class="key">%s : </td>
                   <td>%s</td></tr>
-            """%(ech_itm.title(), ech_dict.get(ech_itm, ''))
-        tmp_html += """
-           <tr class="%s">
-             <td class="key">Overall Status : </td>
-             <td>%s</td>
-           </tr>
-        """%(ech_dict.get('status', ''), ech_dict.get('status', '').upper())
-
+            """ % (ech_itm.title(), ech_dict.get(ech_itm, ''))
         # Adding the scenario
         tmp_scenario_table = """<table cellspacing="1">"""
         for ech_scenario_data in ech_dict.get('elements', []):
+            scenario_duration = 0
             tmp_scenario_table += """<tr><td class="key">Scenario : </td>
-               <td>%s</td></tr>""" %ech_scenario_data.get('name', '')
+               <td>%s</td></tr>""" % ech_scenario_data.get('name', '')
             tmp_scenario_table += """<tr><td class="key">Tags : </td>
-               <td>%s</td></tr>""" %', '.join(ech_scenario_data.get('tags', []))
-            tmp_scenario_table += """<tr><td class="key">Location : </td>
-               <td>%s</td></tr>""" %ech_scenario_data.get('location', '')
+               <td>%s</td></tr>""" % ','.join(ech_scenario_data.get('tags', []))
+            
 
             # Adding Steps
             tmp_step_table = """<table class="stepsTable" cellspacing="1">"""
-            tmp_step_table += """<tr><th>Name</th><th>Keyword</th><th>Location</th>
-                                <th>Arguments</th><th>Duration<br />(in seconds)</th>
-                                <th>Status</th><th>Error Message</th></tr>"""
+            tmp_step_table += """<tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>"""
             scenario_status = 'passed'
             for ech_step in ech_scenario_data.get("steps", []):
-                step_status = ech_step.get('result', {}).get('status', 'Not Executed')
+                step_status = ech_step.get('result', {})\
+                                      .get('status', 'Not Executed')
 
                 if step_status.lower().strip() == "failed":
                     scenario_status = "failed"
@@ -180,17 +188,20 @@ def report_generator(file_name, op_html):
                 step_name = ech_step['name']
                 step_keyward = ech_step['keyword']
                 step_location = ech_step['location']
-                step_argument = format_argument(ech_step.get('match',{}).get('arguments', []))
-                step_dur = ech_step.get('result', {}).get('duration', '00.00')
-                #step_dur = ech_step.get('result', {}).get('duration', 'Not Executed')
-                msgs = ech_step.get('result', {}).get('error_message', [])
+                step_argument = format_argument(ech_step.get('match', {})\
+                                                        .get('arguments', []))
+                step_dur = ech_step.get('result', {})\
+                                   .get('duration', '00.00')
+                scenario_duration += float(step_dur)
+                msgs = ech_step.get('result', {})\
+                               .get('error_message', [])
                 step_err_msg = ""
                 if msgs:
                     step_err_msg = '<br />'.join(msgs)
                     step_err_msg = """
                        <a class='err-msg-link'>%s</a>
                        <div class='full-err-msg'>%s</div>
-                    """%(msgs[-1], step_err_msg)
+                    """ % (msgs[-1], step_err_msg)
 
                 try:
                     tmp_step_table += """
@@ -198,14 +209,19 @@ def report_generator(file_name, op_html):
                          <td>%s</td><td>%s</td><td>%s</td>
                          <td>%s</td><td>%0.3f</td><td>%s</td>
                          <td>%s</td></tr>
-                    """%( step_status, step_name,
+                    """ % ( step_status, step_name,
                           step_keyward, step_location, step_argument,
                           float(step_dur), step_status.upper(), step_err_msg)
                 except Exception as ex:
                     print ">>>>>>>>>", ex
 
+            feature_duration += sum(int(x) * 60 ** i for i,x in enumerate(reversed(humanize_time(scenario_duration).split(":"))))
             tmp_step_table += """</table>"""
-
+            
+            tmp_scenario_table += """<tr><td class="key">Duration (hh:mm:ss) : </td>
+               <td>%s</td></tr>""" % (humanize_time(scenario_duration))   
+            tmp_scenario_table += """<tr><td class="key">Location : </td>
+               <td>%s</td></tr>""" % ech_scenario_data.get('location', '')
             tmp_scenario_table += """
                 <tr class="%s">
                    <td class="key">Status : </td>
@@ -214,22 +230,40 @@ def report_generator(file_name, op_html):
                        <button class="togBtn">Show Steps</button>
                    </td>
                 </tr>
-            """%(scenario_status,scenario_status.upper())
+            """ % (scenario_status, scenario_status.upper())
 
-            tmp_scenario_table += """<tr><td class="key">Steps : </td><td>%s</td></tr>"""%tmp_step_table
-            tmp_scenario_table += """<tr><td colspan="2" class="line-brk"></td></tr>"""
+            tmp_scenario_table += """<tr>
+                  <td class="key">Steps :</td>
+                  <td>%s</td></tr>""" % tmp_step_table
+            tmp_scenario_table += """<tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr>"""
         tmp_scenario_table += """</table>"""
-        tmp_html += """<tr><td class="key">Scenario : </td><td>%s</td></tr>"""%tmp_scenario_table
+        tmp_html += """
+           <tr><td class="key">Duration (hh:mm:ss) : </td>
+             <td>%s</td>
+           </tr>
+        """ % (humanize_time(feature_duration))  
+        tmp_html += """
+           <tr class="%s">
+             <td class="key">Overall Status : </td>
+             <td>%s</td>
+           </tr>
+        """ % (ech_dict.get('status', ''), ech_dict.get('status', '').upper())
+        tmp_html += """<tr>
+            <td class="key">Scenario : </td><td>%s</td>
+         </tr>
+         """ % tmp_scenario_table
         tmp_html += """</table>"""
         html += tmp_html
     html += """</body></html>"""
     with open(op_html, "w") as f_out:
         try:
             f_out.write(html)
-        except:
+        except Exception:
             f_out.write(html.encode('utf-8').strip())
 
 if __name__ == '__main__':
-    file_name = "output\\2015_02_09_18_56_35_json_out.json"
-    op_html = "output.html"
-    report_generator(file_name, op_html)
+    FILE_NAME = "output\\2015_04_08_13_11_34_json_out.json"
+    OUTPUT_HTML_FILE_NAME = "output.html"
+    report_generator(FILE_NAME, OUTPUT_HTML_FILE_NAME)
