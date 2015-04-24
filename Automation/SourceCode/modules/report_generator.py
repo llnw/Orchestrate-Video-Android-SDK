@@ -10,7 +10,8 @@
 #-------------------------------------------------------------------------------
 """
 import json
-
+from modules.logger import info
+import time
 def format_argument(argument):
     """ To format the argument that send from feature file """
     return_format = ""
@@ -26,16 +27,23 @@ def humanize_time(secs):
     """ Convert seconds to human readable time format """
     mins, secs = divmod(secs, 60)
     hours, mins = divmod(mins, 60)
-    return '%02d:%02d:%02d' % (hours, mins, round(secs))   
-    
+    return '%02d:%02d:%02d' % (hours, mins, round(secs))
+
 def report_generator(file_name, op_html):
     """
     This function generates the html report and save it
     to the file op_html
     """
-    with open(file_name) as json_data:
-        data = json.load(json_data)
-        data = [data] if not isinstance(data, list) else data
+    for ech_try in range(60):
+        try:
+            with open(file_name) as json_data:
+                data = json.load(json_data)
+                data = [data] if not isinstance(data, list) else data
+            break
+        except Exception as exc :
+            print "got err while reading json file:", str(exc)
+            time.sleep(1)
+
     html = """
     <html>
     <head>
@@ -168,7 +176,7 @@ def report_generator(file_name, op_html):
                <td>%s</td></tr>""" % ech_scenario_data.get('name', '')
             tmp_scenario_table += """<tr><td class="key">Tags : </td>
                <td>%s</td></tr>""" % ','.join(ech_scenario_data.get('tags', []))
-            
+
 
             # Adding Steps
             tmp_step_table = """<table class="stepsTable" cellspacing="1">"""
@@ -215,11 +223,16 @@ def report_generator(file_name, op_html):
                 except Exception as ex:
                     print ">>>>>>>>>", ex
 
-            feature_duration += sum(int(x) * 60 ** i for i,x in enumerate(reversed(humanize_time(scenario_duration).split(":"))))
+            feature_duration += sum(int(x) * 60 ** i for i, x in \
+              enumerate(reversed(humanize_time(scenario_duration).split(":"))))
             tmp_step_table += """</table>"""
-            
-            tmp_scenario_table += """<tr><td class="key">Duration (hh:mm:ss) : </td>
-               <td>%s</td></tr>""" % (humanize_time(scenario_duration))   
+
+            tmp_scenario_table += """
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>%s</td>
+               </tr>
+            """ % (humanize_time(scenario_duration))
             tmp_scenario_table += """<tr><td class="key">Location : </td>
                <td>%s</td></tr>""" % ech_scenario_data.get('location', '')
             tmp_scenario_table += """
@@ -243,7 +256,7 @@ def report_generator(file_name, op_html):
            <tr><td class="key">Duration (hh:mm:ss) : </td>
              <td>%s</td>
            </tr>
-        """ % (humanize_time(feature_duration))  
+        """ % (humanize_time(feature_duration))
         tmp_html += """
            <tr class="%s">
              <td class="key">Overall Status : </td>

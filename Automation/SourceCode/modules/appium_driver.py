@@ -17,7 +17,7 @@ import os
 from appium import webdriver
 from time import sleep
 import ConfigParser
-from logger import info, warning
+from modules.logger import info, warning
 
 class Driver(object):
     """
@@ -25,7 +25,7 @@ class Driver(object):
     """
     def __init__(self, remote_host, platform, version, device_name):
         """  Initialize the driver object
-        
+
         @args:
             remote_host : remote host ip / dns
             platform    : android / iOS
@@ -152,7 +152,8 @@ class Driver(object):
             text   : text of the element
         """
         obj = self.driver.find_elements_by_link_text(text)
-        if not obj : raise Exception("Element not found for text: %s"%text)
+        if not obj :
+            raise Exception("Element not found for text: %s" % text)
         return obj if isinstance(obj, list) else [obj]
 
     def find_element(self, ele_data, generic_param=()):
@@ -278,8 +279,8 @@ class Driver(object):
             raise Exception("Element %s not found in config file"%ele)
 
     def get_element_my_algo(self, ele, generic_param=()):
-        """ 
-        Deprecated function 
+        """
+        Deprecated function
         @args:
             ele :   element
             generic_param   : dynamic xpath/id variable
@@ -393,7 +394,8 @@ class Driver(object):
         ele_obj.click()
         return ele_obj
 
-    def clear_value(self, ele_obj):
+    @staticmethod
+    def clear_value(ele_obj):
         """
         Clear out the element text
         @arg :
@@ -411,19 +413,19 @@ class Driver(object):
             except Exception as ex :
                 warning("Got exception while clear out value :: " + str(ex))
 
-    def set_value(self, ele, val, generic_param=()):
+    def set_value(self, ele, value, generic_param=()):
         """
         Set a value to a GUI element, raise exception if the element
         does not present.
         @args :
-            ele : name of the element (whose entry is in element-path.cfg)
+            ele   : name of the element (whose entry is in element-path.cfg)
                   or the element object
-            val : TBD      
+            value : value that need to set
             generic_param : dynamic xpath/id variable
         """
         ele_obj = self.get_element(ele, generic_param=generic_param)
         self.clear_value(ele_obj)
-        ele_obj.set_text(str(val))
+        ele_obj.set_text(str(value))
 
     def get_value(self, ele, generic_param=()):
         """
@@ -489,7 +491,8 @@ class Driver(object):
         except Exception as ex:
             info(str(ex))
 
-    def wait_for(self, secs):
+    @staticmethod
+    def wait_for(secs):
         """ Wait for some seconds """
         sleep(secs)
 
@@ -632,7 +635,8 @@ class Driver(object):
         """Showing the current activity"""
         info("show_current_activity :: " + str(self.driver.current_activity))
 
-    def contains(self, sub_list, big_list):
+    @staticmethod
+    def contains(sub_list, big_list):
         """
         Check if a big list contains the sub list and
         return True/False accordingly
@@ -867,7 +871,7 @@ class Driver(object):
         self.scrol_top_to_bottom(retry=1, indx=0)
 
     def tap_on(self, point_x, point_y):
-        """ 
+        """
         To tap on a particular coordinate
         @args:
             point_x : x coordinate

@@ -18,9 +18,12 @@ from constant import LIME_LIGHT_OBJ, LONG_WAIT, MEDIUM_WAIT, SORT_WAIT
 ret_data = {}
 
 def test_step(grammar_type, grammar):
-    """TBD"""
+    """
+    The parametrized decorator function,
+    This should be placed on each grammar implementation
+    """
     def the_function(function):
-        """TBD"""
+        """This is inner decorator function"""
         def wrapper(*args, **kwargs):
             """ The wrapper function """
             step = grammar_type.upper() +" "+ grammar % kwargs
@@ -34,7 +37,6 @@ def test_step(grammar_type, grammar):
                 raise
         return wrapper
     return the_function
-
 
 
 @given('the application has launched')
@@ -62,7 +64,6 @@ def step_impl(context, opr, val, target_ele, page_name):
     global LIME_LIGHT_OBJ
     LIME_LIGHT_OBJ.select_tab(page_name)
     LIME_LIGHT_OBJ.set_select_value(page_name, target_ele, opr, val)
-    #time.sleep(10)
 
 @when('I {opr} the {tab_name} tab')
 @test_step('when', 'I %(opr)s the %(tab_name)s tab')
@@ -125,7 +126,7 @@ def step_impl(context, check_ele, op, table_header):
     """
     @args :
         check_ele : the element that should contain the data
-        op : TBD
+        op : have / not have
         table_header : Header of data table
     """
     should_equal = False if 'not' in op else True

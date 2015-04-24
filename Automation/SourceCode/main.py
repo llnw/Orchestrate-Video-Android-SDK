@@ -40,7 +40,6 @@ def main():
 
     sys.argv.extend(['--format', 'json.pretty', '--out', json_out_file])
     runCli()
-    time.sleep(1)
     report_generator(json_out_file, html_report_file)
     print "REPORT PATH::", os.path.join(ROOT_DIR_PATH, html_report_file)
     webbrowser.open("file:///"+os.path.join(ROOT_DIR_PATH, html_report_file))

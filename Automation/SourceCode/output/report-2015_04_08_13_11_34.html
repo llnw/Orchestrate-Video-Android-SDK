@@ -1,0 +1,322 @@
+
+    <!doctype html>
+    <html>
+    <head>
+    <title>Automation Report</title>
+    <style>
+    .feature-table{
+       margin-bottom: 10px;
+    }
+    table {
+       empty-cells: show;
+       font-size: 8pt;
+       word-wrap: break-word;
+       border: 0px solid slategray /*1px solid #DDDDDD*/;
+       background-color: #F0F0F0;
+       font-family: arial;
+       color: #222222;
+       width: 100%;
+    }
+    tr {
+       line-height: 20px;
+    }
+    th {
+       background-color: #dcdcf0;
+       padding: 0.2em 0.3em;
+    }
+    th, td {
+       border: 1px solid slategray;
+       padding: 4px;
+       /*font-family: Helvetica,sans-serif;*/
+       min-width: 90px;
+    }
+    .passed {
+       background-color: #99ff66;
+    }
+    .failed {
+       background-color: #FF3333;
+       color:white;
+       font-weight:bold;
+    }
+    h4 {
+       padding: 0px;
+       margin: 0px;
+       font-size: 10pt;
+    }
+    .key {
+       font-size: 10pt !important;
+       font-weight: bold;
+       vertical-align: text-top;
+       width: 100px;
+
+    }
+    .line-brk{
+       border:0px;
+       height:9px
+    }
+    .togBtn{
+        background-color: #dcdcf0;
+        border: 1px solid black;
+        border-radius: 9px;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 7.5pt;
+        padding: 2px;
+        text-align: center;
+        margin-left : 10px;
+
+    }
+    </style>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script type="text/javascript">
+
+    $( document ).ready(function() {
+        $(".stepsTable").toggle();
+        $('.togBtn').click(function(){
+            $(this).parent().parent().next().children().next().children(".stepsTable").toggle();
+            if ($(this).text() === 'Show Steps') {
+                $(this).text('Hide Steps');
+            } else {
+                $(this).text('Show Steps');
+            }
+        });
+    });
+
+    </script>
+    </head>
+    <body>
+    <table class="tab-passed feature-table"><tr><td class="key">Feature : </td>
+                       <td><h4>Setting up the configurations for the application</h4></td></tr>
+              <tr><td class="key">Tag</td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location</td>
+                  <td>featureFiles\setting-up-app-configuration.feature:1</td></tr>
+            
+           <tr class="passed">
+             <td class="key">Overall Status : </td>
+             <td>PASSED</td>
+           </tr>
+        <tr><td class="key">Scenario : </td><td><table><tr><td class="key">Scenario : </td>
+               <td>Should be able to set the organization details</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr><tr><td class="key">Location : </td>
+               <td>featureFiles\setting-up-app-configuration.feature:3</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr><td class="key">Steps : </td><td><table class="stepsTable"><tr><th>Name</th><th>Keyword</th><th>Location</th>
+                                <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                                <th>Status</th><th>Error Message</th></tr>
+                       <tr class="passed">
+                         <td>the application has launched</td><td>Given</td><td>featureFiles\setting-up-app-configuration.feature:4</td>
+                         <td></td><td>31.434</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set 17fbbde5ce1e43e087bcbfffbf0680ca as value for Organization ID in SETTINGS page</td><td>When</td><td>featureFiles\setting-up-app-configuration.feature:5</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = 17fbbde5ce1e43e087bcbfffbf0680ca<br />name = target_ele<br />value = Organization ID<br />name = page_name<br />value = SETTINGS<br /></td><td>72.944</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of Organization ID in SETTINGS page should be 17fbbde5ce1e43e087bcbfffbf0680ca</td><td>Then</td><td>featureFiles\setting-up-app-configuration.feature:6</td>
+                         <td>name = target_ele<br />value = Organization ID<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = 17fbbde5ce1e43e087bcbfffbf0680ca<br /></td><td>25.944</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set sB8TWEftj8ZhYXol7pVWFuutJ4M= as value for Access Key in SETTINGS page</td><td>When</td><td>featureFiles\setting-up-app-configuration.feature:7</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = sB8TWEftj8ZhYXol7pVWFuutJ4M=<br />name = target_ele<br />value = Access Key<br />name = page_name<br />value = SETTINGS<br /></td><td>75.235</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of Access Key in SETTINGS page should be sB8TWEftj8ZhYXol7pVWFuutJ4M=</td><td>Then</td><td>featureFiles\setting-up-app-configuration.feature:8</td>
+                         <td>name = target_ele<br />value = Access Key<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = sB8TWEftj8ZhYXol7pVWFuutJ4M=<br /></td><td>25.698</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set lR46aeyMmlgTOod17Kl9XqNgaYE= as value for Secret Key in SETTINGS page</td><td>When</td><td>featureFiles\setting-up-app-configuration.feature:9</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = lR46aeyMmlgTOod17Kl9XqNgaYE=<br />name = target_ele<br />value = Secret Key<br />name = page_name<br />value = SETTINGS<br /></td><td>73.057</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of Secret Key in SETTINGS page should be lR46aeyMmlgTOod17Kl9XqNgaYE=</td><td>Then</td><td>featureFiles\setting-up-app-configuration.feature:10</td>
+                         <td>name = target_ele<br />value = Secret Key<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = lR46aeyMmlgTOod17Kl9XqNgaYE=<br /></td><td>25.647</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr><td colspan="2" class="line-brk"></td></tr><tr><td class="key">Scenario : </td>
+               <td>Should be able to set web service end point</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr><tr><td class="key">Location : </td>
+               <td>featureFiles\setting-up-app-configuration.feature:12</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr><td class="key">Steps : </td><td><table class="stepsTable"><tr><th>Name</th><th>Keyword</th><th>Location</th>
+                                <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                                <th>Status</th><th>Error Message</th></tr>
+                       <tr class="passed">
+                         <td>the application has launched</td><td>Given</td><td>featureFiles\setting-up-app-configuration.feature:13</td>
+                         <td></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set https://staging-api.lvp.llnw.net/rest as value for URL in SETTINGS page</td><td>When</td><td>featureFiles\setting-up-app-configuration.feature:14</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = https://staging-api.lvp.llnw.net/rest<br />name = target_ele<br />value = URL<br />name = page_name<br />value = SETTINGS<br /></td><td>113.640</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of URL in SETTINGS page should be https://staging-api.lvp.llnw.net/rest</td><td>Then</td><td>featureFiles\setting-up-app-configuration.feature:15</td>
+                         <td>name = target_ele<br />value = URL<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = https://staging-api.lvp.llnw.net/rest<br /></td><td>24.928</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr><td colspan="2" class="line-brk"></td></tr><tr><td class="key">Scenario : </td>
+               <td>Should be able to set Widevine service license proxy URL and portal key</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr><tr><td class="key">Location : </td>
+               <td>featureFiles\setting-up-app-configuration.feature:17</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr><td class="key">Steps : </td><td><table class="stepsTable"><tr><th>Name</th><th>Keyword</th><th>Location</th>
+                                <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                                <th>Status</th><th>Error Message</th></tr>
+                       <tr class="passed">
+                         <td>the application has launched</td><td>Given</td><td>featureFiles\setting-up-app-configuration.feature:18</td>
+                         <td></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set https://staging-wlp.lvp.llnw.net/license as value for License Proxy in SETTINGS page</td><td>When</td><td>featureFiles\setting-up-app-configuration.feature:19</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = https://staging-wlp.lvp.llnw.net/license<br />name = target_ele<br />value = License Proxy<br />name = page_name<br />value = SETTINGS<br /></td><td>132.409</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of License Proxy in SETTINGS page should be https://staging-wlp.lvp.llnw.net/license</td><td>Then</td><td>featureFiles\setting-up-app-configuration.feature:20</td>
+                         <td>name = target_ele<br />value = License Proxy<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = https://staging-wlp.lvp.llnw.net/license<br /></td><td>25.695</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set limelight as value for Portal Key in SETTINGS page</td><td>When</td><td>featureFiles\setting-up-app-configuration.feature:21</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = limelight<br />name = target_ele<br />value = Portal Key<br />name = page_name<br />value = SETTINGS<br /></td><td>59.835</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of Portal Key in SETTINGS page should be limelight</td><td>Then</td><td>featureFiles\setting-up-app-configuration.feature:22</td>
+                         <td>name = target_ele<br />value = Portal Key<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = limelight<br /></td><td>25.107</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr><td colspan="2" class="line-brk"></td></tr><tr><td class="key">Scenario : </td>
+               <td>Should be able to set others data</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr><tr><td class="key">Location : </td>
+               <td>featureFiles\setting-up-app-configuration.feature:24</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr><td class="key">Steps : </td><td><table class="stepsTable"><tr><th>Name</th><th>Keyword</th><th>Location</th>
+                                <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                                <th>Status</th><th>Error Message</th></tr>
+                       <tr class="passed">
+                         <td>the application has launched</td><td>Given</td><td>featureFiles\setting-up-app-configuration.feature:25</td>
+                         <td></td><td>0.002</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select INFO as value for Log level in SETTINGS page</td><td>When</td><td>featureFiles\setting-up-app-configuration.feature:26</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = INFO<br />name = target_ele<br />value = Log level<br />name = page_name<br />value = SETTINGS<br /></td><td>39.772</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of Log level in SETTINGS page should be INFO</td><td>Then</td><td>featureFiles\setting-up-app-configuration.feature:27</td>
+                         <td>name = target_ele<br />value = Log level<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = INFO<br /></td><td>25.474</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>Then</td><td>featureFiles\setting-up-app-configuration.feature:28</td>
+                         <td></td><td>7.236</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr><td colspan="2" class="line-brk"></td></tr></table></td></tr></table><table class="tab-failed feature-table"><tr><td class="key">Feature : </td>
+                       <td><h4>Navigation Feature and data validation</h4></td></tr>
+              <tr><td class="key">Tag</td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location</td>
+                  <td>featureFiles\navigation-feature-data-shown.feature:1</td></tr>
+            
+           <tr class="failed">
+             <td class="key">Overall Status : </td>
+             <td>FAILED</td>
+           </tr>
+        <tr><td class="key">Scenario : </td><td><table><tr><td class="key">Scenario : </td>
+               <td>Should be able to show the appropriate data</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr><tr><td class="key">Location : </td>
+               <td>featureFiles\navigation-feature-data-shown.feature:2</td></tr>
+                <tr class="failed">
+                   <td class="key">Status : </td>
+                   <td>
+                       FAILED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr><td class="key">Steps : </td><td><table class="stepsTable"><tr><th>Name</th><th>Keyword</th><th>Location</th>
+                                <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                                <th>Status</th><th>Error Message</th></tr>
+                       <tr class="passed">
+                         <td>the application has launched</td><td>Given</td><td>featureFiles\navigation-feature-data-shown.feature:3</td>
+                         <td></td><td>30.178</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the CHANNEL GROUPS tab</td><td>When</td><td>featureFiles\navigation-feature-data-shown.feature:4</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = CHANNEL GROUPS<br /></td><td>32.307</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following channel group -</td><td>Then</td><td>featureFiles\navigation-feature-data-shown.feature:5</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = channel group<br /></td><td>12.261</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the ALL CHANNELS tab</td><td>When</td><td>featureFiles\navigation-feature-data-shown.feature:11</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = ALL CHANNELS<br /></td><td>20.482</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="failed">
+                         <td>the CURRENT tab should have following channel -</td><td>Then</td><td>featureFiles\navigation-feature-data-shown.feature:12</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = channel<br /></td><td>19.872</td><td>FAILED</td>
+                         <td>Traceback (most recent call last):<br />  File "E:\FolderStructureLimelight\libehave\model.py", line 1456, in run<br />    match.run(runner.context)<br />  File "E:\FolderStructureLimelight\libehave\model.py", line 1903, in run<br />    self.func(context, *args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 77, in step_impl<br />    LIME_LIGHT_OBJ.check_contains(check_ele, [str(row[table_header.lower()]) for row in context.table], should_equal)<br />  File "E:\FolderStructureLimelight\modules\exception_mod.py", line 19, in wrapper<br />    return fn(*args, **kwargs)<br />  File "E:\FolderStructureLimelight\modules\limelight_mod.py", line 147, in check_contains<br />    raise exception_mod.NotEqualException(varify_data, data_got)<br />NotEqualException: Expected Value: ['Maru Madness', 'Some Sample Videos', 'Kanchan', 'Protected Content'], Got Value: [u'Some Sample Videos', u'Kanchan', u'Protected Content', u'Maru Madnes']</td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I select Rebaca Channel Group as value for channel-group in CHANNEL GROUPS page</td><td>When</td><td>featureFiles\navigation-feature-data-shown.feature:18</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>the CURRENT tab should have following channel -</td><td>Then</td><td>featureFiles\navigation-feature-data-shown.feature:19</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I select Some Sample Videos as value for channel in CHANNELS page</td><td>When</td><td>featureFiles\navigation-feature-data-shown.feature:23</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>the CURRENT tab should have following media -</td><td>Then</td><td>featureFiles\navigation-feature-data-shown.feature:24</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>exit from the application</td><td>Then</td><td>featureFiles\navigation-feature-data-shown.feature:29</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr><td colspan="2" class="line-brk"></td></tr></table></td></tr></table></body></html>

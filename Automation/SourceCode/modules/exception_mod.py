@@ -12,7 +12,7 @@
 """
 import traceback
 import sys
-from logger import error
+from modules.logger import error
 
 # User defined messages
 glue_not_implmnt_static_msg = "Glue code not implemented."
