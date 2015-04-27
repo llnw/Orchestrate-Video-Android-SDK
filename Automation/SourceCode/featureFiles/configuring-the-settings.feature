@@ -8,6 +8,18 @@ Feature: Configuring the Settings
      When I set lR46aeyMmlgTOod17Kl9XqNgaYE= as value for Secret Key in SETTINGS page
      Then value of Secret Key in SETTINGS page should be lR46aeyMmlgTOod17Kl9XqNgaYE=   
 
+    Scenario: Should be able to set web service end point
+    Given the application has launched
+     When I set https://staging-api.lvp.llnw.net/rest as value for URL in SETTINGS page
+     Then value of URL in SETTINGS page should be https://staging-api.lvp.llnw.net/rest
+  
+    Scenario: Should be able to set Widevine service license proxy URL and portal key
+    Given the application has launched
+     When I set https://staging-wlp.lvp.llnw.net/license as value for License Proxy in SETTINGS page
+     Then value of License Proxy in SETTINGS page should be https://staging-wlp.lvp.llnw.net/license
+     When I set limelight as value for Portal Key in SETTINGS page
+     Then value of Portal Key in SETTINGS page should be limelight
+     
     Scenario: I should be able to set the log level in the settings page.
     Given the application has launched
      When I select INFO as value for Log level in SETTINGS page
