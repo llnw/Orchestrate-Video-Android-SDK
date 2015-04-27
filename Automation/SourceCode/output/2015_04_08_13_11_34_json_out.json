@@ -1,0 +1,767 @@
+[
+{
+  "elements": [
+    {
+      "keyword": "Scenario", 
+      "location": "featureFiles\\setting-up-app-configuration.feature:3", 
+      "name": "Should be able to set the organization details", 
+      "steps": [
+        {
+          "keyword": "Given", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:4", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:19"
+          }, 
+          "name": "the application has launched", 
+          "result": {
+            "duration": 31.43400001525879, 
+            "status": "passed"
+          }, 
+          "step_type": "given"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:5", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "set"
+              }, 
+              {
+                "name": "val", 
+                "value": "17fbbde5ce1e43e087bcbfffbf0680ca"
+              }, 
+              {
+                "name": "target_ele", 
+                "value": "Organization ID"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:30"
+          }, 
+          "name": "I set 17fbbde5ce1e43e087bcbfffbf0680ca as value for Organization ID in SETTINGS page", 
+          "result": {
+            "duration": 72.94400000572205, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:6", 
+          "match": {
+            "arguments": [
+              {
+                "name": "target_ele", 
+                "value": "Organization ID"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }, 
+              {
+                "name": "val", 
+                "value": "17fbbde5ce1e43e087bcbfffbf0680ca"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:56"
+          }, 
+          "name": "value of Organization ID in SETTINGS page should be 17fbbde5ce1e43e087bcbfffbf0680ca", 
+          "result": {
+            "duration": 25.944000005722046, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:7", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "set"
+              }, 
+              {
+                "name": "val", 
+                "value": "sB8TWEftj8ZhYXol7pVWFuutJ4M="
+              }, 
+              {
+                "name": "target_ele", 
+                "value": "Access Key"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:30"
+          }, 
+          "name": "I set sB8TWEftj8ZhYXol7pVWFuutJ4M= as value for Access Key in SETTINGS page", 
+          "result": {
+            "duration": 75.23499989509583, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:8", 
+          "match": {
+            "arguments": [
+              {
+                "name": "target_ele", 
+                "value": "Access Key"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }, 
+              {
+                "name": "val", 
+                "value": "sB8TWEftj8ZhYXol7pVWFuutJ4M="
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:56"
+          }, 
+          "name": "value of Access Key in SETTINGS page should be sB8TWEftj8ZhYXol7pVWFuutJ4M=", 
+          "result": {
+            "duration": 25.697999954223633, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:9", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "set"
+              }, 
+              {
+                "name": "val", 
+                "value": "lR46aeyMmlgTOod17Kl9XqNgaYE="
+              }, 
+              {
+                "name": "target_ele", 
+                "value": "Secret Key"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:30"
+          }, 
+          "name": "I set lR46aeyMmlgTOod17Kl9XqNgaYE= as value for Secret Key in SETTINGS page", 
+          "result": {
+            "duration": 73.05700016021729, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:10", 
+          "match": {
+            "arguments": [
+              {
+                "name": "target_ele", 
+                "value": "Secret Key"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }, 
+              {
+                "name": "val", 
+                "value": "lR46aeyMmlgTOod17Kl9XqNgaYE="
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:56"
+          }, 
+          "name": "value of Secret Key in SETTINGS page should be lR46aeyMmlgTOod17Kl9XqNgaYE=", 
+          "result": {
+            "duration": 25.646999835968018, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }
+      ], 
+      "tags": [], 
+      "type": "scenario"
+    }, 
+    {
+      "keyword": "Scenario", 
+      "location": "featureFiles\\setting-up-app-configuration.feature:12", 
+      "name": "Should be able to set web service end point", 
+      "steps": [
+        {
+          "keyword": "Given", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:13", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:19"
+          }, 
+          "name": "the application has launched", 
+          "result": {
+            "duration": 0.0010001659393310547, 
+            "status": "passed"
+          }, 
+          "step_type": "given"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:14", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "set"
+              }, 
+              {
+                "name": "val", 
+                "value": "https://staging-api.lvp.llnw.net/rest"
+              }, 
+              {
+                "name": "target_ele", 
+                "value": "URL"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:30"
+          }, 
+          "name": "I set https://staging-api.lvp.llnw.net/rest as value for URL in SETTINGS page", 
+          "result": {
+            "duration": 113.6399998664856, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:15", 
+          "match": {
+            "arguments": [
+              {
+                "name": "target_ele", 
+                "value": "URL"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }, 
+              {
+                "name": "val", 
+                "value": "https://staging-api.lvp.llnw.net/rest"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:56"
+          }, 
+          "name": "value of URL in SETTINGS page should be https://staging-api.lvp.llnw.net/rest", 
+          "result": {
+            "duration": 24.92799997329712, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }
+      ], 
+      "tags": [], 
+      "type": "scenario"
+    }, 
+    {
+      "keyword": "Scenario", 
+      "location": "featureFiles\\setting-up-app-configuration.feature:17", 
+      "name": "Should be able to set Widevine service license proxy URL and portal key", 
+      "steps": [
+        {
+          "keyword": "Given", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:18", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:19"
+          }, 
+          "name": "the application has launched", 
+          "result": {
+            "duration": 0.0009999275207519531, 
+            "status": "passed"
+          }, 
+          "step_type": "given"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:19", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "set"
+              }, 
+              {
+                "name": "val", 
+                "value": "https://staging-wlp.lvp.llnw.net/license"
+              }, 
+              {
+                "name": "target_ele", 
+                "value": "License Proxy"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:30"
+          }, 
+          "name": "I set https://staging-wlp.lvp.llnw.net/license as value for License Proxy in SETTINGS page", 
+          "result": {
+            "duration": 132.40899991989136, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:20", 
+          "match": {
+            "arguments": [
+              {
+                "name": "target_ele", 
+                "value": "License Proxy"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }, 
+              {
+                "name": "val", 
+                "value": "https://staging-wlp.lvp.llnw.net/license"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:56"
+          }, 
+          "name": "value of License Proxy in SETTINGS page should be https://staging-wlp.lvp.llnw.net/license", 
+          "result": {
+            "duration": 25.694999933242798, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:21", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "set"
+              }, 
+              {
+                "name": "val", 
+                "value": "limelight"
+              }, 
+              {
+                "name": "target_ele", 
+                "value": "Portal Key"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:30"
+          }, 
+          "name": "I set limelight as value for Portal Key in SETTINGS page", 
+          "result": {
+            "duration": 59.83500003814697, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:22", 
+          "match": {
+            "arguments": [
+              {
+                "name": "target_ele", 
+                "value": "Portal Key"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }, 
+              {
+                "name": "val", 
+                "value": "limelight"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:56"
+          }, 
+          "name": "value of Portal Key in SETTINGS page should be limelight", 
+          "result": {
+            "duration": 25.10700011253357, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }
+      ], 
+      "tags": [], 
+      "type": "scenario"
+    }, 
+    {
+      "keyword": "Scenario", 
+      "location": "featureFiles\\setting-up-app-configuration.feature:24", 
+      "name": "Should be able to set others data", 
+      "steps": [
+        {
+          "keyword": "Given", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:25", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:19"
+          }, 
+          "name": "the application has launched", 
+          "result": {
+            "duration": 0.0019998550415039062, 
+            "status": "passed"
+          }, 
+          "step_type": "given"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:26", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "select"
+              }, 
+              {
+                "name": "val", 
+                "value": "INFO"
+              }, 
+              {
+                "name": "target_ele", 
+                "value": "Log level"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:30"
+          }, 
+          "name": "I select INFO as value for Log level in SETTINGS page", 
+          "result": {
+            "duration": 39.77199983596802, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:27", 
+          "match": {
+            "arguments": [
+              {
+                "name": "target_ele", 
+                "value": "Log level"
+              }, 
+              {
+                "name": "page_name", 
+                "value": "SETTINGS"
+              }, 
+              {
+                "name": "val", 
+                "value": "INFO"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:56"
+          }, 
+          "name": "value of Log level in SETTINGS page should be INFO", 
+          "result": {
+            "duration": 25.474000215530396, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\setting-up-app-configuration.feature:28", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:79"
+          }, 
+          "name": "exit from the application", 
+          "result": {
+            "duration": 7.236000061035156, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }
+      ], 
+      "tags": [], 
+      "type": "scenario"
+    }
+  ], 
+  "keyword": "Feature", 
+  "location": "featureFiles\\setting-up-app-configuration.feature:1", 
+  "name": "Setting up the configurations for the application", 
+  "status": "passed", 
+  "tags": []
+},
+
+{
+  "elements": [
+    {
+      "keyword": "Scenario", 
+      "location": "featureFiles\\navigation-feature-data-shown.feature:2", 
+      "name": "Should be able to show the appropriate data", 
+      "steps": [
+        {
+          "keyword": "Given", 
+          "location": "featureFiles\\navigation-feature-data-shown.feature:3", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:19"
+          }, 
+          "name": "the application has launched", 
+          "result": {
+            "duration": 30.17799997329712, 
+            "status": "passed"
+          }, 
+          "step_type": "given"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\navigation-feature-data-shown.feature:4", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "select"
+              }, 
+              {
+                "name": "tab_name", 
+                "value": "CHANNEL GROUPS"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:45"
+          }, 
+          "name": "I select the CHANNEL GROUPS tab", 
+          "result": {
+            "duration": 32.307000160217285, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\navigation-feature-data-shown.feature:5", 
+          "match": {
+            "arguments": [
+              {
+                "name": "check_ele", 
+                "value": "CURRENT tab"
+              }, 
+              {
+                "name": "op", 
+                "value": "have"
+              }, 
+              {
+                "name": "table_header", 
+                "value": "channel group"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:68"
+          }, 
+          "name": "the CURRENT tab should have following channel group -", 
+          "result": {
+            "duration": 12.260999917984009, 
+            "status": "passed"
+          }, 
+          "step_type": "then", 
+          "table": {
+            "headings": [
+              "channel group"
+            ], 
+            "rows": [
+              [
+                "Entertainment"
+              ], 
+              [
+                "Protected Channel"
+              ], 
+              [
+                "Limelight"
+              ], 
+              [
+                "Rebaca Channel Group"
+              ]
+            ]
+          }
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\navigation-feature-data-shown.feature:11", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "select"
+              }, 
+              {
+                "name": "tab_name", 
+                "value": "ALL CHANNELS"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:45"
+          }, 
+          "name": "I select the ALL CHANNELS tab", 
+          "result": {
+            "duration": 20.48200011253357, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\navigation-feature-data-shown.feature:12", 
+          "match": {
+            "arguments": [
+              {
+                "name": "check_ele", 
+                "value": "CURRENT tab"
+              }, 
+              {
+                "name": "op", 
+                "value": "have"
+              }, 
+              {
+                "name": "table_header", 
+                "value": "channel"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:68"
+          }, 
+          "name": "the CURRENT tab should have following channel -", 
+          "result": {
+            "duration": 19.871999979019165, 
+            "error_message": [
+              "Traceback (most recent call last):", 
+              "  File \"E:\\FolderStructureLimelight\\lib\behave\\model.py\", line 1456, in run", 
+              "    match.run(runner.context)", 
+              "  File \"E:\\FolderStructureLimelight\\lib\behave\\model.py\", line 1903, in run", 
+              "    self.func(context, *args, **kwargs)", 
+              "  File \"steps\\limelight_glue_code.py\", line 77, in step_impl", 
+              "    LIME_LIGHT_OBJ.check_contains(check_ele, [str(row[table_header.lower()]) for row in context.table], should_equal)", 
+              "  File \"E:\\FolderStructureLimelight\\modules\\exception_mod.py\", line 19, in wrapper", 
+              "    return fn(*args, **kwargs)", 
+              "  File \"E:\\FolderStructureLimelight\\modules\\limelight_mod.py\", line 147, in check_contains", 
+              "    raise exception_mod.NotEqualException(varify_data, data_got)", 
+              "NotEqualException: Expected Value: ['Maru Madness', 'Some Sample Videos', 'Kanchan', 'Protected Content'], Got Value: [u'Some Sample Videos', u'Kanchan', u'Protected Content', u'Maru Madnes']"
+            ], 
+            "status": "failed"
+          }, 
+          "step_type": "then", 
+          "table": {
+            "headings": [
+              "channel"
+            ], 
+            "rows": [
+              [
+                "Maru Madness"
+              ], 
+              [
+                "Some Sample Videos"
+              ], 
+              [
+                "Kanchan"
+              ], 
+              [
+                "Protected Content"
+              ]
+            ]
+          }
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\navigation-feature-data-shown.feature:18", 
+          "name": "I select Rebaca Channel Group as value for channel-group in CHANNEL GROUPS page", 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\navigation-feature-data-shown.feature:19", 
+          "name": "the CURRENT tab should have following channel -", 
+          "step_type": "then", 
+          "table": {
+            "headings": [
+              "channel"
+            ], 
+            "rows": [
+              [
+                "Some Sample Videos"
+              ], 
+              [
+                "Maru Madness"
+              ]
+            ]
+          }
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\navigation-feature-data-shown.feature:23", 
+          "name": "I select Some Sample Videos as value for channel in CHANNELS page", 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\navigation-feature-data-shown.feature:24", 
+          "name": "the CURRENT tab should have following media -", 
+          "step_type": "then", 
+          "table": {
+            "headings": [
+              "media"
+            ], 
+            "rows": [
+              [
+                "Sintel Trailer"
+              ], 
+              [
+                "Tears of Steel Trailer"
+              ], 
+              [
+                "5ms of Black"
+              ]
+            ]
+          }
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\navigation-feature-data-shown.feature:29", 
+          "name": "exit from the application", 
+          "step_type": "then"
+        }
+      ], 
+      "tags": [], 
+      "type": "scenario"
+    }
+  ], 
+  "keyword": "Feature", 
+  "location": "featureFiles\\navigation-feature-data-shown.feature:1", 
+  "name": "Navigation Feature and data validation", 
+  "status": "failed", 
+  "tags": []
+}
+]
