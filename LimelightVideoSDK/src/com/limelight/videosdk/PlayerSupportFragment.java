@@ -107,7 +107,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         mPlayerLayout.setGravity(Gravity.CENTER);
         mPlayerView = new VideoPlayerView(getActivity());
         mMediaController = new MediaControl(getActivity(), true);
-        final Toast toast = Toast.makeText(getActivity(), "Please Add FullScreenPlayer Activity In Manifest !", Toast.LENGTH_SHORT);
+        final Toast toast = Toast.makeText(getActivity(), "Please Add FullScreenPlayer Activity In Manifest !", Toast.LENGTH_LONG);
         mMediaController.setFullScreenCallback(new FullScreenCallback() {
             @Override
             public void fullScreen() {
@@ -115,15 +115,14 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 i.putExtra("URI",mUri.toString());
                 i.putExtra("POSITION",mPlayerView.getCurrentPosition());
                 i.putExtra("STATE",mPlayerView.mPlayerState.name());
-                if(i.resolveActivity(getActivity().getPackageManager())!= null){
+                try{
                     getActivity().startActivity(i);
                     mPlayerControl.pause();
-                }else{
-                    if (mPlayerCallback != null) {
-                        mLogger.error("Please Add FullScreenPlayer Activity In Manifest !");
-                        if(!toast.getView().isShown()){
-                            toast.show();
-                        }
+                }catch(Exception ex){
+                    if(ex != null)
+                        mLogger.error(ex.getMessage());
+                    if(!toast.getView().isShown()){
+                        toast.show();
                     }
                 }
             }
