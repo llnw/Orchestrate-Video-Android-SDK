@@ -1085,7 +1085,7 @@ public class ContentService {
      * @throws Exception
      */
     public void searchMediaAsync(boolean isLoadMore,String operator,String title,String description,String originalFilename,
-            String tag,String state,String mediaType,String channelId,String created_after, String updated_after, String published_after,final MediaCallback callback) throws Exception{
+            String tag,String state,String mediaType,String channelId,String createdAfter, String updatedAfter, String publishedAfter,final MediaCallback callback) throws Exception{
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
             callback.onError(new Throwable("Please Ensure Organization ID, Access key And Secret Are Set."));
@@ -1121,12 +1121,12 @@ public class ContentService {
                     searchStr.append(String.format("%s:%s;", Constants.MEDIA_TYPE,mediaType));
                 if(channelId!= null)
                     searchStr.append(String.format("%s:%s;", Constants.CHANNEL_ID,channelId));
-                if(created_after!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.CREATED_AFTER,created_after));
-                if(updated_after!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.UPDATED_AFTER,updated_after));
-                if(published_after!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.PUBLISHED_AFTER,published_after));
+                if(createdAfter!= null)
+                    searchStr.append(String.format("%s:%s;", Constants.CREATED_AFTER,createdAfter));
+                if(updatedAfter!= null)
+                    searchStr.append(String.format("%s:%s;", Constants.UPDATED_AFTER,updatedAfter));
+                if(publishedAfter!= null)
+                    searchStr.append(String.format("%s:%s;", Constants.PUBLISHED_AFTER,publishedAfter));
                 if(searchStr!= null)
                     searchStr.deleteCharAt(searchStr.length()-1);
                 HashMap<String, String> params = new HashMap<String, String>();
