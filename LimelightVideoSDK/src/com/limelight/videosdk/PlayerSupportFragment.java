@@ -209,8 +209,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     public void onResume() {
         super.onResume();
         if (mPlayerView != null) {
-            if(mPlayerView.mPlayerState != PlayerState.stopped){
-                mPlayerView.seekTo(mPosition);
+            if(mPlayerView.mPlayerState!= PlayerState.stopped){
+                if(mPlayerView.canSeekBackward() || mPlayerView.canSeekForward()){
+                    mPlayerView.seekTo(mPosition);
+                }
             }
         }
     }

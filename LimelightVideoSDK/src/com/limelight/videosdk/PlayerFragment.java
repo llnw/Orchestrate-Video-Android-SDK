@@ -111,7 +111,6 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         mPlayerView = new VideoPlayerView(getActivity());
         mMediaController = new MediaControl(getActivity(), true);
         mMediaController.setAnchorView(mPlayerView);//Not setting the media controller, setting media controller here results in issue when resumed back from home key press.
-
         final Toast toast = Toast.makeText(getActivity(), "Please Add FullScreenPlayer Activity In Manifest !", Toast.LENGTH_LONG);
         mMediaController.setFullScreenCallback(new FullScreenCallback() {
             @Override
@@ -210,8 +209,10 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     public void onResume() {
         super.onResume();
         if (mPlayerView != null) {
-            if(mPlayerView.mPlayerState != PlayerState.stopped){
-                mPlayerView.seekTo(mPosition);
+            if(mPlayerView.mPlayerState!= PlayerState.stopped){
+                if(mPlayerView.canSeekBackward() || mPlayerView.canSeekForward()){
+                    mPlayerView.seekTo(mPosition);
+                }
             }
         }
     }

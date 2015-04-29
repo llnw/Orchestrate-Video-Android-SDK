@@ -7,9 +7,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.log4j.Logger;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +19,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
-
 import com.google.gson.JsonObject;
 import com.limelight.videosdk.utility.Connection;
 import com.limelight.videosdk.utility.Setting;
@@ -74,15 +71,19 @@ public class AnalyticsReporter {
     void sendStartSession(){
         JsonObject obj = new JsonObject();
         obj.addProperty("appName", mAppName);
+        obj.addProperty("userId", mUserId);
+        obj.addProperty("millisecondsElapsed", 0);
+        obj.addProperty("platform", mPlatform);
+        obj.addProperty("mediaId", "");
+        obj.addProperty("osVersion", mOsVersion);
         obj.addProperty("appVersion",mAppVersion);
+        obj.addProperty("playerProviderId", mPlayerProviderId);
+        obj.addProperty("version", mVersion);
+        obj.addProperty("channelId", "");
         obj.addProperty("deviceMake", mDeviceMake);
         obj.addProperty("deviceModel", mDeviceModel);
-        obj.addProperty("osVersion", mOsVersion);
-        obj.addProperty("platform", mPlatform);
-        obj.addProperty("playerProviderId", mPlayerProviderId);
-        obj.addProperty("userId", mUserId);
-        obj.addProperty("version", mVersion);
-        addAnalyticsData("StartSession",obj,null,null);
+        obj.addProperty("channelListId", "");
+        addAnalyticsData("StartSession",obj);
         post(obj);
     }
 
@@ -94,8 +95,18 @@ public class AnalyticsReporter {
      */
     void sendPlayWithPosition(long position,String mediaId,String channelId){
         JsonObject obj = new JsonObject();
-        obj.addProperty("positionInMilliseconds", ""+position);
-        addAnalyticsData("Play",obj,mediaId,channelId);
+        obj.addProperty("channelListId", "");
+        if(channelId==null)
+            obj.addProperty("channelId", "");
+        else
+            obj.addProperty("channelId", channelId);
+        obj.addProperty("millisecondsElapsed", (System.currentTimeMillis()-mStartTime));
+        if(mediaId == null)
+            obj.addProperty("mediaId", "");
+        else
+            obj.addProperty("mediaId", mediaId);
+        obj.addProperty("positionInMilliseconds", position);
+        addAnalyticsData("Play",obj);
         post(obj);
     }
 
@@ -107,8 +118,18 @@ public class AnalyticsReporter {
      */
     void sendPauseWithPosition (long position,String mediaId,String channelId){
         JsonObject obj = new JsonObject();
-        obj.addProperty("positionInMilliseconds", ""+position);
-        addAnalyticsData("Pause", obj,mediaId,channelId);
+        obj.addProperty("channelListId", "");
+        if(channelId==null)
+            obj.addProperty("channelId", "");
+        else
+            obj.addProperty("channelId", channelId);
+        obj.addProperty("millisecondsElapsed", (System.currentTimeMillis()-mStartTime));
+        if(mediaId == null)
+            obj.addProperty("mediaId", "");
+        else
+            obj.addProperty("mediaId", mediaId);
+        obj.addProperty("positionInMilliseconds", position);
+        addAnalyticsData("Pause", obj);
         post(obj);
     }
 
@@ -121,13 +142,23 @@ public class AnalyticsReporter {
      */
     void sendSeekWithPositionBefore(long positionBefore,long positionAfter,String mediaId,String channelId){
         JsonObject obj = new JsonObject();
+        if(mediaId == null)
+            obj.addProperty("mediaId", "");
+        else
+            obj.addProperty("mediaId", mediaId);
         obj.addProperty("offsetBefore", positionBefore);
-        obj.addProperty("offsetAfter",positionAfter);
-        obj.addProperty("heatmapDisplayed", "NO");
-        obj.addProperty("spectrumType", "");
+        obj.addProperty("channelListId", "");
+        obj.addProperty("millisecondsElapsed", (System.currentTimeMillis()-mStartTime));
         obj.addProperty("spectrumColor", "0");
         obj.addProperty("relatedConcepts", "");
-        addAnalyticsData("Seek",obj,mediaId,channelId);
+        obj.addProperty("spectrumType", "");
+        if(channelId==null)
+            obj.addProperty("channelId", "");
+        else
+            obj.addProperty("channelId", channelId);
+        obj.addProperty("offsetAfter",positionAfter);
+        obj.addProperty("heatmapDisplayed", false);
+        addAnalyticsData("Seek",obj);
         post(obj);
     }
 
@@ -138,7 +169,17 @@ public class AnalyticsReporter {
      */
     void sendMediaComplete(String mediaId,String channelId){
         JsonObject obj = new JsonObject();
-        addAnalyticsData("MediaComplete",obj,mediaId,channelId);
+        if(channelId==null)
+            obj.addProperty("channelId", "");
+        else
+            obj.addProperty("channelId", channelId);
+        obj.addProperty("millisecondsElapsed", (System.currentTimeMillis()-mStartTime));
+        if(mediaId == null)
+            obj.addProperty("mediaId", "");
+        else
+            obj.addProperty("mediaId", mediaId);
+        obj.addProperty("channelListId", "");
+        addAnalyticsData("MediaComplete",obj);
         post(obj);
     }
 
@@ -149,24 +190,14 @@ public class AnalyticsReporter {
      * @param mediaId Media ID for media which is being played
      * @param channelId Channel ID for the media being played.
      */
-    void addAnalyticsData(String eventType,JsonObject data, String mediaId, String channelId){
+    void addAnalyticsData(String eventType,JsonObject data){
         System.out.println(TAG +" Event type: "+eventType);
-        data.addProperty("millisecondsElapsed", ""+(System.currentTimeMillis()-mStartTime));
-        if(mediaId == null)
-            data.addProperty("mediaId", "");
-        else
-            data.addProperty("mediaId", mediaId);
-        if(channelId==null)
-            data.addProperty("channelId", "");
-        else
-            data.addProperty("channelId", channelId);
-        data.addProperty("channelListId", "");
         mAnalyticsData = new JsonObject();
         mAnalyticsData.addProperty("eventType", eventType);
         mAnalyticsData.addProperty("source", "Limelight Android Player");
-        mAnalyticsData.addProperty("sourceInstanceId", mSourceInstanceId);
-        mAnalyticsData.addProperty("sourceVersion", "1");
         mAnalyticsData.add("data", data);
+        mAnalyticsData.addProperty("sourceInstanceId", mSourceInstanceId);
+        mAnalyticsData.addProperty("sourceVersion", 1);
     }
 
     public void pause(){

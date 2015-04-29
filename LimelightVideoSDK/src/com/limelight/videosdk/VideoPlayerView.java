@@ -59,7 +59,7 @@ class VideoPlayerView extends VideoView{
         super.start();
         mPlayerState = PlayerState.playing;
         if (mListener != null) {
-                mListener.onMediaControllerPlay(this.getCurrentPosition());
+            mListener.onMediaControllerPlay(this.getCurrentPosition());
         }
     }
 }
