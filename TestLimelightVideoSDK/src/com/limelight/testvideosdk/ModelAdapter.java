@@ -21,13 +21,14 @@ import com.limelight.videosdk.utility.Downloader;
 import com.limelight.videosdk.utility.Thumbnail;
 
 public class ModelAdapter extends BaseAdapter {
-    private ArrayList<String> mLisArrayList;
+    private ArrayList<String> mTitleList;
     private ArrayList<Uri> mUriList;
     private FragmentActivity mFragmentActivity;
     private Bitmap mLoadingBitmap = null;
     private Downloader mDownloader = null;
     private int mModelType = -1;
     private PlaylistCallback mCallback;
+    private ArrayList<String> mMediaIdList;
 
     public ModelAdapter(FragmentActivity mActivity) {
         mFragmentActivity = mActivity;
@@ -44,13 +45,14 @@ public class ModelAdapter extends BaseAdapter {
         mCallback = cb;
     }
 
-    public void setData(ArrayList<String> list, ArrayList<Uri> uri){
+    public void setData(ArrayList<String> list, ArrayList<Uri> uri,ArrayList<String> mediaIds){
         mUriList = uri;
-        mLisArrayList = list;
+        mTitleList = list;
+        mMediaIdList = mediaIds;
     }
 
     public ModelAdapter(FragmentActivity mActivity, ArrayList<String> mList, ArrayList<Uri> mUri) {
-        mLisArrayList = mList;
+        mTitleList = mList;
         mFragmentActivity = mActivity;
         mUriList = mUri;
         mLoadingBitmap = BitmapFactory.decodeResource(mFragmentActivity.getResources(), android.R.drawable.ic_menu_gallery);
@@ -59,12 +61,12 @@ public class ModelAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mLisArrayList == null ? 0 : mLisArrayList.size();
+        return mTitleList == null ? 0 : mTitleList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mLisArrayList == null ? null : mLisArrayList.get(position);
+        return mTitleList == null ? null : mTitleList.get(position);
     }
 
     @Override
@@ -96,9 +98,9 @@ public class ModelAdapter extends BaseAdapter {
             rowView.setTag(viewHolder);
         }
         final ViewHolder holder = (ViewHolder) rowView.getTag();
-        holder.mTextView.setText(mLisArrayList.get(position));
+        holder.mTextView.setText(mTitleList.get(position));
         if(mUriList.get(position)!= null){
-            mDownloader.startDownload(mUriList.get(position).toString(), null, null, new Downloader.DownLoadCallback(){
+            mDownloader.startDownload(mUriList.get(position).toString(), null, null, mMediaIdList.get(position),new Downloader.DownLoadCallback(){
                 @Override
                 public void onSuccess(String path) {
                     Thumbnail t = new Thumbnail();

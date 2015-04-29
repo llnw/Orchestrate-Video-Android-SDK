@@ -177,9 +177,9 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
 
         @Override
         public ModelHolder loadInBackground() {
-            ArrayList<String> data = new ArrayList<String>();
+            ArrayList<String> titleList = new ArrayList<String>();
             ArrayList<Uri> urls = new ArrayList<Uri>();
-
+            ArrayList<String> mediaIds = new ArrayList<String>();
             try {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
                 String orgId = preferences.getString(mContext.getResources().getString(R.string.OrgIDEditPrefKey), null);
@@ -199,13 +199,15 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
                 return mHolder;
             }
             for(int i = 0; i<mMedias.size() ;i++){
-                data.add(mMedias.get(i).mTitle);
+                titleList.add(mMedias.get(i).mTitle);
                 MediaThumbnail t = mMedias.get(i).mThumbnail;
                 if(t!= null)
                     urls.add((t.mUrl));
+                mediaIds.add(mMedias.get(i).mMediaID);
             }
-            mHolder.setData(data);
+            mHolder.setTitles(titleList);
             mHolder.setUrls(urls);
+            mHolder.setIds(mediaIds);
             return mHolder;
         }
 
@@ -232,7 +234,7 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
             setEmptyText("No Media Found");
             mSwipeLayout.setEnabled(true);
         }
-        mAdapter.setData(arg1.getData(),arg1.getUrls());
+        mAdapter.setData(arg1.getTitles(),arg1.getUrls(),arg1.getIds());
         mAdapter.notifyDataSetChanged();
         setListShown(true);
         mSwipeLayout.setRefreshing(false);
@@ -240,6 +242,7 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoaderReset(Loader<ModelHolder> arg0) {
+        mAdapter.setData(null, null, null);
         mListView.setAdapter(null);
     }
 

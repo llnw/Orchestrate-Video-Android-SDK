@@ -203,8 +203,11 @@ public class ContentService {
                    exception = new Exception("Authentication Failed !");
                }
                catch(IOException e){
-                   JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                   String error = parseError(reader);
+                   String error = null;
+                   if(urlConnection != null){
+                       JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                       error = parseError(reader);
+                   }
                    exception = new Exception(error!= null? error:"Connection Error !");
                }
                finally {
@@ -276,8 +279,11 @@ public class ContentService {
                                 throwable = new Throwable("Invalid Thumbnail URL !");
                             }
                             catch (IOException e) {
-                                JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                                String error = parseError(reader);
+                                String error = null;
+                                if(urlConnection != null){
+                                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                                    error = parseError(reader);
+                                }
                                 throwable = new Throwable(error!= null? error:"Connection Error !");
                             }
                             finally {
@@ -356,8 +362,11 @@ public class ContentService {
                     exception = new Exception("Failed To Append Paging Parameter !");
                 }
                 catch (IOException e) {
-                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                    String error = parseError(reader);
+                    String error = null;
+                    if(urlConnection != null){
+                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                        error = parseError(reader);
+                    }
                     exception = new Exception(error!= null? error:"Connection Error !");
                 }
                 finally {
@@ -433,8 +442,11 @@ public class ContentService {
                             throwable = new Throwable("Invalid Thumbnail URL !");
                         }
                         catch (IOException e) {
-                            JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                            String error = parseError(reader);
+                            String error = null;
+                            if(urlConnection != null){
+                                JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                                error = parseError(reader);
+                            }
                             throwable = new Throwable(error!= null? error:"Connection Error !");
                         }
                         finally {
@@ -513,8 +525,11 @@ public class ContentService {
                     exception = new Exception("Authentication Failed !");
                 }
                 catch(IOException e){
-                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                    String error = parseError(reader);
+                    String error = null;
+                    if(urlConnection != null){
+                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                        error = parseError(reader);
+                    }
                     exception = new Exception(error!= null? error:"Connection Error !");
                 }
                 finally {
@@ -586,8 +601,11 @@ public class ContentService {
                                 throwable = new Throwable("Invalid Thumbnail URL !");
                             }
                             catch (IOException e) {
-                                JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                                String error = parseError(reader);
+                                String error = null;
+                                if(urlConnection != null){
+                                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                                    error = parseError(reader);
+                                }
                                 throwable = new Throwable(error!= null? error:"Connection Error !");
                             }
                             finally {
@@ -666,8 +684,11 @@ public class ContentService {
                     exception = new Exception("Invalid Thumbnail URL !");
                 }
                 catch (IOException e) {
-                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                    String error = parseError(reader);
+                    String error = null;
+                    if(urlConnection != null){
+                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                        error = parseError(reader);
+                    }
                     exception = new Exception(error!= null? error:"Connection Error !");
                 }
                 finally {
@@ -743,8 +764,11 @@ public class ContentService {
                             throwable = new Throwable("Invalid Thumbnail URL !");
                         }
                         catch (IOException e) {
-                            JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                            String error = parseError(reader);
+                            String error = null;
+                            if(urlConnection != null){
+                                JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                                error = parseError(reader);
+                            }
                             throwable = new Throwable(error!= null? error:"Connection Error !");
                         }
                         finally {
@@ -822,8 +846,11 @@ public class ContentService {
                     exception = new Exception("Authentication Failed !");
                 }
                 catch(IOException e){
-                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                    String error = parseError(reader);
+                    String error = null;
+                    if(urlConnection != null){
+                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                        error = parseError(reader);
+                    }
                     exception = new Exception(error!= null? error:"Connection Error !");
                 }
                 finally {
@@ -895,8 +922,11 @@ public class ContentService {
                                 throwable = new Throwable("Invalid Thumbnail URL !");
                             }
                             catch (IOException e) {
-                                JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                                String error = parseError(reader);
+                                String error = null;
+                                if(urlConnection != null){
+                                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                                    error = parseError(reader);
+                                }
                                 throwable = new Throwable(error!= null? error:"Connection Error !");
                             }
                             finally {
@@ -1013,8 +1043,11 @@ public class ContentService {
                     exception = new Exception("Authentication Failed !");
                 }
                 catch(IOException e){
-                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                    String error = parseError(reader);
+                    String error = null;
+                    if(urlConnection != null){
+                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                        error = parseError(reader);
+                    }
                     exception = new Exception(error!= null? error:"Connection Error !");
                 }
                 finally {
@@ -1124,8 +1157,11 @@ public class ContentService {
                                 throwable = new Throwable("Invalid Request URL !");
                             }
                             catch (IOException e) {
-                                JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                                String error = parseError(reader);
+                                String error = null;
+                                if(urlConnection != null){
+                                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                                    error = parseError(reader);
+                                }
                                 throwable = new Throwable(error!= null? error:"Connection Error !");
                             }
                             finally {
@@ -1182,8 +1218,11 @@ public class ContentService {
                             callback.onError(new Throwable("Invalid Request URL !"));
                         } 
                         catch (IOException e) {
-                            JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                            String error = parseError(reader);
+                            String error = null;
+                            if(urlConnection != null){
+                                JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                                error = parseError(reader);
+                            }
                             callback.onError(new Throwable(error!= null? error:"Connection Error !"));
                         }
                         finally {
@@ -1232,8 +1271,11 @@ public class ContentService {
                             callback.onError(new Throwable("Invalid Thumbnail URL !"));
                         }
                         catch (IOException e) {
-                            JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                            String error = parseError(reader);
+                            String error = null;
+                            if(urlConnection != null){
+                                JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                                error = parseError(reader);
+                            }
                             callback.onError(new Throwable(error!= null? error:"Connection Error !"));
                         }
                         finally {
@@ -1293,8 +1335,11 @@ public class ContentService {
                                 callback.onError(new Throwable("Invalid Media Id !"));
                             }
                             catch (IOException e) {
-                                JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
-                                String error = parseError(reader);
+                                String error = null;
+                                if(urlConnection != null){
+                                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                                    error = parseError(reader);
+                                }
                                 callback.onError(new Throwable(error!= null? error:"Connection Error !"));
                             }
                             finally {

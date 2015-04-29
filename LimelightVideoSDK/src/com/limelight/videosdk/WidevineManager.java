@@ -139,7 +139,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         mLogger.debug(TAG + " widevine download url : " + url + " saveDirLocation :" + saveDirLocation + " mediaId :" + mediaId);
         mDownloadingUrl = url;
         mWidevineDownloader = new Downloader((Activity) mContext);
-        mWidevineDownloader.startDownload(url, "video/wvm", saveDirLocation, new DownLoadCallback(){
+        mWidevineDownloader.startDownload(url, "video/wvm", saveDirLocation, mediaId,new DownLoadCallback(){
 
             @Override
             public void onSuccess(String path) {

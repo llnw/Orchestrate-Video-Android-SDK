@@ -6,20 +6,31 @@ import android.net.Uri;
 
 public class ModelHolder {
 
-    ArrayList<String> mListStrings = new ArrayList<String>();
-    ArrayList<Uri> mListThumbUrls = new ArrayList<Uri>();
-    public void setData(ArrayList<String> temp) {
-        mListStrings = temp;
+    ArrayList<String> mTitleList = new ArrayList<String>();
+    ArrayList<Uri> mThumbnailUrlList = new ArrayList<Uri>();
+    ArrayList<String> mIdList = new ArrayList<String>();
+
+    public void setTitles(ArrayList<String> titleList) {
+        mTitleList = titleList;
     }
 
-    public ArrayList<String> getData() {
-        return mListStrings;
+    public ArrayList<String> getTitles() {
+        return mTitleList;
     }
+
     public void setUrls(ArrayList<Uri> temp) {
-        mListThumbUrls = temp;
+        mThumbnailUrlList = temp;
     }
 
     public ArrayList<Uri> getUrls() {
-        return mListThumbUrls;
+        return mThumbnailUrlList;
+    }
+
+    public void setIds(ArrayList<String> idList) {
+        mIdList = idList;
+    }
+
+    public ArrayList<String> getIds() {
+        return mIdList;
     }
 }

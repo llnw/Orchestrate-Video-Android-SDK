@@ -3,6 +3,7 @@ package com.limelight.videosdk;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.VideoView;
+import com.limelight.videosdk.Constants.PlayerState;
 
 /**
  * This class is a wrapper around the android player default player view.
@@ -14,7 +15,7 @@ import android.widget.VideoView;
 class VideoPlayerView extends VideoView{
 
     private IMediaControllerCallback mListener;
-    
+    public PlayerState mPlayerState = PlayerState.stopped;
     public VideoPlayerView(Context context) {
         super(context);
         
@@ -44,6 +45,7 @@ class VideoPlayerView extends VideoView{
 
     @Override
     public void pause() {
+        mPlayerState = PlayerState.paused;
         if(this.isPlaying()){
             super.pause();
             if (mListener != null) {
@@ -55,8 +57,8 @@ class VideoPlayerView extends VideoView{
     @Override
     public void start() {
         super.start();
+        mPlayerState = PlayerState.playing;
         if (mListener != null) {
-            if(this.getCurrentPosition() != 0)
                 mListener.onMediaControllerPlay(this.getCurrentPosition());
         }
     }
