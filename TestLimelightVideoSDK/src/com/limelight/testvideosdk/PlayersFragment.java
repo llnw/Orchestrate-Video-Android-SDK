@@ -77,6 +77,37 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             @Override
             public void removeFromPlaylist(int position) {
                 PlayersFragment.this.removeFromPlaylist(mPlayList.get(position));
+                if(mCurrentPlayPosition == position)
+                {
+                        if(mControl != null)
+                            mControl.stop();
+                    if(mPlayList.size() ==0)
+                    {
+                        mCurrentPlayPosition = -1;
+                    }
+                    else
+                    {
+                        if(mAutoPlayCheck.isChecked() && (mCurrentPlayPosition +1) < mPlayList.size()){
+                            mPlayListAdapter.setCurrentPlayingPosition(mCurrentPlayPosition);
+                            mPlayListAdapter.notifyDataSetChanged();
+                            mPlayListView.setSelection(mCurrentPlayPosition);
+                            if(mControl != null){
+                                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                                String orgId = preferences.getString(getActivity().getResources().getString(R.string.OrgIDEditPrefKey), null);
+                                String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
+                                String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
+                                ContentService contentService = new ContentService(getActivity(),orgId,accessKey,secret);
+                                mControl.play(mPlayList.get(mCurrentPlayPosition).mMediaID,contentService);
+                                showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
+                            }
+                        }
+                        else
+                        {
+                            mPlayListAdapter.setCurrentPlayingPosition(-1);
+                            mPlayListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
             }
 
             @Override

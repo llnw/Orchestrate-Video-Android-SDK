@@ -1458,7 +1458,8 @@ public class ContentService {
                     url = encodingObject.get(Constants.URL).getAsString();
             }
             if("null".equalsIgnoreCase(url)|| url == null){
-                url = encodingObject.get(Constants.MASTER_PLAYLIST_URL).getAsString();
+                if(!(encodingObject.get(Constants.MASTER_PLAYLIST_URL).isJsonNull()))
+                    url = encodingObject.get(Constants.MASTER_PLAYLIST_URL).getAsString();
             }
             mLogger.error(TAG + " Unsupported URL : "+url);
             //some cases only rtmp is present, dont add the encoding

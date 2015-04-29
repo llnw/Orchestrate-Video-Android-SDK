@@ -6,12 +6,22 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.log4j.Logger;
+
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
+
 import com.google.gson.JsonObject;
 import com.limelight.videosdk.utility.Connection;
 import com.limelight.videosdk.utility.Setting;
@@ -45,10 +55,17 @@ public class AnalyticsReporter {
     private Context mContext;;
     private JsonObject mAnalyticsData;
     private String mSourceInstanceId;
+    private RequestExecutor mRequestExecutor;
+    private BroadcastReceiver mConnectionReceiver = null;
+    private IntentFilter mConnectionChangeFilter = null;
+    private Logger mLogger=  null;
+    private final int MAX_THREAD_COUNT = 1;
 
     public AnalyticsReporter(Context ctx) {
         mContext = ctx;
         init();
+        mRequestExecutor= new RequestExecutor(MAX_THREAD_COUNT);
+        mLogger = LoggerUtil.getLogger(ctx,LoggerUtil.sLoggerName);
     }
 
     /**
@@ -151,37 +168,48 @@ public class AnalyticsReporter {
         mAnalyticsData.addProperty("sourceVersion", "1");
         mAnalyticsData.add("data", data);
     }
-    
-    void post(final JsonObject obj){
 
-        if(Connection.isConnected(mContext)){
-            new Thread(){
-                @Override
-                public void run() {
-                    HttpURLConnection urlConnection;
-                    try {
-                        byte[] data = mAnalyticsData.toString().getBytes("UTF-8");
-                        urlConnection = (HttpURLConnection) new URL(Setting.getAnalyticsEndPoint()).openConnection();
-                        urlConnection.setRequestMethod("POST");
-                        urlConnection.setRequestProperty("Content-Type", "application/json");
-                        urlConnection.setRequestProperty("Content-Length", "" + data.length);
-                        urlConnection.setRequestProperty("Content-Language", "en-US");  
-                        urlConnection.setUseCaches (false);
-                        urlConnection.setDoInput(true);
-                        urlConnection.setDoOutput(true);
-                        DataOutputStream str = new DataOutputStream(urlConnection.getOutputStream());
-                        str.write(data);
-                        str.flush();
-                        str.close();
-                        System.out.println(TAG+" ResponseCode: "+urlConnection.getResponseCode());
-                    } catch (ProtocolException e) {
-                        e.printStackTrace();
-                    }catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            }.start();
+    public void pause(){
+        mRequestExecutor.pause();
+    }
+
+    public void resume(){
+        mRequestExecutor.resume();
+    }
+
+    void post(final JsonObject obj){
+        if(Connection.isConnected(mContext) == false)
+        {
+            pause();
         }
+        Runnable reqRunnable =  new Runnable() {
+
+            @Override
+            public void run() {
+                HttpURLConnection urlConnection;
+                try {
+                    byte[] data = mAnalyticsData.toString().getBytes("UTF-8");
+                    urlConnection = (HttpURLConnection) new URL(Setting.getAnalyticsEndPoint()).openConnection();
+                    urlConnection.setRequestMethod("POST");
+                    urlConnection.setRequestProperty("Content-Type", "application/json");
+                    urlConnection.setRequestProperty("Content-Length", "" + data.length);
+                    urlConnection.setRequestProperty("Content-Language", "en-US");  
+                    urlConnection.setUseCaches (false);
+                    urlConnection.setDoInput(true);
+                    urlConnection.setDoOutput(true);
+                    DataOutputStream str = new DataOutputStream(urlConnection.getOutputStream());
+                    str.write(data);
+                    str.flush();
+                    str.close();
+                    System.out.println(TAG+" ResponseCode: "+urlConnection.getResponseCode());
+                } catch (ProtocolException e) {
+                    e.printStackTrace();
+                }catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        };
+        mRequestExecutor.execute(reqRunnable);
     }
 
     /**
@@ -214,5 +242,48 @@ public class AnalyticsReporter {
         mVersion = "0.4";
         mStartTime = System.currentTimeMillis();
         mSourceInstanceId = UUID.randomUUID().toString();
+        if(mConnectionReceiver == null)
+        {
+            mConnectionReceiver = new BroadcastReceiver(){
+                @Override
+                public void onReceive(Context ctx, Intent intent) {
+                    mLogger.debug(TAG + "Reached onReceive, there is a change in internet connection");
+                    if(intent.getExtras() != null)
+                    {
+                        ConnectivityManager connMgr = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+                        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                        if(networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
+                        {
+                            //Network is connected
+                            mLogger.debug(TAG + "Connected to network");
+                            resume();
+                        }
+                        else
+                        {
+                            //No network connectivity
+                            mLogger.debug(TAG + "No network connectivity");
+                            pause();
+                        }
+                    }
+                }
+            };
+        }//end of if
+        mConnectionChangeFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+        mContext.registerReceiver(mConnectionReceiver, mConnectionChangeFilter);
+    }
+
+    void unregisterReceiver(){
+        mContext.unregisterReceiver(mConnectionReceiver);
+
+        //mRequestExecutor.resume();
+        mRequestExecutor.shutdown();
+        //Wait for the current running tasks 
+        try {
+            mRequestExecutor.awaitTermination(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        //Interrupt the threads and shutdown the reqExecutor
+        mRequestExecutor.shutdownNow();
     }
 }

@@ -21,7 +21,9 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
@@ -84,6 +86,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     private WidevineManager mWidevineManager = null;
     private AnalyticsReporter mReporter = null;
     private String mMediaId = null;
+    private boolean mIsMediacontrollerRemoved = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,8 +105,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         mPlayerLayout.setGravity(Gravity.CENTER);
         mPlayerView = new VideoPlayerView(getActivity());
         mMediaController = new MediaController(getActivity(), true);
-        mMediaController.setAnchorView(mPlayerView);
-        mPlayerView.setMediaController(mMediaController);
+        mMediaController.setAnchorView(mPlayerView);//Not setting the media controller, setting media controller here results in issue when resumed back from home key press.
         mPlayerLayout.addView(mPlayerView);
         mPlayerView.setOnErrorListener(this);
         mPlayerView.setOnCompletionListener(this);
@@ -111,6 +113,16 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         mLogger = LoggerUtil.getLogger(getActivity(),LoggerUtil.sLoggerName);
         mReporter = new AnalyticsReporter(getActivity());
         mPlayerControl = new PlayerControl();
+        mPlayerView.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View arg0, MotionEvent arg1) {
+                if(mIsMediacontrollerRemoved){
+                    mPlayerView.setMediaController(mMediaController);
+                    mIsMediacontrollerRemoved = false;
+                }
+                return false;
+            }
+        });
         return mPlayerLayout;
     }
 
@@ -120,7 +132,11 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
      */
     public void hideMediaController() {
         if(mMediaController != null)
+        {
             mMediaController.hide();
+            mPlayerView.setMediaController(null);
+            mIsMediacontrollerRemoved = true;
+        }
     }
 
     @Override
@@ -148,6 +164,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 mPlayerState = mPlayerView.isPlaying()?PlayerState.playing:PlayerState.paused;
                 mPlayerView.pause();
                 mPosition = mPlayerView.getCurrentPosition();
+                hideMediaController();
             }
         }
     }
@@ -158,9 +175,6 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         if (mPlayerView != null) {
             if(mPlayerState!= PlayerState.stopped){
                 mPlayerView.seekTo(mPosition);
-                if (mPlayerState == PlayerState.playing) {
-                    mPlayerView.start();
-                }
             }
         }
     }
@@ -196,16 +210,6 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 mPlayerState = PlayerState.paused;
         }
         return mPlayerState.ordinal();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        reset();
-        mPlayerView = null;
-        mPlayerLayout = null;
-        mLogger = null;
-        mPlayerCallback = null;
     }
 
     /**
@@ -715,6 +719,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         if (mLogger != null) {
             mLogger.debug(TAG+" PlayerState:"+mPlayerState.name());
         }
+        hideMediaController();
     }
 
     @Override
@@ -750,7 +755,8 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         if (mLogger != null) {
             mLogger.debug(TAG+" PlayerState:"+mPlayerState.name());
         }
-    }
+    }
+
     /**
      * Method to start timer for buffering the media data.<br>
      * The timer kicks its callback methods on completion to terminate the player 
@@ -837,4 +843,15 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     public void onMediaControllerSeek(long positionBefore,long positionAfter) {
         mReporter.sendSeekWithPositionBefore(positionBefore, positionAfter,mMediaId,null);
     }
+
+    @Override
+    public void onDestroyView() {
+        reset();
+        mPlayerView = null;
+        mPlayerLayout = null;
+        mLogger = null;
+        mPlayerCallback = null;
+        super.onDestroyView();
+    }
+
 }
