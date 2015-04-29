@@ -56,7 +56,7 @@ public class Downloader {
      * @param saveDirLocation
      * @param callback
      */
-    public void startDownload(String url,String mimetype,String saveDirLocation,DownLoadCallback callback){
+    public void startDownload(String url,String mimetype,String saveDirLocation,String mediaId,DownLoadCallback callback){
 
         if(Build.VERSION.SDK_INT < 18 && mimetype!= null && mimetype.equalsIgnoreCase("video/wvm") && saveDirLocation == null){
             if(Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)
@@ -66,7 +66,8 @@ public class Downloader {
         if(saveDirLocation == null){
             saveDirLocation = mActivity.getFilesDir().getPath();
         }
-
+        if(mediaId != null && mediaId.trim().length()>0)
+            saveDirLocation = saveDirLocation+"/"+mediaId;
         File dir = new File(saveDirLocation);
 
         if (!dir.exists()) {

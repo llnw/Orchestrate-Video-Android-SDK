@@ -92,7 +92,7 @@ public class PlaylistAdapter extends BaseAdapter {
             holder.mTextView.setTextColor(Color.BLACK);
         }
         if(mPlayList.get(position)!= null && mPlayList.get(position).mThumbnail!= null && mPlayList.get(position).mThumbnail.mUrl!= null){
-            mDownloader.startDownload(mPlayList.get(position).mThumbnail.mUrl.toString(), null, null, new Downloader.DownLoadCallback(){
+            mDownloader.startDownload(mPlayList.get(position).mThumbnail.mUrl.toString(), null, null, mPlayList.get(position).mMediaID,new Downloader.DownLoadCallback(){
                 @Override
                 public void onSuccess(String path) {
                     Thumbnail t = new Thumbnail();

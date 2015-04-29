@@ -166,8 +166,9 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
 
         @Override
         public ModelHolder loadInBackground() {
-            ArrayList<String> data = new ArrayList<String>();
+            ArrayList<String> titleList = new ArrayList<String>();
             ArrayList<Uri> urls = new ArrayList<Uri>();
+            ArrayList<String> channelIds = new ArrayList<String>();
 
             try {
                 if(mGroupId == null){
@@ -193,11 +194,13 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
                 return mHolder;
             }
             for(Channel channel : mChannelList){
-                data.add(channel.mTitle);
+                titleList.add(channel.mTitle);
                 urls.add(channel.mThumbnailUrl);
+                channelIds.add(channel.mChannelId);
             }
-            mHolder.setData(data);
+            mHolder.setTitles(titleList);
             mHolder.setUrls(urls);
+            mHolder.setIds(channelIds);
             return mHolder;
         }
 
@@ -228,7 +231,7 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
             mSwipeLayout.setRefreshing(false);
             setListShown(true);
         }
-        mAdapter.setData(arg1.getData(),arg1.getUrls());
+        mAdapter.setData(arg1.getTitles(),arg1.getUrls(),arg1.getIds());
         mAdapter.notifyDataSetChanged();
         setListShown(true);
         mSwipeLayout.setRefreshing(false);
@@ -236,6 +239,7 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
 
     @Override
     public void onLoaderReset(Loader<ModelHolder> arg0) {
+        mAdapter.setData(null, null, null);
         mListView.setAdapter(null);
     }
 

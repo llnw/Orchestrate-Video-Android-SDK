@@ -782,7 +782,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             mPlayerView.setVideoURI(null);
         }
         mUri = null;
-        mPlayerView.mPlayerState = PlayerState.stopped;
+        if(mPlayerView !=null){
+            mPlayerView.mPlayerState = PlayerState.stopped;
+        }
         stopTimerForPrepare();
         stopTimerForBuffer();
         if(mWidevineManager!= null){

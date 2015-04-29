@@ -16,7 +16,7 @@ import android.widget.ImageView;
  */
 public class Thumbnail {
 
-    static Bitmap sLoadingBitmap = null;
+    private Bitmap mLoadingBitmap = null;
 
     /**
      * To load a bitmap into image view in background.
@@ -30,9 +30,9 @@ public class Thumbnail {
             if (cancelPotentialWork(path, imageView)) {
                 final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
                 if(loadingBitmap != null)
-                    sLoadingBitmap = loadingBitmap;
-                if(sLoadingBitmap == null)
-                    sLoadingBitmap = BitmapFactory.decodeResource(ctx.getResources(),android.R.drawable.ic_menu_gallery);
+                    mLoadingBitmap = loadingBitmap;
+                if(mLoadingBitmap == null)
+                    mLoadingBitmap = BitmapFactory.decodeResource(ctx.getResources(),android.R.drawable.ic_menu_gallery);
                 final AsyncDrawable asyncDrawable = new AsyncDrawable(task);
                 imageView.setImageDrawable(asyncDrawable);
                 task.execute(path);
@@ -72,7 +72,7 @@ public class Thumbnail {
         private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
 
         public AsyncDrawable(BitmapWorkerTask bitmapWorkerTask) {
-            super(sLoadingBitmap);
+            super(mLoadingBitmap);
             bitmapWorkerTaskReference = new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
         }
 
@@ -149,7 +149,7 @@ public class Thumbnail {
                 bitmap = null;
             }
             if(bitmap == null){
-                bitmap = sLoadingBitmap;
+                bitmap = mLoadingBitmap;
             }
             if (imageViewReference != null && bitmap != null) {
                 final ImageView imageView = imageViewReference.get();

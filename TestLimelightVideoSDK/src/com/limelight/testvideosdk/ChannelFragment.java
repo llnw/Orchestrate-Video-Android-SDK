@@ -145,8 +145,9 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
 
         @Override
         public ModelHolder loadInBackground() {
-            ArrayList<String> data = new ArrayList<String>();
+            ArrayList<String> titles = new ArrayList<String>();
             ArrayList<Uri> urls = new ArrayList<Uri>();
+            ArrayList<String> channelIds = new ArrayList<String>();
             try {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
                 String orgId = preferences.getString(mContext.getResources().getString(R.string.OrgIDEditPrefKey), null);
@@ -165,11 +166,13 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
                 return mHolder;
             }
             for(Channel channel : mChannels){
-                data.add(channel.mTitle);
+                titles.add(channel.mTitle);
                 urls.add(channel.mThumbnailUrl);
+                channelIds.add(channel.mChannelId);
             }
-            mHolder.setData(data);
+            mHolder.setTitles(titles);
             mHolder.setUrls(urls);
+            mHolder.setIds(channelIds);
             return mHolder;
         }
 
@@ -196,7 +199,7 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
             mSwipeLayout.setEnabled(true);
             setEmptyText("No Channel Found");
         }
-        mAdapter.setData(arg1.getData(),arg1.getUrls());
+        mAdapter.setData(arg1.getTitles(),arg1.getUrls(),arg1.getIds());
         mAdapter.notifyDataSetChanged();
         setListShown(true);
         mSwipeLayout.setRefreshing(false);
@@ -204,6 +207,7 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onLoaderReset(Loader<ModelHolder> arg0) {
+        mAdapter.setData(null,null,null);
         mListView.setAdapter(null);
     }
 
