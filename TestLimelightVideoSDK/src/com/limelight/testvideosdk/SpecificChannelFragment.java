@@ -284,10 +284,18 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
     public void onScroll(AbsListView view, int firstVisibleItem,
             int visibleItemCount, int totalItemCount) {
         if(mSwipeLayout != null){
-        if (firstVisibleItem == 0)
-            mSwipeLayout.setEnabled(true);
-        else
-            mSwipeLayout.setEnabled(false);
+            if (firstVisibleItem == 0)
+            {
+                View v = mListView.getChildAt(0);
+                int offset = (v == null) ? 0 : v.getTop();
+                if (offset == 0) {
+                    mSwipeLayout.setEnabled(true);
+                }
+            }
+            else
+            {
+                mSwipeLayout.setEnabled(false);
+            }
         }
         if (totalItemCount == 0 || mAdapter == null)
             return;
