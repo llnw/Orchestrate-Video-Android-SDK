@@ -197,8 +197,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         super.onPause();
         if (mPlayerView != null) {
             if(mPlayerView.mPlayerState != PlayerState.stopped){
-                mPlayerView.mPlayerState = mPlayerView.isPlaying()?PlayerState.playing:PlayerState.paused;
+                PlayerState state = mPlayerView.isPlaying()?PlayerState.playing:PlayerState.paused;
                 mPlayerView.pause();
+                mPlayerView.mPlayerState = state;//store the old state
                 mPosition = mPlayerView.getCurrentPosition();
                 hideMediaController();
             }

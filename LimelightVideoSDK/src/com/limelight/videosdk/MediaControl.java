@@ -51,9 +51,9 @@ class MediaControl extends MediaController{
         ShapeDrawable d = new ShapeDrawable(new RectShape());
         d.getPaint().setColor(Color.WHITE);
         searchButton.setBackgroundDrawable(d);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(40, 20);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(30, 20);
         params.gravity = Gravity.RIGHT;
-        params.rightMargin = 100;
+        params.rightMargin = 30;
         params.topMargin = 20;
         addView(searchButton, params);
         //add a vertical bar to view
@@ -61,7 +61,7 @@ class MediaControl extends MediaController{
         rightVerticalBar.setBackgroundColor(Color.BLACK);
         FrameLayout.LayoutParams rightVerticalBarParams = new FrameLayout.LayoutParams(2,15);
         rightVerticalBarParams.gravity = Gravity.RIGHT;
-        rightVerticalBarParams.rightMargin = 103;
+        rightVerticalBarParams.rightMargin = 33;
         rightVerticalBarParams.topMargin = 22;
         addView(rightVerticalBar, rightVerticalBarParams);
         //add a vertical bar to view
@@ -69,7 +69,7 @@ class MediaControl extends MediaController{
         leftVerticalBar.setBackgroundColor(Color.BLACK);
         FrameLayout.LayoutParams leftVerticalBarParams = new FrameLayout.LayoutParams(2,15);
         leftVerticalBarParams.gravity = Gravity.RIGHT;
-        leftVerticalBarParams.rightMargin = 135;
+        leftVerticalBarParams.rightMargin = 55;
         leftVerticalBarParams.topMargin = 22;
         addView(leftVerticalBar,leftVerticalBarParams);
     }
