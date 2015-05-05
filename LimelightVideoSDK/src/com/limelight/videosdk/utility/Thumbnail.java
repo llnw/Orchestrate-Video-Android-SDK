@@ -16,7 +16,7 @@ import android.widget.ImageView;
  */
 public class Thumbnail {
 
-    private Bitmap mLoadingBitmap = null;
+    private Bitmap mLoadingBitmap;
 
     /**
      * To load a bitmap into image view in background.
@@ -25,25 +25,25 @@ public class Thumbnail {
      * @param imageView
      * @param loadingBitmap placeholder or loading bitmap
      */
-    public void loadBitmap(Context ctx,String path, ImageView imageView,Bitmap loadingBitmap) {
-        if(ctx != null && imageView != null){
-            if (cancelPotentialWork(path, imageView)) {
-                final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
-                if(loadingBitmap != null)
-                    mLoadingBitmap = loadingBitmap;
-                if(mLoadingBitmap == null)
-                    mLoadingBitmap = BitmapFactory.decodeResource(ctx.getResources(),android.R.drawable.ic_menu_gallery);
-                final AsyncDrawable asyncDrawable = new AsyncDrawable(task);
-                imageView.setImageDrawable(asyncDrawable);
-                task.execute(path);
+    public void loadBitmap(final Context ctx,final String path, final ImageView imageView,final Bitmap loadingBitmap) {
+        if(ctx != null && imageView != null && cancelPotentialWork(path, imageView)){
+            final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
+            if(loadingBitmap != null){
+                mLoadingBitmap = loadingBitmap;
             }
+            if(mLoadingBitmap == null){
+                mLoadingBitmap = BitmapFactory.decodeResource(ctx.getResources(),android.R.drawable.ic_menu_gallery);
+            }
+            final AsyncDrawable asyncDrawable = new AsyncDrawable(task);
+            imageView.setImageDrawable(asyncDrawable);
+            task.execute(path);
         }
     }
 
-    private boolean cancelPotentialWork(String path, ImageView imageView) {
+    private boolean cancelPotentialWork(final String path, final ImageView imageView) {
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
         if (bitmapWorkerTask != null) {
-            final String bitmapPath = bitmapWorkerTask.path;
+            final String bitmapPath = bitmapWorkerTask.mPath;
             // If bitmapData is not yet set or it differs from the new data
             if (bitmapPath == null || !(bitmapPath.equals(path))) {
                 // Cancel previous task
@@ -57,7 +57,7 @@ public class Thumbnail {
         return true;
     }
 
-    private BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
+    private BitmapWorkerTask getBitmapWorkerTask(final ImageView imageView) {
         if (imageView != null) {
             final Drawable drawable = imageView.getDrawable();
             if (drawable instanceof AsyncDrawable) {
@@ -69,15 +69,15 @@ public class Thumbnail {
     }
 
     class AsyncDrawable extends BitmapDrawable {
-        private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
+        private final WeakReference<BitmapWorkerTask> mWorker;
 
-        public AsyncDrawable(BitmapWorkerTask bitmapWorkerTask) {
+        public AsyncDrawable(final BitmapWorkerTask bitmapWorkerTask) {
             super(mLoadingBitmap);
-            bitmapWorkerTaskReference = new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
+            mWorker = new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
         }
 
         public BitmapWorkerTask getBitmapWorkerTask() {
-            return bitmapWorkerTaskReference.get();
+            return mWorker.get();
         }
     }
 
@@ -88,7 +88,7 @@ public class Thumbnail {
      * @param reqHeight
      * @return Scaled Bitmap
      */
-    public Bitmap scaleImage(String path, int reqWidth, int reqHeight) {
+    public Bitmap scaleImage(final String path, final int reqWidth, final int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -103,7 +103,7 @@ public class Thumbnail {
         return BitmapFactory.decodeFile(path,options);
     }
 
-    int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    private int calculateInSampleSize(final BitmapFactory.Options options, final int reqWidth, final int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
@@ -122,37 +122,37 @@ public class Thumbnail {
     }
 
     class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
-        private final WeakReference<ImageView> imageViewReference;
-        private String path = null;
-        public BitmapWorkerTask(ImageView imageView) {
+        private final WeakReference<ImageView> mImageReference;
+        private String mPath;
+        public BitmapWorkerTask(final ImageView imageView) {
             // Use a WeakReference to ensure the ImageView can be garbage collected
-            imageViewReference = new WeakReference<ImageView>(imageView);
+            mImageReference = new WeakReference<ImageView>(imageView);
         }
 
         // Decode image in background.
         @Override
-        protected Bitmap doInBackground(String... params) {
-            path = params[0];
-            if(path == null)
+        protected Bitmap doInBackground(final String... params) {
+            mPath = params[0];
+            if(mPath == null){
                 return null;
-            ImageView i = imageViewReference.get();
-            if(i == null)
-                return scaleImage(path, 100, 100);
-            else
-                return scaleImage(path, i.getWidth(), i.getHeight());
+            }
+            final ImageView image = mImageReference.get();
+            if(image == null){
+                return scaleImage(mPath, 100, 100);
+            }
+            else{
+                return scaleImage(mPath, image.getWidth(), image.getHeight());
+            }
         }
 
         // Once complete, see if ImageView is still around and set bitmap.
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            if (isCancelled()) {
-                bitmap = null;
-            }
-            if(bitmap == null){
+            if (isCancelled()||bitmap == null) {
                 bitmap = mLoadingBitmap;
             }
-            if (imageViewReference != null && bitmap != null) {
-                final ImageView imageView = imageViewReference.get();
+            if (mImageReference != null && bitmap != null) {
+                final ImageView imageView = mImageReference.get();
                 final BitmapWorkerTask bitmapWorkerTask =getBitmapWorkerTask(imageView);
                 if (this == bitmapWorkerTask && imageView != null) {
                     imageView.setImageBitmap(bitmap);

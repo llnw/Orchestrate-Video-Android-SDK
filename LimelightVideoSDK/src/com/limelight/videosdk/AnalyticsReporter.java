@@ -35,7 +35,7 @@ import com.limelight.videosdk.utility.Setting;
  * player provider ID which holds the player provider identifier like Limelight Networks,
  * version which holds the version information and user ID which holds the user identifier.
 */
-public class AnalyticsReporter {
+class AnalyticsReporter {
 
     private static final String TAG = AnalyticsReporter.class.getSimpleName();
 
@@ -49,20 +49,23 @@ public class AnalyticsReporter {
     private String mPlayerProviderId;
     private String mUserId;
     private String mVersion;
-    private Context mContext;;
+    private final Context mContext;;
     private JsonObject mAnalyticsData;
     private String mSourceInstanceId;
     private RequestExecutor mRequestExecutor;
-    private BroadcastReceiver mConnectionReceiver = null;
-    private IntentFilter mConnectionChangeFilter = null;
-    private Logger mLogger=  null;
+    private BroadcastReceiver mConnectionReceiver;
+    private Logger mLogger;
     private final int MAX_THREAD_COUNT = 1;
+    private final String mMilliSecondElapsed = "millisecondsElapsed";
+    private final String mMediaId = "mediaId";
+    private final String mChannelId = "channelId";
+    private final String mChannelListId = "channelListId";
 
     public AnalyticsReporter(Context ctx) {
         mContext = ctx;
         init();
         mRequestExecutor= new RequestExecutor(MAX_THREAD_COUNT);
-        mLogger = LoggerUtil.getLogger(ctx,LoggerUtil.sLoggerName);
+        mLogger = LoggerUtil.getLogger(ctx,LoggerUtil.LOGGER_NAME);
     }
 
     /**
@@ -72,17 +75,17 @@ public class AnalyticsReporter {
         JsonObject obj = new JsonObject();
         obj.addProperty("appName", mAppName);
         obj.addProperty("userId", mUserId);
-        obj.addProperty("millisecondsElapsed", 0);
+        obj.addProperty(mMilliSecondElapsed, 0);
         obj.addProperty("platform", mPlatform);
-        obj.addProperty("mediaId", "");
+        obj.addProperty(mMediaId, "");
         obj.addProperty("osVersion", mOsVersion);
         obj.addProperty("appVersion",mAppVersion);
         obj.addProperty("playerProviderId", mPlayerProviderId);
         obj.addProperty("version", mVersion);
-        obj.addProperty("channelId", "");
+        obj.addProperty(mChannelId, "");
         obj.addProperty("deviceMake", mDeviceMake);
         obj.addProperty("deviceModel", mDeviceModel);
-        obj.addProperty("channelListId", "");
+        obj.addProperty(mChannelListId, "");
         addAnalyticsData("StartSession",obj);
         post(obj);
     }
@@ -95,16 +98,20 @@ public class AnalyticsReporter {
      */
     void sendPlayWithPosition(long position,String mediaId,String channelId){
         JsonObject obj = new JsonObject();
-        obj.addProperty("channelListId", "");
-        if(channelId==null)
-            obj.addProperty("channelId", "");
-        else
-            obj.addProperty("channelId", channelId);
-        obj.addProperty("millisecondsElapsed", (System.currentTimeMillis()-mStartTime));
-        if(mediaId == null)
-            obj.addProperty("mediaId", "");
-        else
-            obj.addProperty("mediaId", mediaId);
+        obj.addProperty(mChannelListId, "");
+        if(channelId==null){
+            obj.addProperty(mChannelId, "");
+        }
+        else{
+            obj.addProperty(mChannelId, channelId);
+        }
+        obj.addProperty(mMilliSecondElapsed, (System.currentTimeMillis()-mStartTime));
+        if(mediaId == null){
+            obj.addProperty(mMediaId, "");
+        }
+        else{
+            obj.addProperty(mMediaId, mediaId);
+        }
         obj.addProperty("positionInMilliseconds", position);
         addAnalyticsData("Play",obj);
         post(obj);
@@ -118,16 +125,20 @@ public class AnalyticsReporter {
      */
     void sendPauseWithPosition (long position,String mediaId,String channelId){
         JsonObject obj = new JsonObject();
-        obj.addProperty("channelListId", "");
-        if(channelId==null)
-            obj.addProperty("channelId", "");
-        else
-            obj.addProperty("channelId", channelId);
-        obj.addProperty("millisecondsElapsed", (System.currentTimeMillis()-mStartTime));
-        if(mediaId == null)
-            obj.addProperty("mediaId", "");
-        else
-            obj.addProperty("mediaId", mediaId);
+        obj.addProperty(mChannelListId, "");
+        if(channelId==null){
+            obj.addProperty(mChannelId, "");
+        }
+        else{
+            obj.addProperty(mChannelId, channelId);
+        }
+        obj.addProperty(mMilliSecondElapsed, (System.currentTimeMillis()-mStartTime));
+        if(mediaId == null){
+            obj.addProperty(mMediaId, "");
+        }
+        else{
+            obj.addProperty(mMediaId, mediaId);
+        }
         obj.addProperty("positionInMilliseconds", position);
         addAnalyticsData("Pause", obj);
         post(obj);
@@ -142,20 +153,24 @@ public class AnalyticsReporter {
      */
     void sendSeekWithPositionBefore(long positionBefore,long positionAfter,String mediaId,String channelId){
         JsonObject obj = new JsonObject();
-        if(mediaId == null)
-            obj.addProperty("mediaId", "");
-        else
-            obj.addProperty("mediaId", mediaId);
+        if(mediaId == null){
+            obj.addProperty(mMediaId, "");
+        }
+        else{
+            obj.addProperty(mMediaId, mediaId);
+        }
         obj.addProperty("offsetBefore", positionBefore);
-        obj.addProperty("channelListId", "");
-        obj.addProperty("millisecondsElapsed", (System.currentTimeMillis()-mStartTime));
+        obj.addProperty(mChannelListId, "");
+        obj.addProperty(mMilliSecondElapsed, (System.currentTimeMillis()-mStartTime));
         obj.addProperty("spectrumColor", "0");
         obj.addProperty("relatedConcepts", "");
         obj.addProperty("spectrumType", "");
-        if(channelId==null)
-            obj.addProperty("channelId", "");
-        else
-            obj.addProperty("channelId", channelId);
+        if(channelId==null){
+            obj.addProperty(mChannelId, "");
+        }
+        else{
+            obj.addProperty(mChannelId, channelId);
+        }
         obj.addProperty("offsetAfter",positionAfter);
         obj.addProperty("heatmapDisplayed", false);
         addAnalyticsData("Seek",obj);
@@ -169,16 +184,20 @@ public class AnalyticsReporter {
      */
     void sendMediaComplete(String mediaId,String channelId){
         JsonObject obj = new JsonObject();
-        if(channelId==null)
-            obj.addProperty("channelId", "");
-        else
-            obj.addProperty("channelId", channelId);
-        obj.addProperty("millisecondsElapsed", (System.currentTimeMillis()-mStartTime));
-        if(mediaId == null)
-            obj.addProperty("mediaId", "");
-        else
-            obj.addProperty("mediaId", mediaId);
-        obj.addProperty("channelListId", "");
+        if(channelId==null){
+            obj.addProperty(mChannelId, "");
+        }
+        else{
+            obj.addProperty(mChannelId, channelId);
+        }
+        obj.addProperty(mMilliSecondElapsed, (System.currentTimeMillis()-mStartTime));
+        if(mediaId == null){
+            obj.addProperty(mMediaId, "");
+        }
+        else{
+            obj.addProperty(mMediaId, mediaId);
+        }
+        obj.addProperty(mChannelListId, "");
         addAnalyticsData("MediaComplete",obj);
         post(obj);
     }
@@ -191,7 +210,7 @@ public class AnalyticsReporter {
      * @param channelId Channel ID for the media being played.
      */
     void addAnalyticsData(String eventType,JsonObject data){
-        System.out.println(TAG +" Event type: "+eventType);
+//        System.out.println(TAG +" Event type: "+eventType);
         mAnalyticsData = new JsonObject();
         mAnalyticsData.addProperty("eventType", eventType);
         mAnalyticsData.addProperty("source", "Limelight Android Player");
@@ -200,17 +219,16 @@ public class AnalyticsReporter {
         mAnalyticsData.addProperty("sourceVersion", 1);
     }
 
-    public void pause(){
+    void pause(){
         mRequestExecutor.pause();
     }
 
-    public void resume(){
+    void resume(){
         mRequestExecutor.resume();
     }
 
     void post(final JsonObject obj){
-        if(Connection.isConnected(mContext) == false)
-        {
+        if(!Connection.isConnected(mContext)){
             pause();
         }
         Runnable reqRunnable =  new Runnable() {
@@ -232,11 +250,11 @@ public class AnalyticsReporter {
                     str.write(data);
                     str.flush();
                     str.close();
-                    System.out.println(TAG+" ResponseCode: "+urlConnection.getResponseCode());
+//                    System.out.println(TAG+" ResponseCode: "+urlConnection.getResponseCode());
                 } catch (ProtocolException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();//TODO
                 }catch (IOException e1) {
-                    e1.printStackTrace();
+                    e1.printStackTrace();//TODO
                 }
             }
         };
@@ -258,7 +276,7 @@ public class AnalyticsReporter {
         }
         mDeviceMake = Build.MANUFACTURER;
         mDeviceModel = Build.MODEL;
-        mOsVersion = ""+Build.VERSION.SDK_INT;
+        mOsVersion = Integer.toString(Build.VERSION.SDK_INT);
         mPlatform = "Android";
         mPlayerProviderId = "Limelight Networks";
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
@@ -273,34 +291,29 @@ public class AnalyticsReporter {
         mVersion = "0.4";
         mStartTime = System.currentTimeMillis();
         mSourceInstanceId = UUID.randomUUID().toString();
-        if(mConnectionReceiver == null)
-        {
-            mConnectionReceiver = new BroadcastReceiver(){
-                @Override
-                public void onReceive(Context ctx, Intent intent) {
-                    mLogger.debug(TAG + "Reached onReceive, there is a change in internet connection");
-                    if(intent.getExtras() != null)
-                    {
-                        ConnectivityManager connMgr = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-                        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-                        if(networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED)
-                        {
-                            //Network is connected
-                            mLogger.debug(TAG + "Connected to network");
-                            resume();
-                        }
-                        else
-                        {
-                            //No network connectivity
-                            mLogger.debug(TAG + "No network connectivity");
-                            pause();
-                        }
+        mConnectionReceiver = new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                mLogger.debug(TAG + "Reached onReceive, there is a change in internet connection");
+                if(intent.getExtras() != null){
+                    ConnectivityManager connMgr = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                    if(networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED){
+                        //Network is connected
+                        mLogger.debug(TAG + "Connected to network");
+                        resume();
+                    }
+                    else{
+                        //No network connectivity
+                        mLogger.debug(TAG + "No network connectivity");
+                        pause();
                     }
                 }
-            };
-        }//end of if
-        mConnectionChangeFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
-        mContext.registerReceiver(mConnectionReceiver, mConnectionChangeFilter);
+            }
+        };
+        IntentFilter filter;
+        filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+        mContext.registerReceiver(mConnectionReceiver, filter);
     }
 
     void unregisterReceiver(){
@@ -312,7 +325,7 @@ public class AnalyticsReporter {
         try {
             mRequestExecutor.awaitTermination(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            e.printStackTrace();//TODO
         }
         //Interrupt the threads and shutdown the reqExecutor
         mRequestExecutor.shutdownNow();

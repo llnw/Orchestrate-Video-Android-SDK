@@ -38,8 +38,8 @@ import android.content.Context;
  */
 public class LoggerUtil {
 
-    private final static LogConfigurator sLogConfigurator = new LogConfigurator();
-    public final static String sLoggerName = "Limelight_Video_SDK";
+    private static LogConfigurator sLogConfigurator = new LogConfigurator();
+    public final static String LOGGER_NAME = "Limelight_Video_SDK";
 
     /**
      * Method to configure Logging.
@@ -48,8 +48,8 @@ public class LoggerUtil {
      * @param maxBackupSize Maximum number of backed up log files
      * @param maxFileSize maximum size of log file until rolling
      */
-    static void configure(String fileName, String filePattern,
-            int maxBackupSize, long maxFileSize) {
+    static void configure(final String fileName, final String filePattern,
+            final int maxBackupSize, final long maxFileSize) {
 
         sLogConfigurator.setFileName(fileName);
         sLogConfigurator.setFilePattern(filePattern);
@@ -64,14 +64,13 @@ public class LoggerUtil {
      * @param name Logger name
      * @return {@link Logger}
      */
-    public synchronized static Logger getLogger(Context context,String name) {
-        String filePath = sLogConfigurator.getFileName();
+    public synchronized static Logger getLogger(final Context context,final String name) {
+        final String filePath = sLogConfigurator.getFileName();
         if(filePath == null && context != null){
-            File file = new File(context.getFilesDir(), LoggerUtil.sLoggerName + ".log");
+            final File file = new File(context.getFilesDir(), LoggerUtil.LOGGER_NAME + ".log");
             LoggerUtil.configure(file.getAbsolutePath(),"%d - %p - %c - %t - %m%n", 5, 512 * 1024);
         }
-        Logger logger = Logger.getLogger(name);
-        return logger;
+        return Logger.getLogger(name);
     }
 
     /**
@@ -84,9 +83,10 @@ public class LoggerUtil {
      * 
      * @param level
      */
-    public static void setLogLevel(Level level) {
-        if(level != null)
-           sLogConfigurator.setLevel(sLoggerName, level);
+    public static void setLogLevel(final Level level) {
+        if(level != null){
+           sLogConfigurator.setLevel(LOGGER_NAME, level);
+        }
     }
 
     /**
@@ -94,7 +94,7 @@ public class LoggerUtil {
      * @return {@link Level}
      */
     public static Level getLogLevel() {
-        return sLogConfigurator.getLevel(sLoggerName);
+        return sLogConfigurator.getLevel(LOGGER_NAME);
     }
 
     /**
@@ -121,23 +121,32 @@ public class LoggerUtil {
      * @param level {@link Level}
      * @return int
      */
-    public static int levelToInt(Level level) {
+    public static int levelToInt(final Level level) {
+        int retVal = -1;
         if(level != null){
             switch (level.toInt()) {
             case Priority.DEBUG_INT:
-                return 0;
+                retVal= 0;
+                break;
             case Priority.INFO_INT:
-                return 1;
+                retVal= 1;
+                break;
             case Priority.WARN_INT:
-                return 2;
+                retVal= 2;
+                break;
             case Priority.ERROR_INT:
-                return 3;
+                retVal= 3;
+                break;
             case Priority.FATAL_INT:
-                return 4;
+                retVal= 4;
+                break;
             case Priority.OFF_INT:
-                return 5;
+                retVal= 5;
+                break;
+            default:
+                break;
             }
         }
-        return -1;
+        return retVal;
     }
 }

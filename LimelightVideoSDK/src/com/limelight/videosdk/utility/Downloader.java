@@ -26,7 +26,7 @@ import com.limelight.videosdk.Constants;
 public class Downloader {
 
     private final Set<DownloadTask> mDownloadTasks = new LinkedHashSet<DownloadTask>();
-    private Activity mActivity;
+    private final Activity mActivity;
 
     /**
      * Callback interface for download.<br>
@@ -38,11 +38,11 @@ public class Downloader {
      */
     public interface DownLoadCallback {
         void onSuccess(String path);
-        void onError(Throwable ex);
+        void onError(Throwable throwable);
         void onProgress(int percentFinished);
     }
 
-    public Downloader(Activity activity){
+    public Downloader(final Activity activity){
         mActivity = activity;
     }
 
@@ -56,25 +56,27 @@ public class Downloader {
      * @param saveDirLocation
      * @param callback
      */
-    public void startDownload(String url,String mimetype,String saveDirLocation,String mediaId,DownLoadCallback callback){
+    public void startDownload(final String url,final String mimetype,String saveDirLocation,final String mediaId,final DownLoadCallback callback){
 
-        if(Build.VERSION.SDK_INT < 18 && mimetype!= null && mimetype.equalsIgnoreCase("video/wvm") && saveDirLocation == null){
-            if(Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)
-                    && ! (Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED_READ_ONLY)))
-                saveDirLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        if(Build.VERSION.SDK_INT < 18
+                && mimetype!= null
+                && mimetype.equalsIgnoreCase("video/wvm")
+                && saveDirLocation == null
+                && Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)
+                && ! (Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED_READ_ONLY))){
+            saveDirLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
         }
         if(saveDirLocation == null){
             saveDirLocation = mActivity.getFilesDir().getPath();
         }
-        if(mediaId != null && mediaId.trim().length()>0)
+        if(mediaId != null && !mediaId.trim().isEmpty()){
             saveDirLocation = saveDirLocation+"/"+mediaId;
-        File dir = new File(saveDirLocation);
+        }
+        final File dir = new File(saveDirLocation);
 
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
-                callback.onError(new Throwable("Could Not Create Directory: " + saveDirLocation));
-                return;
-            }
+        if (!dir.exists() && !dir.mkdirs()) {
+            callback.onError(new Throwable("Could Not Create Directory: " + saveDirLocation));
+            return;
         }
 
         if (dir.isFile()) {
@@ -88,12 +90,13 @@ public class Downloader {
         }
 
         if(url != null && url.length() > 0 && URLUtil.isValidUrl(url)){
-            DownloadTask task = new DownloadTask(mimetype,saveDirLocation,callback);
+            final DownloadTask task = new DownloadTask(mimetype,saveDirLocation,callback);
             mDownloadTasks.add(task);
             task.execute(url);
         }
-        else
+        else{
             callback.onError(new Throwable("URL Invalid"));
+        }
     }
 
     /**
@@ -101,7 +104,7 @@ public class Downloader {
      * @param url
      * @return
      */
-    public boolean cancelDownload(String url){
+    public boolean cancelDownload(final String url){
         for(DownloadTask task : mDownloadTasks){
             if(url.equals(task.mUrl)){
                 task.cancel(true);
@@ -114,14 +117,14 @@ public class Downloader {
     private class DownloadTask extends AsyncTask<String, Integer, String> {
 
         private final DownLoadCallback mCallback;
-        private String mSaveDirLocation;
-        private String mMimetype;
+        private final String mSaveDirLocation;
+        private final String mMimetype;
         private Exception mError;
-        private File mTempFile = null;
-        private File mFile = null;
-        private String mUrl = null;
+        private File mTempFile;
+        private File mFile;
+        private String mUrl;
 
-        DownloadTask(String mimetype, String saveDirLocation, DownLoadCallback callback) {
+        DownloadTask(final String mimetype, final String saveDirLocation, final DownLoadCallback callback) {
             this.mSaveDirLocation = saveDirLocation;
             this.mMimetype = mimetype;
             this.mCallback = callback;
@@ -134,38 +137,38 @@ public class Downloader {
         }
 
         @Override
-        protected void onProgressUpdate(Integer... progress) {
+        protected void onProgressUpdate(final Integer... progress) {
             super.onProgressUpdate(progress);
             mCallback.onProgress(progress[0]);
         }
 
         @Override
-        protected String doInBackground(String... urls) {
+        protected String doInBackground(final String... urls) {
             publishProgress(0);
             final String url = urls[0];
             mUrl = url;
 
-            String filename = getFilenameFromUrl(url,mMimetype);
-            String eventualFileLocation = String.format("%s/%s", mSaveDirLocation, filename);
-            mFile = new File(eventualFileLocation);
+            final String filename = getFilenameFromUrl(url,mMimetype);
+            final String fileLocation = String.format("%s/%s", mSaveDirLocation, filename);
+            mFile = new File(fileLocation);
 
             if (mFile.exists()) {
                 publishProgress(100);
-                return eventualFileLocation;
+                return fileLocation;
             }
-            mTempFile = new File(eventualFileLocation+".tmp");
+            mTempFile = new File(fileLocation+".tmp");
 
             InputStream input = null;
             OutputStream output;
 
             try {
-                URL urlOfFile = new URL(url);
-                URLConnection connection = urlOfFile.openConnection();
+                final URL urlOfFile = new URL(url);
+                final URLConnection connection = urlOfFile.openConnection();
                 connection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                 connection.connect();
 
-                int fileLength = connection.getContentLength();
-                int tickSize = 2 * fileLength / 100;
+                final int fileLength = connection.getContentLength();
+                final int tickSize = 2 * fileLength / 100;
                 int nextProgress = tickSize;
 
                 input = new BufferedInputStream(urlOfFile.openStream());
@@ -201,29 +204,34 @@ public class Downloader {
                     if (input != null) {
                         input.close();
                     }
-                } catch (IOException ignored) { }
+                } catch (IOException ignored) {
+                    //TODO
+                }
             }
-            return eventualFileLocation;
+            return fileLocation;
         }
 
 
         @Override
-        protected void onPostExecute(String pathToFile) {
+        protected void onPostExecute(final String pathToFile) {
             mDownloadTasks.remove(this);
             if (mError == null) {
                 mCallback.onProgress(100);
                 if(mTempFile!= null && mTempFile.exists()){
-                    if(mTempFile.renameTo(mFile))
+                    if(mTempFile.renameTo(mFile)){
                         mCallback.onSuccess(pathToFile);
-                    else
+                    }
+                    else{
                         mCallback.onError(new Throwable("Failed To Write !"));
+                    }
                 }else{
                     mCallback.onSuccess(pathToFile);
                 }
             } else {
                 mCallback.onError(mError);
-                if(mTempFile!= null && mTempFile.exists())
+                if(mTempFile!= null && mTempFile.exists()){
                     mTempFile.delete();
+                }
             }
         }
 
@@ -234,9 +242,10 @@ public class Downloader {
          * @param mimetype
          * @return file name
          */
-        private String getFilenameFromUrl(String url,String mimetype) {
-            if(mimetype == null)
+        private String getFilenameFromUrl(final String url,String mimetype) {
+            if(mimetype == null){
                 mimetype = MimeTypeMap.getFileExtensionFromUrl(url);
+            }
             return URLUtil.guessFileName(url, null, mimetype);
         }
     }

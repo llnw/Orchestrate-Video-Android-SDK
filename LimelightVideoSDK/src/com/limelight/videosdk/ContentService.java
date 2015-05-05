@@ -55,25 +55,25 @@ import com.limelight.videosdk.utility.Setting;
 public class ContentService {
 
     private static final String TAG = PlayerSupportFragment.class.getSimpleName();
-    private ArrayList<Channel> mChannelList = new ArrayList<Channel>();
-    private ArrayList<ChannelGroup> mChannelGroupList = new ArrayList<ChannelGroup>();
-    private ArrayList<Media> mMediaList = new ArrayList<Media>();
-    private ArrayList<Encoding> mEncodingList = new ArrayList<Encoding>();
+    private final ArrayList<Channel> mChannelList = new ArrayList<Channel>();
+    private final ArrayList<ChannelGroup> mChannelGroupList = new ArrayList<ChannelGroup>();
+    private final ArrayList<Media> mMediaList = new ArrayList<Media>();
+    private final ArrayList<Encoding> mEncodingList = new ArrayList<Encoding>();
 
     private int mPageSize = 500;
-    private String[] mSortByValidValues = {Constants.SORT_BY_UPDATE_DATE,Constants.SORT_BY_CREATE_DATE};
-    private String[] mSortOrderValidValues = {Constants.SORT_ORDER_ASC,Constants.SORT_ORDER_DESC};
+    private final String[] mSortValues = {Constants.SORT_BY_UPDATE_DATE,Constants.SORT_BY_CREATE_DATE};
+    private final String[] mSortOrderValues = {Constants.SORT_ORDER_ASC,Constants.SORT_ORDER_DESC};
     private String mSortBy = "update_date";
     private String mSortOrder = "asc";
-    private int mPageId = 0;
-    private boolean mHasNext = false;
+    private int mPageId;
+    private boolean mHasNext;
 
-    private Logger mLogger=  null;
-    private Context mContext = null;
+    private final Logger mLogger;
+    private final Context mContext;
 
-    private String mOrgId = null;
-    private String mAccessKey = null;
-    private String mSecret = null;
+    private final String mOrgId;
+    private final String mAccessKey;
+    private final String mSecret;
 
     /**
      * Getter for Organization Id.
@@ -99,12 +99,12 @@ public class ContentService {
         return mSecret;
     }
 
-    public ContentService(Context context, String orgId,String access, String secret){
+    public ContentService(final Context context, final String orgId,final String access,final String secret){
         mContext = context;
         mOrgId = orgId;
         mAccessKey = access;
         mSecret = secret;
-        mLogger = LoggerUtil.getLogger(mContext,LoggerUtil.sLoggerName);
+        mLogger = LoggerUtil.getLogger(mContext,LoggerUtil.LOGGER_NAME);
     }
 
     /**
@@ -150,38 +150,38 @@ public class ContentService {
     * @return list of channel groups.
     * @throws Exception
     */
-   public ArrayList<ChannelGroup> getAllChannelGroup(boolean isLoadMore) throws Exception{
+   public ArrayList<ChannelGroup> getAllChannelGroup(final boolean isLoadMore) throws Exception{
 
        if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-           throw new Exception("Please Ensure Organization ID, Access key And Secret Are Set.");
+           throw new Exception(Constants.ACCOUNT_ERROR);
        } else {
            if(!Connection.isConnected(mContext)){
-               throw new Exception("Device Not Connected !");
+               throw new Exception(Constants.CONNECTION_ERROR);
            }else{
                Exception exception = null;
                HttpURLConnection urlConnection = null;
                try{
-                   String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_GROUP_PATH, mOrgId);
+                   final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_GROUP_PATH, mOrgId);
                    mLogger.debug(TAG + " getAllChannelGroup "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                    mLogger.debug(TAG + " getAllChannelGroup "+ " mHasNextGroup: " + mHasNext +" mPageIdGroup: " + mPageId);
                    if(isLoadMore){
-                       if(!mHasNext){
-                          return mChannelGroupList;
+                       if(mHasNext){
+                          mPageId++;
                        }else {
-                           mPageId++;
+                           return mChannelGroupList;
                        }
                    }else{
                        mChannelGroupList.clear();
                        mHasNext = false;
                        mPageId = 0;
                    }
-                   HashMap<String, String> params = new HashMap<String, String>();
-                   params.put(Constants.PAGE_ID, ""+mPageId);
-                   params.put("page_size", ""+mPageSize);
-                   params.put("sort_by", mSortBy);
-                   params.put("sort_order", mSortOrder);
+                   final HashMap<String, String> params = new HashMap<String, String>();
+                   params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                   params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                   params.put(Constants.SORT_BY, mSortBy);
+                   params.put(Constants.SORT_ORDER, mSortOrder);
                    mLogger.debug(TAG + " getAllChannelGroup "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
-                   String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
+                   final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                    urlConnection = (HttpURLConnection) new URL(url).openConnection();
                    urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
@@ -191,16 +191,16 @@ public class ContentService {
                    exception = new Exception("Signing Failed !");
                }
                catch (MalformedURLException e) {
-                   exception =  new Exception("Invalid URL !");
+                   exception =  new Exception(Constants.URL_ERROR);
                }
                catch(InvalidKeyException e){
-                   exception = new Exception("Authentication Failed !");
+                   exception = new Exception(Constants.AUTH_ERROR);
                }
                catch(UnsupportedEncodingException e){
-                   exception = new Exception("Authentication Failed !");
+                   exception = new Exception(Constants.AUTH_ERROR);
                }
                catch(URISyntaxException e){
-                   exception = new Exception("Authentication Failed !");
+                   exception = new Exception(Constants.AUTH_ERROR);
                }
                catch(IOException e){
                    String error = null;
@@ -208,7 +208,7 @@ public class ContentService {
                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                        error = parseError(reader);
                    }
-                   exception = new Exception(error!= null? error:"Connection Error !");
+                   exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
                }
                finally {
                    if (urlConnection != null) {
@@ -235,32 +235,32 @@ public class ContentService {
     public void getAllChannelGroupAsync(boolean isLoadMore,final ChannelGroupCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            callback.onError(new Throwable("Please Ensure Organization ID, Access key And Secret Are Set."));
+            callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable("Device Not Connected !"));
+                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 try {
-                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_GROUP_PATH, mOrgId);
+                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_GROUP_PATH, mOrgId);
                     mLogger.debug(TAG + " getAllChannelGroupAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannelGroupAsync "+ " mHasNextGroup: " + mHasNext +" mPageIdGroup: " + mPageId);
                     if(isLoadMore){
-                        if(!mHasNext){
+                        if(mHasNext){
+                            mPageId++;
+                        }else {
                             callback.onSuccess(mChannelGroupList);
                             return;
-                        }else {
-                            mPageId++;
                         }
                     }else{
                         mChannelGroupList.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    HashMap<String, String> params = new HashMap<String,String>();
-                    params.put(Constants.PAGE_ID, ""+mPageId);
-                    params.put("page_size", ""+mPageSize);
-                    params.put("sort_by", mSortBy);
-                    params.put("sort_order", mSortOrder);
+                    final HashMap<String, String> params = new HashMap<String, String>();
+                    params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                    params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                    params.put(Constants.SORT_BY, mSortBy);
+                    params.put(Constants.SORT_ORDER, mSortOrder);
                     mLogger.debug(TAG + " getAllChannelGroupAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     Runnable runnable = new Runnable() {
@@ -276,7 +276,7 @@ public class ContentService {
                                 callback.onSuccess(mChannelGroupList);
                             }
                             catch (MalformedURLException e) {
-                                throwable = new Throwable("Invalid Thumbnail URL !");
+                                throwable = new Throwable(Constants.THUMB_URL_ERROR);
                             }
                             catch (IOException e) {
                                 String error = null;
@@ -284,7 +284,7 @@ public class ContentService {
                                     JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                     error = parseError(reader);
                                 }
-                                throwable = new Throwable(error!= null? error:"Connection Error !");
+                                throwable = new Throwable(error == null?Constants.CONNECTION_ERROR:error);
                             }
                             finally {
                                 if (urlConnection != null) {
@@ -303,7 +303,7 @@ public class ContentService {
                     thread.start();
                 }
                 catch (Exception e) {
-                    callback.onError(new Throwable("Authentication Failed !"));
+                    callback.onError(new Throwable(Constants.AUTH_ERROR));
                 }
             }
         }
@@ -321,10 +321,10 @@ public class ContentService {
     public ArrayList<Channel> getAllChannelOfGroup(String channelGroupId,boolean isLoadMore) throws Exception{
 
         if (mOrgId == null || mOrgId.trim().length() == 0) {
-            throw new Exception("Please Ensure Organization ID is Set.");
+            throw new Exception(Constants.ORG_ERROR);
         } else {
             if(!Connection.isConnected(mContext)){
-                throw new Exception("Device Not Connected !");
+                throw new Exception(Constants.CONNECTION_ERROR);
             }else{
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
@@ -333,21 +333,21 @@ public class ContentService {
                     mLogger.debug(TAG + " getAllChannelOfGroup "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannelOfGroup "+ " mHasNextChannelOfGroup: " + mHasNext +" mPageIdChannelOfGroup: " + mPageId);
                     if(isLoadMore){
-                        if(!mHasNext){
-                           return mChannelList;
-                        }else {
+                        if(mHasNext){
                             mPageId++;
+                        }else {
+                            return mChannelList;
                         }
                     }else{
                         mChannelList.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    HashMap<String, String> params = new HashMap<String, String>();
-                    params.put(Constants.PAGE_ID, ""+mPageId);
-                    params.put("page_size", ""+mPageSize);
-                    params.put("sort_by", mSortBy);
-                    params.put("sort_order", mSortOrder);
+                    final HashMap<String, String> params = new HashMap<String, String>();
+                    params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                    params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                    params.put(Constants.SORT_BY, mSortBy);
+                    params.put(Constants.SORT_ORDER, mSortOrder);
                     mLogger.debug(TAG + " getAllChannelOfGroup "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                     resourceUrl = appendPagingParameters(resourceUrl, params);
                     urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
@@ -356,10 +356,10 @@ public class ContentService {
                     parseChannels(reader);
                 }
                 catch (MalformedURLException e) {
-                    exception = new Exception("Invalid Thumbnail URL !");
+                    exception = new Exception(Constants.THUMB_URL_ERROR);
                 }
                 catch (UnsupportedEncodingException e) {
-                    exception = new Exception("Failed To Append Paging Parameter !");
+                    exception = new Exception(Constants.ENCODING_ERROR);
                 }
                 catch (IOException e) {
                     String error = null;
@@ -367,7 +367,7 @@ public class ContentService {
                         JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                         error = parseError(reader);
                     }
-                    exception = new Exception(error!= null? error:"Connection Error !");
+                    exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
                 }
                 finally {
                     if (urlConnection != null) {
@@ -396,10 +396,10 @@ public class ContentService {
     public void getAllChannelOfGroupAsync(final String channelGroupId, final boolean isLoadMore,final ChannelCallback callback) {
 
         if (mOrgId == null || mOrgId.trim().length() == 0) {
-            callback.onError(new Throwable("Please Ensure Organization ID is Set."));
+            callback.onError(new Throwable(Constants.ORG_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable("Device Not Connected !"));
+                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 Runnable runnable = new Runnable() {
                     @Override
@@ -411,11 +411,11 @@ public class ContentService {
                             mLogger.debug(TAG + " getAllChannelOfGroupAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                             mLogger.debug(TAG + " getAllChannelOfGroupAsync "+ " mHasNextChannelOfGroup: " + mHasNext +" mPageIdChannelOfGroup: " + mPageId);
                             if(isLoadMore){
-                                if(!mHasNext){
+                                if(mHasNext){
+                                    mPageId++;
+                                }else {
                                     callback.onSuccess(mChannelList);
                                     return;
-                                }else {
-                                    mPageId++;
                                 }
                             }else{
                                 mChannelList.clear();
@@ -423,10 +423,10 @@ public class ContentService {
                                 mPageId = 0;
                             }
                             HashMap<String, String> params = new HashMap<String, String>();
-                            params.put(Constants.PAGE_ID, ""+mPageId);
-                            params.put("page_size", ""+mPageSize);
-                            params.put("sort_by", mSortBy);
-                            params.put("sort_order", mSortOrder);
+                            params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                            params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                            params.put(Constants.SORT_BY, mSortBy);
+                            params.put(Constants.SORT_ORDER, mSortOrder);
                             mLogger.debug(TAG + " getAllChannelOfGroupAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                             resourceUrl = appendPagingParameters(resourceUrl, params);
                             urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
@@ -436,10 +436,10 @@ public class ContentService {
                             callback.onSuccess(mChannelList);
                         }
                         catch (UnsupportedEncodingException e) {
-                            throwable = new Throwable("Failed To Append Paging Parameter !");
+                            throwable = new Throwable(Constants.ENCODING_ERROR);
                         }
                         catch (MalformedURLException e) {
-                            throwable = new Throwable("Invalid Thumbnail URL !");
+                            throwable = new Throwable(Constants.THUMB_URL_ERROR);
                         }
                         catch (IOException e) {
                             String error = null;
@@ -447,7 +447,7 @@ public class ContentService {
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                 error = parseError(reader);
                             }
-                            throwable = new Throwable(error!= null? error:"Connection Error !");
+                            throwable = new Throwable(error == null?Constants.CONNECTION_ERROR:error);
                         }
                         finally {
                             if (urlConnection != null) {
@@ -478,10 +478,10 @@ public class ContentService {
     public ArrayList<Channel> getAllChannel(boolean isLoadMore) throws Exception{
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            throw new Exception("Please Ensure Organization ID, Access key And Secret Are Set.");
+            throw new Exception(Constants.ACCOUNT_ERROR);
         } else {
             if(!Connection.isConnected(mContext)){
-                throw new Exception("Device Not Connected !");
+                throw new Exception(Constants.CONNECTION_ERROR);
             }else{
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
@@ -490,10 +490,10 @@ public class ContentService {
                     mLogger.debug(TAG + " getAllChannel "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannel "+ " mHasNextChannel: " + mHasNext +" mPageIdChannel: " + mPageId);
                     if(isLoadMore){
-                        if(!mHasNext){
-                           return mChannelList;
-                        }else {
+                        if(mHasNext){
                             mPageId++;
+                        }else {
+                            return mChannelList;
                         }
                     }else{
                         mChannelList.clear();
@@ -501,28 +501,28 @@ public class ContentService {
                         mPageId = 0;
                     }
                     HashMap<String, String> params = new HashMap<String, String>();
-                    params.put(Constants.PAGE_ID, ""+mPageId);
-                    params.put("page_size", ""+mPageSize);
-                    params.put("sort_by", mSortBy);
-                    params.put("sort_order", mSortOrder);
+                    params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                    params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                    params.put(Constants.SORT_BY, mSortBy);
+                    params.put(Constants.SORT_ORDER, mSortOrder);
                     mLogger.debug(TAG + " getAllChannel "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
-                    String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
+                    final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     urlConnection = (HttpURLConnection) new URL(url).openConnection();
                     urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                     JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                     parseChannels(reader);
                 }
                 catch (MalformedURLException e) {
-                    exception = new Exception("Invalid URL !");
+                    exception = new Exception(Constants.URL_ERROR);
                 }
                 catch(InvalidKeyException e){
-                    exception = new Exception("Authentication Failed !");
+                    exception = new Exception(Constants.AUTH_ERROR);
                 }
                 catch(UnsupportedEncodingException e){
-                    exception = new Exception("Authentication Failed !");
+                    exception = new Exception(Constants.AUTH_ERROR);
                 }
                 catch(URISyntaxException e){
-                    exception = new Exception("Authentication Failed !");
+                    exception = new Exception(Constants.AUTH_ERROR);
                 }
                 catch(IOException e){
                     String error = null;
@@ -530,7 +530,7 @@ public class ContentService {
                         JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                         error = parseError(reader);
                     }
-                    exception = new Exception(error!= null? error:"Connection Error !");
+                    exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
                 }
                 finally {
                     if (urlConnection != null) {
@@ -557,32 +557,32 @@ public class ContentService {
     public void getAllChannelAsync(boolean isLoadMore,final ChannelCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            callback.onError(new Throwable("Please Ensure Organization ID, Access key And Secret Are Set."));
+            callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable("Device Not Connected !"));
+                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 try {
                     String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_PATH, mOrgId);
                     mLogger.debug(TAG + " getAllChannelAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannelAsync "+ " mHasNextChannel: " + mHasNext +" mPageIdChannel: " + mPageId);
                     if(isLoadMore){
-                        if(!mHasNext){
+                        if(mHasNext){
+                            mPageId++;
+                        }else {
                             callback.onSuccess(mChannelList);
                             return;
-                        }else {
-                            mPageId++;
                         }
                     }else{
                         mChannelList.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    HashMap<String, String> params = new HashMap<String, String>();
-                    params.put(Constants.PAGE_ID, ""+mPageId);
-                    params.put("page_size", ""+mPageSize);
-                    params.put("sort_by", mSortBy);
-                    params.put("sort_order", mSortOrder);
+                    final HashMap<String, String> params = new HashMap<String, String>();
+                    params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                    params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                    params.put(Constants.SORT_BY, mSortBy);
+                    params.put(Constants.SORT_ORDER, mSortOrder);
                     mLogger.debug(TAG + " getAllChannelAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     Runnable runnable = new Runnable() {
@@ -598,7 +598,7 @@ public class ContentService {
                                 callback.onSuccess(mChannelList);
                             }
                             catch (MalformedURLException e) {
-                                throwable = new Throwable("Invalid Thumbnail URL !");
+                                throwable = new Throwable(Constants.THUMB_URL_ERROR);
                             }
                             catch (IOException e) {
                                 String error = null;
@@ -606,7 +606,7 @@ public class ContentService {
                                     JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                     error = parseError(reader);
                                 }
-                                throwable = new Throwable(error!= null? error:"Connection Error !");
+                                throwable = new Throwable(error == null?Constants.CONNECTION_ERROR:error);
                             }
                             finally {
                                 if (urlConnection != null) {
@@ -625,7 +625,7 @@ public class ContentService {
                     thread.start();
                 }
                 catch (Exception e) {
-                    callback.onError(new Throwable("Authentication Failed !"));
+                    callback.onError(new Throwable(Constants.AUTH_ERROR));
                 }
             }
         }
@@ -643,10 +643,10 @@ public class ContentService {
     public ArrayList<Media> getAllMediaOfChannel(String channelId,boolean isLoadMore) throws Exception{
 
         if (mOrgId == null || mOrgId.trim().length() == 0) {
-            throw new Exception("Please Ensure Organization ID is Set.");
+            throw new Exception(Constants.ORG_ERROR);
         } else {
             if(!Connection.isConnected(mContext)){
-                throw new Exception("Device Not Connected !");
+                throw new Exception(Constants.CONNECTION_ERROR);
             }else{
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
@@ -655,21 +655,21 @@ public class ContentService {
                     mLogger.debug(TAG + " getAllMediaOfChannel "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                     mLogger.debug(TAG + " getAllMediaOfChannel "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMediaOfChannel: " + mPageId);
                     if(isLoadMore){
-                        if(!mHasNext){
-                           return mMediaList;
+                        if(mHasNext){
+                           mPageId++;
                         }else {
-                            mPageId++;
+                            return mMediaList;
                         }
                     }else{
                         mMediaList.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    HashMap<String, String> params = new HashMap<String, String>();
-                    params.put(Constants.PAGE_ID, ""+mPageId);
-                    params.put("page_size", ""+mPageSize);
-                    params.put("sort_by", mSortBy);
-                    params.put("sort_order", mSortOrder);
+                    final HashMap<String, String> params = new HashMap<String, String>();
+                    params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                    params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                    params.put(Constants.SORT_BY, mSortBy);
+                    params.put(Constants.SORT_ORDER, mSortOrder);
                     mLogger.debug(TAG + " getAllMediaOfChannel "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                     resourceUrl = appendPagingParameters(resourceUrl, params);
                     urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
@@ -678,10 +678,10 @@ public class ContentService {
                     parseMedias(reader);
                 }
                 catch (UnsupportedEncodingException e) {
-                    exception = new Exception("Failed To Append Paging Parameter !");
+                    exception = new Exception(Constants.ENCODING_ERROR);
                 }
                 catch (MalformedURLException e) {
-                    exception = new Exception("Invalid Thumbnail URL !");
+                    exception = new Exception(Constants.THUMB_URL_ERROR);
                 }
                 catch (IOException e) {
                     String error = null;
@@ -689,7 +689,7 @@ public class ContentService {
                         JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                         error = parseError(reader);
                     }
-                    exception = new Exception(error!= null? error:"Connection Error !");
+                    exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
                 }
                 finally {
                     if (urlConnection != null) {
@@ -718,10 +718,10 @@ public class ContentService {
     public void getAllMediaOfChannelAsync(final String channelId,final boolean isLoadMore,final MediaCallback callback) {
 
         if (mOrgId == null || mOrgId.trim().length() == 0) {
-            callback.onError(new Throwable("Please Ensure Organization ID is Set."));
+            callback.onError(new Throwable(Constants.ORG_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable("Device Not Connected !"));
+                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 Runnable runnable = new Runnable() {
                     @Override
@@ -733,11 +733,11 @@ public class ContentService {
                             mLogger.debug(TAG + " getAllMediaOfChannelAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                             mLogger.debug(TAG + " getAllMediaOfChannelAsync "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMediaOfChannel: " + mPageId);
                             if(isLoadMore){
-                                if(!mHasNext){
+                                if(mHasNext){
+                                    mPageId++;
+                                }else {
                                     callback.onSuccess(mMediaList);
                                     return;
-                                }else {
-                                    mPageId++;
                                 }
                             }else{
                                 mMediaList.clear();
@@ -745,10 +745,10 @@ public class ContentService {
                                 mPageId = 0;
                             }
                             HashMap<String, String> params = new HashMap<String, String>();
-                            params.put(Constants.PAGE_ID, ""+mPageId);
-                            params.put("page_size", ""+mPageSize);
-                            params.put("sort_by", mSortBy);
-                            params.put("sort_order", mSortOrder);
+                            params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                            params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                            params.put(Constants.SORT_BY, mSortBy);
+                            params.put(Constants.SORT_ORDER, mSortOrder);
                             mLogger.debug(TAG + " getAllMediaOfChannelAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                             resourceUrl = appendPagingParameters(resourceUrl, params);
                             urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
@@ -758,10 +758,10 @@ public class ContentService {
                             callback.onSuccess(mMediaList);
                         }
                         catch (UnsupportedEncodingException e) {
-                            throwable = new Throwable("Failed To Append Paging Parameter !");
+                            throwable = new Throwable(Constants.ENCODING_ERROR);
                         }
                         catch (MalformedURLException e) {
-                            throwable = new Throwable("Invalid Thumbnail URL !");
+                            throwable = new Throwable(Constants.THUMB_URL_ERROR);
                         }
                         catch (IOException e) {
                             String error = null;
@@ -769,7 +769,7 @@ public class ContentService {
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                 error = parseError(reader);
                             }
-                            throwable = new Throwable(error!= null? error:"Connection Error !");
+                            throwable = new Throwable(error == null?Constants.CONNECTION_ERROR:error);
                         }
                         finally {
                             if (urlConnection != null) {
@@ -800,10 +800,10 @@ public class ContentService {
     public ArrayList<Media> getAllMedia(boolean isLoadMore) throws Exception{
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            throw new Exception("Please Ensure Organization ID, Access key And Secret Are Set.");
+            throw new Exception(Constants.ACCOUNT_ERROR);
         } else {
             if(!Connection.isConnected(mContext)){
-                throw new Exception("Device Not Connected !");
+                throw new Exception(Constants.CONNECTION_ERROR);
             }else{
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
@@ -812,38 +812,38 @@ public class ContentService {
                     mLogger.debug(TAG + " getAllMedia "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                     mLogger.debug(TAG + " getAllMedia "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMedia: " + mPageId);
                     if(isLoadMore){
-                        if(!mHasNext){
-                           return mMediaList;
+                        if(mHasNext){
+                           mPageId++;
                         }else {
-                            mPageId++;
+                            return mMediaList;
                         }
                     }else{
                         mMediaList.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    HashMap<String, String> params = new HashMap<String, String>();
-                    params.put(Constants.PAGE_ID, ""+mPageId);
-                    params.put("page_size", ""+mPageSize);
-                    params.put("sort_by", mSortBy);
-                    params.put("sort_order", mSortOrder);
+                    final HashMap<String, String> params = new HashMap<String, String>();
+                    params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                    params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                    params.put(Constants.SORT_BY, mSortBy);
+                    params.put(Constants.SORT_ORDER, mSortOrder);
                     mLogger.debug(TAG + " getAllMedia "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
-                    String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
+                    final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     urlConnection = (HttpURLConnection) new URL(url).openConnection();
                     urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                     JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                     parseMedias(reader);
                 }catch (MalformedURLException e) {
-                    exception = new Exception("Invalid URL !");
+                    exception = new Exception(Constants.URL_ERROR);
                 }
                 catch(InvalidKeyException e){
-                    exception = new Exception("Authentication Failed !");
+                    exception = new Exception(Constants.AUTH_ERROR);
                 }
                 catch(UnsupportedEncodingException e){
-                    exception = new Exception("Authentication Failed !");
+                    exception = new Exception(Constants.AUTH_ERROR);
                 }
                 catch(URISyntaxException e){
-                    exception = new Exception("Authentication Failed !");
+                    exception = new Exception(Constants.AUTH_ERROR);
                 }
                 catch(IOException e){
                     String error = null;
@@ -851,7 +851,7 @@ public class ContentService {
                         JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                         error = parseError(reader);
                     }
-                    exception = new Exception(error!= null? error:"Connection Error !");
+                    exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
                 }
                 finally {
                     if (urlConnection != null) {
@@ -878,32 +878,32 @@ public class ContentService {
     public void getAllMediaAsync(boolean isLoadMore,final MediaCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            callback.onError(new Throwable("Please Ensure Organization ID, Access key And Secret Are Set."));
+            callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable("Device Not Connected !"));
+                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 try {
                     String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
                     mLogger.debug(TAG + " getAllMediaAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                     mLogger.debug(TAG + " getAllMediaAsync "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMedia: " + mPageId);
                     if(isLoadMore){
-                        if(!mHasNext){
+                        if(mHasNext){
+                            mPageId++;
+                        }else {
                             callback.onSuccess(mMediaList);
                             return;
-                        }else {
-                            mPageId++;
                         }
                     }else{
                         mMediaList.clear();
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    HashMap<String, String> params = new HashMap<String, String>();
-                    params.put(Constants.PAGE_ID, ""+mPageId);
-                    params.put("page_size", ""+mPageSize);
-                    params.put("sort_by", mSortBy);
-                    params.put("sort_order", mSortOrder);
+                    final HashMap<String, String> params = new HashMap<String, String>();
+                    params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                    params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                    params.put(Constants.SORT_BY, mSortBy);
+                    params.put(Constants.SORT_ORDER, mSortOrder);
                     mLogger.debug(TAG + " getAllMediaAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     Runnable runnable = new Runnable() {
@@ -919,7 +919,7 @@ public class ContentService {
                                 callback.onSuccess(mMediaList);
                             }
                             catch (MalformedURLException e1) {
-                                throwable = new Throwable("Invalid Thumbnail URL !");
+                                throwable = new Throwable(Constants.THUMB_URL_ERROR);
                             }
                             catch (IOException e) {
                                 String error = null;
@@ -927,7 +927,7 @@ public class ContentService {
                                     JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                     error = parseError(reader);
                                 }
-                                throwable = new Throwable(error!= null? error:"Connection Error !");
+                                throwable = new Throwable(error == null?Constants.CONNECTION_ERROR:error);
                             }
                             finally {
                                 if (urlConnection != null) {
@@ -946,7 +946,7 @@ public class ContentService {
                     thread.start();
                 } 
                 catch (Exception e) {
-                    callback.onError(new Throwable("Authentication Failed !"));
+                    callback.onError(new Throwable(Constants.AUTH_ERROR));
                 }
             }
         }
@@ -963,29 +963,29 @@ public class ContentService {
      * @param state state of Media(published/unpublished) - Optional
      * @param mediaType Type of media {@link MediaType}- Optional
      * @param channelId channel id for the medias - Optional
-     * @param created_after String holding the Date the media is created after, date should be in unix format - Optional
-     * @param updated_after String holding the Date the media is updated after, date should be in unix format - Optional
-     * @param published_after String holding the Date the media is published after, date should be in unix format - Optional
+     * @param createdAfter String holding the Date the media is created after, date should be in unix format - Optional
+     * @param updatedAfter String holding the Date the media is updated after, date should be in unix format - Optional
+     * @param publishedAfter String holding the Date the media is published after, date should be in unix format - Optional
      * @throws Exception
      */
     public ArrayList<Media> searchMedia(boolean isLoadMore,String operator,String title,String description,String originalFilename,
-            String tag,String state,String mediaType,String channelId,String created_after, String updated_after, String published_after) throws Exception{
+            String tag,String state,String mediaType,String channelId,String createdAfter, String updatedAfter, String publishedAfter) throws Exception{
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            throw new Exception("Please Ensure Organization ID, Access key And Secret Are Set.");
+            throw new Exception(Constants.ACCOUNT_ERROR);
         } else {
             if(!Connection.isConnected(mContext)){
-                throw new Exception("Device Not Connected !");
+                throw new Exception(Constants.CONNECTION_ERROR);
             }else{
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
                 mLogger.debug(TAG + " searchMedia "+ " mHasNextSearchMedia: " + mHasNext +" mPageIdSearchMedia: " + mPageId);
                 try {
                     if(isLoadMore){
-                        if(!mHasNext){
-                             return mMediaList;
+                        if(mHasNext){
+                             mPageId++;
                         }else {
-                            mPageId++;
+                            return mMediaList;
                         }
                     }else{
                         mMediaList.clear();
@@ -993,54 +993,65 @@ public class ContentService {
                         mPageId = 0;
                     }
                     StringBuilder searchStr = new StringBuilder();
-                    if(title!= null)
-                        searchStr.append(String.format("%s:%s;", Constants.TITLE,title));
-                    if(description!= null)
-                        searchStr.append(String.format("%s:%s;", Constants.DESCRIPTION,description));
-                    if(originalFilename!= null)
-                        searchStr.append(String.format("%s:%s;", Constants.ORIGINAL_FILENAME,originalFilename));
-                    if(tag!= null)
-                        searchStr.append(String.format("%s:%s;", Constants.TAG,tag));
-                    if(state!= null)
-                        searchStr.append(String.format("%s:%s;", Constants.STATE,state));
-                    if(mediaType!= null)
-                        searchStr.append(String.format("%s:%s;", Constants.MEDIA_TYPE,mediaType));
-                    if(channelId!= null)
-                        searchStr.append(String.format("%s:%s;", Constants.CHANNEL_ID,channelId));
-                    if(created_after!= null)
-                        searchStr.append(String.format("%s:%s;", Constants.CREATED_AFTER,created_after));
-                    if(updated_after!= null)
-                        searchStr.append(String.format("%s:%s;", Constants.UPDATED_AFTER,updated_after));
-                    if(published_after!= null)
-                        searchStr.append(String.format("%s:%s;", Constants.PUBLISHED_AFTER,published_after));
-                    if(searchStr!= null)
-                        searchStr.deleteCharAt(searchStr.length()-1);
-                    HashMap<String, String> params = new HashMap<String, String>();
-                    params.put(Constants.PAGE_ID, ""+mPageId);
-                    params.put("page_size", ""+mPageSize);
-                    params.put("sort_by", mSortBy);
-                    params.put("sort_order", mSortOrder);
+                    if(title!= null){
+                        searchStr = searchStr.append(String.format("%s:%s;", Constants.TITLE,title));
+                    }
+                    if(description!= null){
+                        searchStr = searchStr.append(String.format("%s:%s;", Constants.DESCRIPTION,description));
+                    }
+                    if(originalFilename!= null){
+                        searchStr = searchStr.append(String.format("%s:%s;", Constants.ORIGINAL_FILENAME,originalFilename));
+                    }
+                    if(tag!= null){
+                        searchStr = searchStr.append(String.format("%s:%s;", Constants.TAG,tag));
+                    }
+                    if(state!= null){
+                        searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,state));
+                    }
+                    if(mediaType!= null){
+                        searchStr = searchStr.append(String.format("%s:%s;", Constants.MEDIA_TYPE,mediaType));
+                    }
+                    if(channelId!= null){
+                        searchStr = searchStr.append(String.format("%s:%s;", Constants.CHANNEL_ID,channelId));
+                    }
+                    if(createdAfter!= null){
+                        searchStr = searchStr.append(String.format("%s:%s;", Constants.CREATED_AFTER,createdAfter));
+                    }
+                    if(updatedAfter!= null){
+                        searchStr = searchStr.append(String.format("%s:%s;", Constants.UPDATED_AFTER,updatedAfter));
+                    }
+                    if(publishedAfter!= null){
+                        searchStr = searchStr.append(String.format("%s:%s;", Constants.PUBLISHED_AFTER,publishedAfter));
+                    }
+                    if(searchStr!= null){
+                        searchStr = searchStr.deleteCharAt(searchStr.length()-1);
+                    }
+                    final HashMap<String, String> params = new HashMap<String, String>();
+                    params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                    params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                    params.put(Constants.SORT_BY, mSortBy);
+                    params.put(Constants.SORT_ORDER, mSortOrder);
                     params.put(operator, searchStr.toString());
                     mLogger.debug(TAG +" searchMedia "+ " search String: "+ searchStr);
                     String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
                     mLogger.debug(TAG + " searchMedia "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                     mLogger.debug(TAG + " searchMedia "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
-                    String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
+                    final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     urlConnection = (HttpURLConnection) new URL(url).openConnection();
                     urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                     JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                     parseMedias(reader);
                 }catch (MalformedURLException e) {
-                    exception = new Exception("Invalid URL !");
+                    exception = new Exception(Constants.URL_ERROR);
                 }
                 catch(InvalidKeyException e){
-                    exception = new Exception("Authentication Failed !");
+                    exception = new Exception(Constants.AUTH_ERROR);
                 }
                 catch(UnsupportedEncodingException e){
-                    exception = new Exception("Authentication Failed !");
+                    exception = new Exception(Constants.AUTH_ERROR);
                 }
                 catch(URISyntaxException e){
-                    exception = new Exception("Authentication Failed !");
+                    exception = new Exception(Constants.AUTH_ERROR);
                 }
                 catch(IOException e){
                     String error = null;
@@ -1048,7 +1059,7 @@ public class ContentService {
                         JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                         error = parseError(reader);
                     }
-                    exception = new Exception(error!= null? error:"Connection Error !");
+                    exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
                 }
                 finally {
                     if (urlConnection != null) {
@@ -1088,18 +1099,18 @@ public class ContentService {
             String tag,String state,String mediaType,String channelId,String createdAfter, String updatedAfter, String publishedAfter,final MediaCallback callback) throws Exception{
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            callback.onError(new Throwable("Please Ensure Organization ID, Access key And Secret Are Set."));
+            callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable("Device Not Connected !"));
+                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 mLogger.debug(TAG + " searchMediaAsync "+ " mHasNextSearchMedia: " + mHasNext +" mPageIdSearchMedia: " + mPageId);
                 if(isLoadMore){
-                    if(!mHasNext){
+                    if(mHasNext){
+                        mPageId++;
+                    }else {
                         callback.onSuccess(mMediaList);
                         return;
-                    }else {
-                        mPageId++;
                     }
                 }else{
                     mMediaList.clear();
@@ -1107,37 +1118,48 @@ public class ContentService {
                     mPageId = 0;
                 }
                 StringBuilder searchStr = new StringBuilder();
-                if(title!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.TITLE,title));
-                if(description!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.DESCRIPTION,description));
-                if(originalFilename!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.ORIGINAL_FILENAME,originalFilename));
-                if(tag!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.TAG,tag));
-                if(state!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.STATE,state));
-                if(mediaType!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.MEDIA_TYPE,mediaType));
-                if(channelId!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.CHANNEL_ID,channelId));
-                if(createdAfter!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.CREATED_AFTER,createdAfter));
-                if(updatedAfter!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.UPDATED_AFTER,updatedAfter));
-                if(publishedAfter!= null)
-                    searchStr.append(String.format("%s:%s;", Constants.PUBLISHED_AFTER,publishedAfter));
-                if(searchStr!= null)
-                    searchStr.deleteCharAt(searchStr.length()-1);
+                if(title!= null){
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.TITLE,title));
+                }
+                if(description!= null){
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.DESCRIPTION,description));
+                }
+                if(originalFilename!= null){
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.ORIGINAL_FILENAME,originalFilename));
+                }
+                if(tag!= null){
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.TAG,tag));
+                }
+                if(state!= null){
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,state));
+                }
+                if(mediaType!= null){
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.MEDIA_TYPE,mediaType));
+                }
+                if(channelId!= null){
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.CHANNEL_ID,channelId));
+                }
+                if(createdAfter!= null){
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.CREATED_AFTER,createdAfter));
+                }
+                if(updatedAfter!= null){
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.UPDATED_AFTER,updatedAfter));
+                }
+                if(publishedAfter!= null){
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.PUBLISHED_AFTER,publishedAfter));
+                }
+                if(searchStr!= null){
+                    searchStr = searchStr.deleteCharAt(searchStr.length()-1);
+                }
                 HashMap<String, String> params = new HashMap<String, String>();
-                params.put(Constants.PAGE_ID, ""+mPageId);
-                params.put("page_size", ""+mPageSize);
-                params.put("sort_by", mSortBy);
-                params.put("sort_order", mSortOrder);
+                params.put(Constants.PAGE_ID, Integer.toString(mPageId));
+                params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
+                params.put(Constants.SORT_BY, mSortBy);
+                params.put(Constants.SORT_ORDER, mSortOrder);
                 params.put(operator, searchStr.toString());
                 mLogger.debug(TAG +" searchMediaAsync "+ " search String: "+ searchStr);
                 mLogger.debug(TAG +" searchMediaAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
-                final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
+                String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
                 mLogger.debug(TAG + " searchMediaAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
                 try {
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
@@ -1162,7 +1184,7 @@ public class ContentService {
                                     JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                     error = parseError(reader);
                                 }
-                                throwable = new Throwable(error!= null? error:"Connection Error !");
+                                throwable = new Throwable(error == null?Constants.CONNECTION_ERROR:error);
                             }
                             finally {
                                 if (urlConnection != null) {
@@ -1181,7 +1203,7 @@ public class ContentService {
                     thread.start();
                 }
                 catch (Exception e) {
-                    callback.onError(new Throwable("Authentication Failed !"));
+                    callback.onError(new Throwable(Constants.AUTH_ERROR));
                 }
             }
         }
@@ -1195,10 +1217,10 @@ public class ContentService {
      */
     public void getChannelAsync(final String channelId,final ChannelCallback callback) {
         if (mOrgId == null || mOrgId.trim().length() == 0) {
-            callback.onError(new Throwable("Please Ensure Organization ID is Set."));
+            callback.onError(new Throwable(Constants.ORG_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable("Device Not Connected !"));
+                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 Runnable runnable = new Runnable() {
                     @Override
@@ -1223,7 +1245,7 @@ public class ContentService {
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                 error = parseError(reader);
                             }
-                            callback.onError(new Throwable(error!= null? error:"Connection Error !"));
+                            callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
                         }
                         finally {
                             if (urlConnection != null) {
@@ -1248,10 +1270,10 @@ public class ContentService {
     public void getMediaAsync(final String mediaId,final MediaCallback callback) {
 
         if (mOrgId == null || mOrgId.trim().length() == 0) {
-            callback.onError(new Throwable("Please Ensure Organization ID is Set."));
+            callback.onError(new Throwable(Constants.ORG_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable("Device Not Connected !"));
+                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 Runnable runnable = new Runnable() {
                     @Override
@@ -1268,7 +1290,7 @@ public class ContentService {
                             callback.onSuccess(mediaList);
                         }
                         catch (MalformedURLException e1) {
-                            callback.onError(new Throwable("Invalid Thumbnail URL !"));
+                            callback.onError(new Throwable(Constants.THUMB_URL_ERROR));
                         }
                         catch (IOException e) {
                             String error = null;
@@ -1276,7 +1298,7 @@ public class ContentService {
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                 error = parseError(reader);
                             }
-                            callback.onError(new Throwable(error!= null? error:"Connection Error !"));
+                            callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
                         }
                         finally {
                             if (urlConnection != null) {
@@ -1297,23 +1319,23 @@ public class ContentService {
      * @param callback EncodingsCallback
      */
     public void getAllEncodingsForMediaId(final String mediaId,final EncodingsCallback callback) {
-        HashMap<String, String> params = new HashMap<String, String>();
+        final HashMap<String, String> params = new HashMap<String, String>();
         params.put(Constants.PRIMARY_USE, "all");
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            callback.onError(new Throwable("Please Ensure Organization ID, Access key And Secret Are Set."));
+            callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable("Device Not Connected"));
+                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else {
                 try {
                     if(mediaId != null && mediaId.trim().length() == 0){
                         callback.onError(new Throwable("Invalid Media Id"));
                         return;
                     }
-                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.ENCODING_PATH, mOrgId, mediaId);
+                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.ENCODING_PATH, mOrgId, mediaId);
                     mLogger.debug(TAG + " getAllEncodingsForMediaId " + " resourceUrl "+ resourceUrl);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
-                    Runnable runnable = new Runnable() {
+                    final Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
                             HttpURLConnection urlConnection = null;
@@ -1340,7 +1362,7 @@ public class ContentService {
                                     JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                     error = parseError(reader);
                                 }
-                                callback.onError(new Throwable(error!= null? error:"Connection Error !"));
+                                callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
                             }
                             finally {
                                 if (urlConnection != null) {
@@ -1349,11 +1371,11 @@ public class ContentService {
                             }
                         }
                     };
-                    Thread thread = new Thread(runnable);
+                    final Thread thread = new Thread(runnable);
                     thread.start();
 
                 }catch (Exception e) {
-                    callback.onError(new Throwable("Authentication Failed !"));
+                    callback.onError(new Throwable(Constants.AUTH_ERROR));
                 }
             }
         }
@@ -1476,7 +1498,7 @@ public class ContentService {
      * @param mediaId
      * @throws JSONException
      */
-    private void parseEncodings(JsonReader reader, String mediaId) throws JSONException{
+    private void parseEncodings(final JsonReader reader, final String mediaId) throws JSONException{
         mEncodingList.clear();
         JsonParser parser = new JsonParser();
         JsonObject object = parser.parse(reader).getAsJsonObject();
@@ -1496,8 +1518,9 @@ public class ContentService {
             }
             String url= null;
             if(PrimaryUse.Flash.equals(encoding.primaryUse)){
-                if(!(encodingObject.get(Constants.FILE_URL).isJsonNull()))
+                if(!(encodingObject.get(Constants.FILE_URL).isJsonNull())){
                     url = encodingObject.get(Constants.FILE_URL).getAsString();
+                }
             }else{
                 if(!(encodingObject.get(Constants.URL).isJsonNull()))
                     url = encodingObject.get(Constants.URL).getAsString();
@@ -1538,12 +1561,11 @@ public class ContentService {
      * @param reader
      * @return Error message
      */
-    String parseError(JsonReader reader){
+    String parseError(final JsonReader reader){
         JsonParser parser = new JsonParser();
         JsonObject object = parser.parse(reader).getAsJsonObject();
         if(!object.get("errors").isJsonNull()){
-            String error = object.get("errors").getAsString();
-            return error;
+            return object.get("errors").getAsString();
         }
         return null;
     }
@@ -1553,7 +1575,7 @@ public class ContentService {
      * @param encodingUrl
      * @return Encoding
      */
-    Encoding getEncodingFromUrl(String encodingUrl) {
+    Encoding getEncodingFromUrl(final String encodingUrl) {
         for(Encoding encoding: mEncodingList ){
             if(encoding.mEncodingUrl.toString().equalsIgnoreCase(encodingUrl)){
                 return encoding;
@@ -1569,17 +1591,16 @@ public class ContentService {
      * @param sortBy The field by which the results should be sorted. It has values like publish_date, create_date, update_date<br>
      * @param sortOrder The order in which the results should display. It has values like asc or  desc<br>
      */
-    public void setPagingParameters(int pageSize,String sortBy, String sortOrder){
+    public void setPagingParameters(final int pageSize,final String sortBy, final String sortOrder){
         mLogger.debug(TAG + " setPagingParameters "+ " pageSize: " + pageSize +" sortBy: " +sortBy+ " sortOrder: " + sortOrder);
-        if(pageSize>= 50 && pageSize <=500)
+        if(pageSize>= 50 && pageSize <=500){
             mPageSize = pageSize;
-        if(sortBy!= null){
-            if(sortBy.equalsIgnoreCase(mSortByValidValues[0])||sortBy.equalsIgnoreCase(mSortByValidValues[1]))
-                mSortBy = sortBy;
         }
-        if(sortOrder!= null){
-            if(sortOrder.equalsIgnoreCase(mSortOrderValidValues[0])||sortOrder.equalsIgnoreCase(mSortOrderValidValues[1]))
-                mSortOrder = sortOrder;
+        if(sortBy!= null && sortBy.equalsIgnoreCase(mSortValues[0])||sortBy.equalsIgnoreCase(mSortValues[1])){
+            mSortBy = sortBy;
+        }
+        if(sortOrder!= null && sortOrder.equalsIgnoreCase(mSortOrderValues[0])||sortOrder.equalsIgnoreCase(mSortOrderValues[1])){
+            mSortOrder = sortOrder;
         }
     }
 
@@ -1590,18 +1611,18 @@ public class ContentService {
      * @return Paging Parameters appended URL
      * @throws UnsupportedEncodingException
      */
-    private String appendPagingParameters(String url,Map<String, String> params) throws UnsupportedEncodingException{
+    private String appendPagingParameters(final String url,final Map<String, String> params) throws UnsupportedEncodingException{
         StringBuilder urlBuilder = new StringBuilder(url);
-        urlBuilder.append("?");
+        urlBuilder = urlBuilder.append("?");
         for (Map.Entry<String, String> entry : params.entrySet()) {
             urlBuilder.append(URLEncoder.encode(entry.getKey(),Constants.URL_CHARACTER_ENCODING_TYPE));
-            urlBuilder.append("=");
+            urlBuilder = urlBuilder.append("=");
             urlBuilder.append(URLEncoder.encode(entry.getValue(),Constants.URL_CHARACTER_ENCODING_TYPE));
-            urlBuilder.append("&");
+            urlBuilder = urlBuilder.append("&");
             urlBuilder.append(entry.getKey());
-            urlBuilder.append("=");
+            urlBuilder = urlBuilder.append("=");
             urlBuilder.append(entry.getValue());
-            urlBuilder.append("&");
+            urlBuilder = urlBuilder.append("&");
         }
         // Removing trailing "&"
         urlBuilder.deleteCharAt(urlBuilder.length() - 1);
@@ -1617,40 +1638,40 @@ public class ContentService {
      * @param encodings
      * @return Delivery
      */
-    Delivery getDeliveryForMedia(ArrayList<Encoding> encodingList) {
-        if(encodingList!= null && encodingList.size() > 0){
-        Map<Uri,ArrayList<Encoding>> encodingsMap = getEncodingsByUrl(encodingList);
-        ArrayList<Delivery> deliveryList =  new ArrayList<Delivery>();
-        for(Uri uri:encodingsMap.keySet()){
-            ArrayList<Encoding> enc = encodingsMap.get(uri);
-            Delivery delivery =  new Delivery();
-            switch (enc.get(0).primaryUse) {
-            case MobileH264:
-                delivery.mDeliveryType = DeliveryType.LVKDeliveryTypeMobileH264;
-                break;
-            case Flash:
-                delivery.mDeliveryType = DeliveryType.LVKDeliveryTypeFlash;
-                break;
-            case HttpLiveStreaming:
-                delivery.mDeliveryType = DeliveryType.LVKDeliveryTypeHTTPLiveStreaming;
-                break;
-            case Widevine:
-                delivery.mProtected = true;
-                delivery.mDeliveryType = DeliveryType.LVKDeliveryTypeWidevine;
-                break;
-            case WidevineOffline:
-                delivery.mDeliveryType = DeliveryType.LVKDeliveryTypeWidevineOffline;
-                delivery.mProtected = true;
-                delivery.mDownloadable = true;
-                break;
-            default:
-                continue;
+    Delivery getDeliveryForMedia(final ArrayList<Encoding> encodingList) {
+        if(encodingList!= null && !encodingList.isEmpty()){
+            Map<Uri,ArrayList<Encoding>> encodingsMap = getEncodingsByUrl(encodingList);
+            ArrayList<Delivery> deliveryList =  new ArrayList<Delivery>();
+            for(Uri uri:encodingsMap.keySet()){
+                ArrayList<Encoding> enc = encodingsMap.get(uri);
+                Delivery delivery =  new Delivery();
+                switch (enc.get(0).primaryUse) {
+                case MobileH264:
+                    delivery.mDeliveryType = DeliveryType.LVKDeliveryTypeMobileH264;
+                    break;
+                case Flash:
+                    delivery.mDeliveryType = DeliveryType.LVKDeliveryTypeFlash;
+                    break;
+                case HttpLiveStreaming:
+                    delivery.mDeliveryType = DeliveryType.LVKDeliveryTypeHTTPLiveStreaming;
+                    break;
+                case Widevine:
+                    delivery.mProtected = true;
+                    delivery.mDeliveryType = DeliveryType.LVKDeliveryTypeWidevine;
+                    break;
+                case WidevineOffline:
+                    delivery.mDeliveryType = DeliveryType.LVKDeliveryTypeWidevineOffline;
+                    delivery.mProtected = true;
+                    delivery.mDownloadable = true;
+                    break;
+                default:
+                    continue;
+                }
+                delivery.mRemoteURL = enc.get(0).mEncodingUrl;
+                delivery.mMediaId = enc.get(0).mMediaID;
+                deliveryList.add(delivery);
             }
-            delivery.mRemoteURL = enc.get(0).mEncodingUrl;
-            delivery.mMediaId = enc.get(0).mMediaID;
-            deliveryList.add(delivery);
-        }
-        return getSuitableDelivery(deliveryList);
+            return getSuitableDelivery(deliveryList);
         }else{
             mLogger.error(TAG + "getDeliveryForMedia : encodingList size is 0");
             return null;
@@ -1662,17 +1683,18 @@ public class ContentService {
      * @param encodingList
      * @return Map of Encoding Uri and Encoding List
      */
-    private Map<Uri,ArrayList<Encoding>> getEncodingsByUrl(ArrayList<Encoding> encodingList){
+    private Map<Uri,ArrayList<Encoding>> getEncodingsByUrl(final ArrayList<Encoding> encodingList){
         Map<Uri,ArrayList<Encoding>> map = new HashMap<Uri, ArrayList<Encoding>>();
         for(Encoding encoding:encodingList){
-            if(!(map.containsKey(encoding.mEncodingUrl))){
-                ArrayList<Encoding> enc = new ArrayList<Encoding>();
-                enc.add(encoding);
-                map.put(encoding.mEncodingUrl, enc);
-            }else if((map.containsKey(encoding.mEncodingUrl))){
+            if(map.containsKey(encoding.mEncodingUrl)){
                 ArrayList<Encoding> enc = map.get(encoding.mEncodingUrl);
                 enc.add(encoding);
                 map.put(encoding.mEncodingUrl, enc);
+            }else{
+                ArrayList<Encoding> enc = new ArrayList<Encoding>();
+                enc.add(encoding);
+                map.put(encoding.mEncodingUrl, enc);
+                
             }
         }
         return map;
@@ -1684,7 +1706,7 @@ public class ContentService {
      * @param deliveryList
      * @return Delivery
      */
-    private Delivery getSuitableDelivery(ArrayList<Delivery> deliveryList){
+    private Delivery getSuitableDelivery(final ArrayList<Delivery> deliveryList){
         DeliveryType cur = DeliveryType.LVKDeliveryTypeNone;
         Delivery delivery = null;
         for(Delivery del:deliveryList){

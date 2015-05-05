@@ -37,18 +37,18 @@ import com.limelight.videosdk.utility.Setting;
  * @author kanchan
  */
 class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
-    private Downloader mWidevineDownloader = null;
-    private String mDownloadingUrl = null;
-    private Context mContext = null;
-    private WVCallback mCallback = null;
-    private JSONObject mCredentials = null;
-    private DrmManagerClient mDrm = null;
-    private String mUri= null;
+    private Downloader mWidevineDownloader;
+    private String mDownloadingUrl;
+    private final Context mContext;
+    private WVCallback mCallback;
+    private JSONObject mCredentials;
+    private DrmManagerClient mDrm;
+    private String mUri;
     private static final String TAG = WidevineManager.class.getSimpleName();
-    private Logger mLogger=  null;
-    private DrmInfoRequest mDrmInfoRequest = null;
-    private FileInputStream mFileStream = null;
-    private ContentService mContentService = null;
+    private final Logger mLogger;
+    private DrmInfoRequest mDrmInfoRequest;
+    private FileInputStream mFileStream;
+    private final ContentService mContentService;
 
     public interface WVCallback{
         void onSuccess(String uri);
@@ -57,9 +57,9 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         void onSendMessage(String message);
     }
 
-    WidevineManager(Context ctx,ContentService svc){
+    WidevineManager(final Context ctx,final ContentService svc){
         mContext = ctx;
-        mLogger = LoggerUtil.getLogger(mContext,LoggerUtil.sLoggerName);
+        mLogger = LoggerUtil.getLogger(mContext,LoggerUtil.LOGGER_NAME);
         mContentService = svc;
     }
 
@@ -73,9 +73,14 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param encoding Encoding
      * @param cb WVCallback
      */
-    void playWidewineEncodedContent(Encoding encoding,WVCallback cb){
-        mCallback = cb;
-        if(encoding!= null && encoding.primaryUse!= null && encoding.mEncodingUrl!= null && encoding.mMediaID != null){
+    void playWidewineEncodedContent(final Encoding encoding,final WVCallback callback){
+        mCallback = callback;
+        if(encoding == null || encoding.primaryUse == null || encoding.mEncodingUrl == null || encoding.mMediaID == null){
+            if(mCallback!= null){
+                mCallback.onError(new Throwable("Invalid Encodings !"));
+            }
+        }
+        else{
             mLogger.debug(TAG + " encoding mediaID : " + encoding.mMediaID + " mEncodingUrl :" +encoding.mEncodingUrl);
             if (PrimaryUse.WidevineOffline.equals(encoding.primaryUse)) {
                 mLogger.debug(TAG + " Encoding is Widevine download ");
@@ -85,14 +90,12 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
                     mLogger.debug(TAG + " Encoding is Widevine online ");
                     requestRights(encoding.mEncodingUrl.toString(), encoding.mMediaID);
                 } catch (JSONException e) {
-                    mLogger.error(TAG + " "+e != null ?e.getStackTrace():"JSON Exception");
-                    if(mCallback!= null)
+                    mLogger.error(TAG + " "+e == null ?"JSON Exception":e.getStackTrace());
+                    if(mCallback!= null){
                         mCallback.onError(new Throwable("AcquireRights Failed !"));
+                    }
                 }
             }
-        }else{
-            if(mCallback!= null)
-                mCallback.onError(new Throwable("Invalid Encodings !"));
         }
     }
 
@@ -106,9 +109,13 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param delivery Delivery
      * @param cb WVCallback
      */
-    void playWidewineDeliveryContent(Delivery delivery,WVCallback cb){
-        mCallback = cb;
-        if(delivery!= null && delivery.mRemoteURL != null && delivery.mMediaId != null){
+    void playWidewineDeliveryContent(final Delivery delivery,final WVCallback callback){
+        mCallback = callback;
+        if(delivery == null || delivery.mRemoteURL == null || delivery.mMediaId == null){
+            if(mCallback!= null){
+                mCallback.onError(new Throwable("Invalid Delivery !"));
+            }
+        }else{
             mLogger.debug(TAG + " delivery mediaId : " + delivery.mMediaId + " mRemoteURL :" +delivery.mRemoteURL);
             if (delivery.mDownloadable && delivery.mProtected) {
                 mLogger.debug(TAG + " Delivery is Widevine download ");
@@ -118,14 +125,12 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
                     mLogger.debug(TAG + " Delivery is Widevine online ");
                     requestRights(delivery.mRemoteURL.toString(),delivery.mMediaId);
                 } catch (JSONException e) {
-                    mLogger.error(TAG + " " +e != null ?e.getStackTrace():"JSON Exception");
-                    if(mCallback!= null)
+                    mLogger.error(TAG + " " +e == null ?"JSON Exception":e.getStackTrace());
+                    if(mCallback!= null){
                         mCallback.onError(new Throwable("AcquireRights Failed !"));
+                    }
                 }
             }
-        }else{
-            if(mCallback!= null)
-                mCallback.onError(new Throwable("Invalid Delivery !"));
         }
     }
 
@@ -135,34 +140,37 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param mediaId
      * @param saveDirLocation
      */
-    private void downloadWidevine(String url, final String mediaId,String saveDirLocation) {
+    private void downloadWidevine(final String url, final String mediaId,final String saveDirLocation) {
         mLogger.debug(TAG + " widevine download url : " + url + " saveDirLocation :" + saveDirLocation + " mediaId :" + mediaId);
         mDownloadingUrl = url;
         mWidevineDownloader = new Downloader((Activity) mContext);
         mWidevineDownloader.startDownload(url, "video/wvm", saveDirLocation, mediaId,new DownLoadCallback(){
 
             @Override
-            public void onSuccess(String path) {
+            public void onSuccess(final String path) {
                 mLogger.debug(TAG + " widevine downloaded file url : " + path);
                 try {
                     requestRights(path, mediaId);
                 } catch (JSONException e) {
-                    mLogger.error(TAG + " "+e != null ?e.getStackTrace():"JSON Exception");
-                    if(mCallback!= null)
+                    mLogger.error(TAG + " "+e == null ?"JSON Exception":e.getStackTrace());
+                    if(mCallback!= null){
                         mCallback.onError(new Throwable("AcquireRights Failed !"));
+                    }
                 }
             }
 
             @Override
-            public void onError(Throwable throwable) {
-                if(mCallback!= null)
+            public void onError(final Throwable throwable) {
+                if(mCallback!= null){
                     mCallback.onError(new Throwable(throwable.getMessage()));
+                }
             }
 
             @Override
-            public void onProgress(int percentFinished) {
-                if(mCallback!= null)
+            public void onProgress(final int percentFinished) {
+                if(mCallback!= null){
                     mCallback.onProgress(percentFinished);
+                }
             }
         });
     }
@@ -173,20 +181,21 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * the rights.
      * @throws JSONException 
      */
-    private void requestRights(String uri,String mediaId) throws JSONException {
-        if(mCallback!= null)
+    private void requestRights(final String uri,String mediaId) throws JSONException {
+        if(mCallback!= null){
             mCallback.onSendMessage("Processing Widevine Rights !");
+        }
         mLogger.debug(TAG +  "widevine request rights url : " + uri + " mediaId :" + mediaId);
         mUri =  uri;
-        WidevineStatus registerStatus = register(uri,mediaId);
-        if(!(registerStatus==WidevineStatus.OK))
+        final WidevineStatus registerStatus = register(uri,mediaId);
+        if(registerStatus!=WidevineStatus.OK){
             return;
+        }
 
         // get our license
-        int val = mDrm.acquireRights(mDrmInfoRequest);
-        if(val != DrmManagerClient.ERROR_NONE){
-            if(mCallback!= null)
-                mCallback.onError(new Throwable("AcquireRights Failed"));
+        final int val = mDrm.acquireRights(mDrmInfoRequest);
+        if(val != DrmManagerClient.ERROR_NONE && mCallback!= null){
+            mCallback.onError(new Throwable("AcquireRights Failed"));
         }
         if(mFileStream != null){
             try {
@@ -203,25 +212,26 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param uri
      * @return WidevineStatus
      */
-    WidevineStatus registerAsset(String userData,String uri){
+    WidevineStatus registerAsset(final String userData,final String uri){
 
-        String deviceId = Setting.getDeviceID(mContext);
+        final String deviceId = Setting.getDeviceID(mContext);
         mDrmInfoRequest.put("WVCAUserDataKey", userData);
-        mDrmInfoRequest.put("WVAssetURIKey", uri.toString());
+        mDrmInfoRequest.put("WVAssetURIKey", uri);
         mDrmInfoRequest.put("WVDeviceIDKey",deviceId);
 
-        boolean isOffline = uri.toString().startsWith("/");
+        final boolean isOffline = uri.startsWith("/");
         if (isOffline) {
             try {
-                mFileStream = new FileInputStream(uri.toString());
-                FileDescriptor fd = mFileStream.getFD();
-                if (fd.valid()) {
-                    mLogger.debug(TAG + "FileDescriptorKey : " + fd.toString());
-                    mDrmInfoRequest.put("FileDescriptorKey", fd.toString());
+                mFileStream = new FileInputStream(uri);
+                final FileDescriptor fileDescriptor = mFileStream.getFD();
+                if (fileDescriptor.valid()) {
+                    mLogger.debug(TAG + "FileDescriptorKey : " + fileDescriptor.toString());
+                    mDrmInfoRequest.put("FileDescriptorKey", fileDescriptor.toString());
                 }else{
                     mLogger.debug(TAG + " FileDescriptorKey is invalid");
-                    if(mCallback!= null)
+                    if(mCallback!= null){
                         mCallback.onError(new Throwable("FileDescriptorKey is Invalid !"));
+                    }
                     if(mFileStream != null){
                         try {
                             mFileStream.close();
@@ -232,8 +242,9 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
                     return WidevineStatus.FileSystemError;
                 }
             } catch (FileNotFoundException e) {
-                if(mCallback!= null)
+                if(mCallback!= null){
                     mCallback.onError(new Throwable("File Not Found !"));
+                }
                 if(mFileStream != null){
                     try {
                         mFileStream.close();
@@ -243,8 +254,9 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
                 }
                 return WidevineStatus.FileNotPresent;
             } catch (IOException e) {
-                if(mCallback!= null)
+                if(mCallback!= null){
                     mCallback.onError(new Throwable("Error Adding File Key"));
+                }
                 if(mFileStream != null){
                     try {
                         mFileStream.close();
@@ -263,13 +275,12 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param mediaID
      * @throws JSONException
      */
-    void setMediaCredentials(String mediaID) throws JSONException{
-        long clientTime = System.currentTimeMillis() / 1000L;
-        String toSign = String.format("%s|%s|%s|get_license|%s",mContentService.getAccessKey(), clientTime, mediaID, mContentService.getOrgId());
-        String signature = URLAuthenticator.signWithKey(mContentService.getSecret(), toSign);
-        if(signature == null){
-            if(mCallback!= null)
-                mCallback.onError(new Throwable("Signing Failed !"));
+    void setMediaCredentials(final String mediaID) throws JSONException{
+        final long clientTime = System.currentTimeMillis() / 1000L;
+        final String toSign = String.format("%s|%s|%s|get_license|%s",mContentService.getAccessKey(), clientTime, mediaID, mContentService.getOrgId());
+        final String signature = URLAuthenticator.signWithKey(mContentService.getSecret(), toSign);
+        if(signature == null && mCallback!= null){
+            mCallback.onError(new Throwable("Signing Failed !"));
             return;
         }
         // add values to credentials
@@ -300,8 +311,8 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param mediaID
      * @throws JSONException
      */
-    private WidevineStatus register(String uri,String mediaID) throws JSONException{
-        WidevineStatus initStatus = initialize(mContext);
+    private WidevineStatus register(final String uri,final String mediaID) throws JSONException{
+        final WidevineStatus initStatus = initialize(mContext);
         if(initStatus != WidevineStatus.OK && initStatus != WidevineStatus.AlreadyInitialized){
             return WidevineStatus.NotRegistered;
         }
@@ -310,12 +321,13 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         try {
             userData = URLEncoder.encode(mCredentials.toString(), Constants.URL_CHARACTER_ENCODING_TYPE);
         } catch (UnsupportedEncodingException e) {
-            mLogger.error(TAG + " " +e != null ?e.getStackTrace():"UnsupportedEncodingException");
-            if(mCallback!= null)
+            mLogger.error(TAG + " " +e == null ?"UnsupportedEncodingException":e.getStackTrace());
+            if(mCallback!= null){
                 mCallback.onError(new Throwable("Error Encoding JSON"));
+            }
             return WidevineStatus.NotRegistered;
         }
-        WidevineStatus registerStatus = registerAsset(userData,uri);
+        final WidevineStatus registerStatus = registerAsset(userData,uri);
         if(registerStatus == WidevineStatus.OK){
             return WidevineStatus.OK;
         }
@@ -344,10 +356,10 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * Method to check whether is device is Widevine DRM enabled.
      * @return true if Widevine Supported else false
      */
-    public boolean isWideVineSupported(Context ctx){
-        DrmManagerClient drm = new DrmManagerClient(ctx);
+    public boolean isWideVineSupported(final Context ctx){
+        final DrmManagerClient drm = new DrmManagerClient(ctx);
         boolean supported = false;
-        String[] engines = drm.getAvailableDrmEngines();
+        final String[] engines = drm.getAvailableDrmEngines();
         for (String engine : engines) {
             if (engine.contains("Widevine")) {
                 supported = true;
@@ -363,12 +375,13 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * Also set the organization credentials.
      * @param context
      */
-    private WidevineStatus initialize(Context context) {
+    private WidevineStatus initialize(final Context context) {
 
         if(mDrm == null){
             if (!isWideVineSupported(context)) {
-                if(mCallback!= null)
+                if(mCallback!= null){
                     mCallback.onError(new Throwable("WideVine Unsupported Device!"));
+                }
                 return WidevineStatus.NotInitialized;
             }
             mCredentials = new JSONObject();
@@ -394,78 +407,95 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
     }
 
     @Override
-    public void onError(DrmManagerClient client, DrmErrorEvent event) {
+    public void onError(final DrmManagerClient client, final DrmErrorEvent event) {
         switch (event.getType()) {
         case DrmErrorEvent.TYPE_PROCESS_DRM_INFO_FAILED:
-            if(mCallback!= null)
+            if(mCallback!= null){
                 mCallback.onError(new Throwable("Failed To Process DRM Info !"));
+            }
             break;
         case DrmErrorEvent.TYPE_NO_INTERNET_CONNECTION:
-            if(mCallback!= null)
+            if(mCallback!= null){
                 mCallback.onError(new Throwable("Connection Error !"));
+            }
             break;
         case DrmErrorEvent.TYPE_NOT_SUPPORTED:
-            if(mCallback!= null)
+            if(mCallback!= null){
                 mCallback.onError(new Throwable("Response From The Server Cannot Be Handled !"));
+            }
             break;
         case DrmErrorEvent.TYPE_OUT_OF_MEMORY:
-            if(mCallback!= null)
+            if(mCallback!= null){
                 mCallback.onError(new Throwable("Memory Allocation Failed During Renewal. !"));
+            }
             break;
         case DrmErrorEvent.TYPE_ACQUIRE_DRM_INFO_FAILED:
-            if(mCallback!= null)
+            if(mCallback!= null){
                 mCallback.onError(new Throwable("Failed To Acquire DrmInfo. !"));
+            }
             break;
         case DrmErrorEvent.TYPE_REMOVE_ALL_RIGHTS_FAILED:
-            if(mCallback!= null)
+            if(mCallback!= null){
                 mCallback.onError(new Throwable("Failed To Remove The Rights !"));
+            }
             break;
         case DrmErrorEvent.TYPE_RIGHTS_NOT_INSTALLED:
-            if(mCallback!= null)
+            if(mCallback!= null){
                 mCallback.onError(new Throwable("Something Went Wrong Installing The Rights. !"));
+            }
             break;
         case DrmErrorEvent.TYPE_RIGHTS_RENEWAL_NOT_ALLOWED:
-            if(mCallback!= null)
+            if(mCallback!= null){
                 mCallback.onError(new Throwable("The Server Rejected The Renewal Of Rights. !"));
+            }
             break;
         default:
             Log.w(TAG, String.format("Error [%d]: %s", event.getType(), event.getMessage()));
-            if(mCallback!= null)
+            if(mCallback!= null){
                 mCallback.onError(new Throwable("DRM Error: "+event.getMessage()));
+            }
             break;
         }
         mLogger.debug(TAG + " onError event: " + event.getType());
     }
 
     @Override
-    public void onEvent(DrmManagerClient client, DrmEvent event) {
+    public void onEvent(final DrmManagerClient client, final DrmEvent event) {
         switch (event.getType()) {
         case DrmEvent.TYPE_DRM_INFO_PROCESSED:
             // check if everything went well and play if so
-            int status = mDrm.checkRightsStatus(mUri,DrmStore.Action.PLAY);
+            final int status = mDrm.checkRightsStatus(mUri,DrmStore.Action.PLAY);
             switch (status) {
             case DrmStore.RightsStatus.RIGHTS_VALID:
-                if(mCallback!= null)
+                if(mCallback!= null){
                     mCallback.onSuccess(mUri);
+                }
                 break;
             case DrmStore.RightsStatus.RIGHTS_NOT_ACQUIRED:
-                if(mCallback!= null)
+                if(mCallback!= null){
                     mCallback.onError(new Throwable("Rights Not Acquired"));
+                }
                 break;
             case DrmStore.RightsStatus.RIGHTS_EXPIRED:
-                if(mCallback!= null)
+                if(mCallback!= null){
                     mCallback.onError(new Throwable("Rights Expired"));
+                }
                 break;
             case DrmStore.RightsStatus.RIGHTS_INVALID:
-                if(mCallback!= null)
+                if(mCallback!= null){
                     mCallback.onError(new Throwable("Rights Invalid"));
+                }
+                break;
+            default:
+                Log.d(TAG, String.format("Event Status[%d]", status));
                 break;
             }
             mLogger.debug(TAG + " drm info proicessed status: " + status);
             break;
         case DrmEvent.TYPE_ALL_RIGHTS_REMOVED:
-            if(mCallback!= null)
+            if(mCallback!= null){
                 mCallback.onSendMessage("All rights Removed !");
+            }
             break;
         default:
             Log.d(TAG, String.format("Event [%d]: %s", event.getType(),event.getMessage()));
@@ -475,7 +505,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
     }
 
     @Override
-    public void onInfo(DrmManagerClient client, DrmInfoEvent event) {
+    public void onInfo(final DrmManagerClient client, final DrmInfoEvent event) {
         switch (event.getType()) {
         case DrmInfoEvent.TYPE_RIGHTS_INSTALLED:
             Log.i(TAG,"The rights have been successfully downloaded and installed");

@@ -33,7 +33,7 @@ import org.apache.log4j.helpers.LogLog;
 class LogConfigurator {
     private Level rootLevel = Level.DEBUG;
     private String filePattern = "%d - %p - %c - %t - %m%n";
-    private String fileName = null;
+    private String fileName;
     private int maxBackupSize = 5;
     private long maxFileSize = 512 * 1024;
     private boolean immediateFlush = true;
@@ -41,10 +41,11 @@ class LogConfigurator {
     private boolean resetConfiguration = true;
     private boolean internalDebugging = false;
 
-    LogConfigurator() {
+    public LogConfigurator() {
+        // TODO
     }
 
-    Level getLevel(String loggerName){
+    Level getLevel(final String loggerName){
         return Logger.getLogger(loggerName).getLevel();
 //        return Level.DEBUG;
     }
@@ -137,9 +138,8 @@ class LogConfigurator {
      * until rolling and logging format.
      */
     private void configureFileAppender() {
-        Logger root = Logger.getRootLogger();
-        RollingFileAppender rollingFileAppender;
-        Layout fileLayout = new PatternLayout(getFilePattern());
+        final RollingFileAppender rollingFileAppender;
+        final Layout fileLayout = new PatternLayout(getFilePattern());
 
         try {
             rollingFileAppender = new RollingFileAppender(fileLayout,
@@ -152,6 +152,7 @@ class LogConfigurator {
         rollingFileAppender.setMaximumFileSize(getMaxFileSize());
         rollingFileAppender.setImmediateFlush(isImmediateFlush());
 
+        final Logger root = Logger.getRootLogger();
         root.addAppender(rollingFileAppender);
     }
 
@@ -264,7 +265,7 @@ class LogConfigurator {
         this.useFileAppender = useFileAppender;
     }
 
-    void setResetConfiguration(boolean resetConfiguration) {
+    void setResetConfiguration(final boolean resetConfiguration) {
         this.resetConfiguration = resetConfiguration;
     }
 
@@ -279,7 +280,7 @@ class LogConfigurator {
         return resetConfiguration;
     }
 
-    void setInternalDebugging(boolean internalDebugging) {
+    void setInternalDebugging(final boolean internalDebugging) {
         this.internalDebugging = internalDebugging;
     }
 

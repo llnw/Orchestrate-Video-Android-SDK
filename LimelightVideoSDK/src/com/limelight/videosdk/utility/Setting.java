@@ -17,12 +17,12 @@ import android.preference.PreferenceManager;
  *
  */
 public class Setting{
-    private static final boolean mIsRelease = false;
-    private static String sApiEndPoint = null;
-    private static String sLicenseProxy = null;
-    private static String sPortalkey = null;
-    private static String sDeviceId = null;
-    private static String sAnalyticsEndPoint = null;
+    private static final boolean IS_RELEASE = true;
+    private static String sApiEndPoint;
+    private static String sLicenseProxy;
+    private static String sPortalkey;
+    private static String sDeviceId;
+    private static String sAnalyticsEndPoint;
 
 
     /**
@@ -32,7 +32,7 @@ public class Setting{
      * @param licenseProxy LicenseProxy
      * @param portalKey PortalKey
      */
-    public static void configureLimelightSettings(String apiEndPoint,String licenseProxy,String portalKey){
+    public static void configureLimelightSettings(final String apiEndPoint,final String licenseProxy,final String portalKey){
         sApiEndPoint= apiEndPoint;
         sLicenseProxy = licenseProxy;
         sPortalkey = portalKey;
@@ -44,16 +44,16 @@ public class Setting{
      * Device id is required for making requests to DRM engine in case of Widevine content.
      * @param ctx context
      */
-    public static String getDeviceID(Context ctx) {
+    public static String getDeviceID(final Context ctx) {
         // Create a device ID, if none exists
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
-        if (!preferences.contains(Constants.DEVICE_ID_KEY)) {
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+        if (preferences.contains(Constants.DEVICE_ID_KEY)) {
+            sDeviceId = preferences.getString(Constants.DEVICE_ID_KEY, "");
+        }else{
             sDeviceId = UUID.randomUUID().toString();
-            SharedPreferences.Editor editor = preferences.edit();
+            final SharedPreferences.Editor editor = preferences.edit();
             editor.putString(Constants.DEVICE_ID_KEY, sDeviceId);
             editor.commit();
-        }else{
-            sDeviceId = preferences.getString(Constants.DEVICE_ID_KEY, "");
         }
         return sDeviceId;
     }
@@ -65,10 +65,11 @@ public class Setting{
      * @param values developer account details
      * @return true if account configured else false
      */
-    public static boolean isAccountConfigured(String... values) {
-        for (String value : values) {
-            if (value == null || "".equals(value))
+    public static boolean isAccountConfigured(final String... values) {
+        for (final String value : values) {
+            if (value == null || value.trim().isEmpty()){
                 return false;
+            }
         }
         return true;
     }
@@ -80,8 +81,8 @@ public class Setting{
      * @return ContentAPIEndPoint
      */
     public static String getApiEndPoint(){
-        if(sApiEndPoint== null|| "".equals(sApiEndPoint)){
-            if(mIsRelease){
+        if(sApiEndPoint== null|| sApiEndPoint.trim().isEmpty()){
+            if(IS_RELEASE){
                   return Constants.API_ENDPOINT_PROD;
             }else{
                   return Constants.API_ENDPOINT_STAGING;
@@ -98,8 +99,8 @@ public class Setting{
      * @return AnalyticsEndPoint
      */
     public static String getLicenseProxyURL(){
-        if(sLicenseProxy== null|| "".equals(sLicenseProxy)){
-            if(mIsRelease){
+        if(sLicenseProxy== null|| sLicenseProxy.trim().isEmpty()){
+            if(IS_RELEASE){
                   return Constants.LICENSE_PROXY_PROD;
             }else{
                   return Constants.LICENSE_PROXY_STAGING;
@@ -116,7 +117,7 @@ public class Setting{
      * @return AnalyticsEndPoint
      */
     public static String getPortalKey(){
-        if(sPortalkey== null|| "".equals(sPortalkey)){
+        if(sPortalkey== null|| sPortalkey.trim().isEmpty()){
           return "Limelight";
         }else{
             return sPortalkey;
@@ -131,7 +132,7 @@ public class Setting{
      */
     public static String getAnalyticsEndPoint(){
         if(sAnalyticsEndPoint== null){
-            if(mIsRelease){
+            if(IS_RELEASE){
                   return Constants.ANALYTICS_ENDPOINT_PROD;
             }else{
                   return Constants.ANALYTICS_ENDPOINT_STAGING;

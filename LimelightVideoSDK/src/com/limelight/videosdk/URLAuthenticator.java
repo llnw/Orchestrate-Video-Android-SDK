@@ -8,6 +8,7 @@ import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -35,59 +36,61 @@ class URLAuthenticator {
      * @throws NoSuchAlgorithmException
      * @throws URISyntaxException
      */
-    static String authenticateRequest(String httpVerb,
-            String resourceUrl, String accessKey, String secret,
-            Map<String, String> params) throws InvalidKeyException,
+    static String authenticateRequest(final String httpVerb,
+            final String resourceUrl, final String accessKey, final String secret,
+            final Map<String, String> params) throws InvalidKeyException,
             UnsupportedEncodingException, NoSuchAlgorithmException, URISyntaxException {
         // Creating a sorted map
         SortedMap<String, String> sortedParams = null;
-        if(params != null)
-            sortedParams = new TreeMap<String, String>(params);
-        else
+        if(params == null){
             sortedParams = new TreeMap<String, String>();
+        }
+        else{
+            sortedParams = new TreeMap<String, String>(params);
+        }
 
         // Adding necessary items to the dictionary
         sortedParams.put(Constants.ACCESS_KEY, accessKey);
         if (!sortedParams.containsKey(Constants.EXPIRES)) {
-            sortedParams.put(Constants.EXPIRES,Long.toString((System.currentTimeMillis() / 1000) + 300));
+            sortedParams.put(Constants.EXPIRES,Long.toString(System.currentTimeMillis() / 1000 + 300));
         }
 
         // Generating signed url and the string to generate the signature from
-        URI uri = new URI(resourceUrl);
+        final URI uri = new URI(resourceUrl);
 
-        StringBuilder strToSignBuilder = new StringBuilder(httpVerb.toLowerCase());
-        strToSignBuilder.append("|");
-        strToSignBuilder.append(uri.getHost().toLowerCase());
-        strToSignBuilder.append("|");
-        strToSignBuilder.append(uri.getPath().toLowerCase());
-        strToSignBuilder.append("|");
+        StringBuilder strToSignBuilder = new StringBuilder(httpVerb.toLowerCase(Locale.ENGLISH));
+        strToSignBuilder = strToSignBuilder.append("|");
+        strToSignBuilder.append(uri.getHost().toLowerCase(Locale.ENGLISH));
+        strToSignBuilder = strToSignBuilder.append("|");
+        strToSignBuilder.append(uri.getPath().toLowerCase(Locale.ENGLISH));
+        strToSignBuilder = strToSignBuilder.append("|");
 
         StringBuilder signedUrlBuilder = new StringBuilder(resourceUrl);
-        signedUrlBuilder.append("?");
+        signedUrlBuilder = signedUrlBuilder.append("?");
 
         // Iterating through keys in sorted order to build up the string to sign
         // and the signed url query string
         for (Map.Entry<String, String> entry : sortedParams.entrySet()) {
             signedUrlBuilder.append(URLEncoder.encode(entry.getKey(),Constants.URL_CHARACTER_ENCODING_TYPE));
-            signedUrlBuilder.append("=");
+            signedUrlBuilder = signedUrlBuilder.append("=");
             signedUrlBuilder.append(URLEncoder.encode(entry.getValue(),Constants.URL_CHARACTER_ENCODING_TYPE));
-            signedUrlBuilder.append("&");
+            signedUrlBuilder = signedUrlBuilder.append("&");
 
             strToSignBuilder.append(entry.getKey());
-            strToSignBuilder.append("=");
+            strToSignBuilder = strToSignBuilder.append("=");
             strToSignBuilder.append(entry.getValue());
-            strToSignBuilder.append("&");
+            strToSignBuilder = strToSignBuilder.append("&");
         }
 
         // Removing trailing "&"
         strToSignBuilder.deleteCharAt(strToSignBuilder.length() - 1);
 
         // Create the signature
-        String signature = signWithKey(secret,strToSignBuilder.toString());
+        final String signature = signWithKey(secret,strToSignBuilder.toString());
         if(signature == null){
             throw new InvalidKeyException();
         }
-        signedUrlBuilder.append("signature=");
+        signedUrlBuilder = signedUrlBuilder.append("signature=");
         signedUrlBuilder.append(URLEncoder.encode(signature,Constants.URL_CHARACTER_ENCODING_TYPE));
 
         return signedUrlBuilder.toString();
@@ -100,15 +103,15 @@ class URLAuthenticator {
      * @param data data to be signed
      * @return signed data
      */
-    static String signWithKey(String key, String data){
+    static String signWithKey(final String key, final String data){
         try{
-            Key secretKey = new SecretKeySpec(key.getBytes(), Constants.SHA256_HASH_ALGORITHM);
-            Mac mac = Mac.getInstance(Constants.SHA256_HASH_ALGORITHM);
+            final Key secretKey = new SecretKeySpec(key.getBytes(), Constants.SHA256_HASH_ALGORITHM);
+            final Mac mac = Mac.getInstance(Constants.SHA256_HASH_ALGORITHM);
             mac.init(secretKey);
             byte[] hashValue = mac.doFinal(data.getBytes(Constants.URL_CHARACTER_ENCODING_TYPE));
             return Base64.encodeToString(hashValue, Base64.DEFAULT).trim();
         }catch (Exception e){
-            //do nothing.handled in authenticatRequest()
+            //do nothing.handled in authenticatRequest()//TODO
         }
         return null;
     }

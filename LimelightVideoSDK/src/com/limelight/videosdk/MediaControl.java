@@ -16,58 +16,60 @@ import android.widget.MediaController;
  */
 class MediaControl extends MediaController{
 
-    private Context mContext;
+    private final Context mContext;
     private FullScreenCallback mFullScreenCallback;
     private boolean mIsFullScreen;
 
-    public MediaControl(Context context, boolean useFastForward) {
+    public MediaControl(final Context context, final boolean useFastForward) {
         super(context, useFastForward);
         mContext = context;
     }
 
-    public MediaControl(Context context, AttributeSet attrs) {
+    public MediaControl(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
 
-    public MediaControl(Context context) {
+    public MediaControl(final Context context) {
         super(context);
         mContext = context;
     }
 
     @Override 
-    public void setAnchorView(View view) {
+    public void setAnchorView(final View view) {
         super.setAnchorView(view);
-        Button searchButton = new Button(mContext);
+        final Button searchButton = new Button(mContext);
         searchButton.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if(mIsFullScreen)
+            public void onClick(final View view) {
+                if(mIsFullScreen){
                     mFullScreenCallback.fullScreen();
-               else
+                }
+               else{
                    mFullScreenCallback.closeFullScreen();
+               }
             }
         });
-        ShapeDrawable d = new ShapeDrawable(new RectShape());
-        d.getPaint().setColor(Color.WHITE);
-        searchButton.setBackgroundDrawable(d);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(30, 20);
+        final ShapeDrawable drawable = new ShapeDrawable(new RectShape());
+        drawable.getPaint().setColor(Color.WHITE);
+        searchButton.setBackgroundDrawable(drawable);
+        final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(30, 20);
         params.gravity = Gravity.RIGHT;
         params.rightMargin = 30;
         params.topMargin = 20;
         addView(searchButton, params);
         //add a vertical bar to view
-        View rightVerticalBar = new View(mContext);
+        final View rightVerticalBar = new View(mContext);
         rightVerticalBar.setBackgroundColor(Color.BLACK);
-        FrameLayout.LayoutParams rightVerticalBarParams = new FrameLayout.LayoutParams(2,15);
+        final FrameLayout.LayoutParams rightVerticalBarParams = new FrameLayout.LayoutParams(2,15);
         rightVerticalBarParams.gravity = Gravity.RIGHT;
         rightVerticalBarParams.rightMargin = 33;
         rightVerticalBarParams.topMargin = 22;
         addView(rightVerticalBar, rightVerticalBarParams);
         //add a vertical bar to view
-        View leftVerticalBar = new View(mContext);
+        final View leftVerticalBar = new View(mContext);
         leftVerticalBar.setBackgroundColor(Color.BLACK);
-        FrameLayout.LayoutParams leftVerticalBarParams = new FrameLayout.LayoutParams(2,15);
+        final FrameLayout.LayoutParams leftVerticalBarParams = new FrameLayout.LayoutParams(2,15);
         leftVerticalBarParams.gravity = Gravity.RIGHT;
         leftVerticalBarParams.rightMargin = 55;
         leftVerticalBarParams.topMargin = 22;
@@ -79,7 +81,7 @@ class MediaControl extends MediaController{
      * @param callback
      * @param fullScreen
      */
-    void setFullScreenCallback(FullScreenCallback callback,boolean fullScreen){
+    void setFullScreenCallback(final FullScreenCallback callback,final boolean fullScreen){
         mFullScreenCallback = callback;
         mIsFullScreen = fullScreen;
     }

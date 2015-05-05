@@ -81,6 +81,13 @@ public class Constants {
     public static final int TYPE_CHANNEL_GROUP = 1;
     public static final int TYPE_CHANNEL = 2;
     public static final int TYPE_MEDIA = 3;
+    public static final String ACCOUNT_ERROR = "Please Ensure Organization ID, Access key And Secret Are Set.";
+    public static final String CONNECTION_ERROR = "Device Not Connected !";
+    public static final String AUTH_ERROR = "Authentication Failed !";
+    public static final String URL_ERROR = "Invalid URL !";
+    public static final String THUMB_URL_ERROR = "Invalid Thumbnail URL !";
+    public static final String ENCODING_ERROR = "Failed To Append Paging Parameter !";
+    public static final String ORG_ERROR = "Please Ensure Organization ID is Set.";
     /**
      * Various message states.<br>
      * status 0<br>
