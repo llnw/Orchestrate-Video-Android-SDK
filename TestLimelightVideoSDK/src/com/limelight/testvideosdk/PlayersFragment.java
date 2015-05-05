@@ -195,9 +195,10 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                 if("RTSP".equalsIgnoreCase(scheme)){
                     mControl.play(mMediaInfo, null);//used with delivery
                 }else{
-                    if(mDeliveryCheck.isChecked())
+                    if(mDeliveryCheck.isChecked()){
                         //This content service object is passed from Media or ALL media tab.
                         mControl.play(mMediaInfo, svc);//used with delivery
+                    }
                     else{
                         getAllEncodings(mMediaInfo, svc);
                     }

@@ -197,6 +197,5 @@ public class PlayerActivity extends FragmentActivity implements
         mPlayerFragment.setControl(mControl);
         mPlayerFragment.showProgress(false,null);
         mPlayerFragment.show();
-        mControl.play(null, null);
     }
 }

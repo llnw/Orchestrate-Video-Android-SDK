@@ -259,186 +259,162 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
      */
     private class PlayerControl implements IPlayerControl {
 
-        //options are : media id,remote url or local url
-        public void play(final String media, final ContentService contentService) {
-            /*if URL is valid, it can be direct remote URL ,encoding remote URL or Local content URL
-            if it is encoding URL fetch URL from encoding URL map
-            if direct remote URL then play
-            if local content URL  then play.*/
+        /**
+         * This method is to play the local file.
+         * @param localURL The content URL to the local file.
+         */
+        private void playLocalURL(final String localURL) {
             if (mLogger != null) {
-                mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
-                mLogger.debug(TAG+" Media play:"+ media);
+                mLogger.debug(TAG+" Local Content: "+localURL);
             }
-            if(media != null && mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
-                mPlayerView.stopPlayback();
-                mPlayerView.mPlayerState = PlayerState.stopped;
-            }
-            if(URLUtil.isValidUrl(media)){
-                //Local content URL
-                if(URLUtil.isContentUrl(media)){
-                    if (mLogger != null) {
-                        mLogger.debug(TAG+" Local Content: "+media);
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setVideoPath(localURL);
                     }
-                    try {
-                        getActivity().runOnUiThread(new Runnable() {
+                });
+            } catch (Exception ex) {
+                playerError();
+            }
+        }
+
+        /**
+         * This method is to play the remote URL.
+         * @param remoteURL The remote URL to the remote file.
+         * @param contentService The ContentService object.
+         */
+        private void playRemoteURL(final String remoteURL, final ContentService contentService) {
+
+            if (mPlayerCallback != null)
+                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+            if(contentService != null){
+                Encoding encoding = contentService.getEncodingFromUrl(remoteURL);
+                if(encoding != null){
+                    mMediaId = encoding.mMediaID;
+                    if (PrimaryUse.WidevineOffline.equals(encoding.primaryUse)||PrimaryUse.Widevine.equals(encoding.primaryUse)) {
+                        mWidevineManager = new WidevineManager(getActivity(),contentService);
+                        mWidevineManager.playWidewineEncodedContent(encoding, new WVCallback() {
                             @Override
-                            public void run() {
-                                setVideoPath(media);
-                                play();
-                            }
-                        });
-                    } catch (Exception ex) {
-                        playerError();
-                    }
-                }
-                //encoded remote URL or direct remote url
-                else{
-                    if (mPlayerCallback != null)
-                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
-                    if(contentService != null){
-                        Encoding encoding = contentService.getEncodingFromUrl(media);
-                        if(encoding != null){
-                            mMediaId = encoding.mMediaID;
-                            if (PrimaryUse.WidevineOffline.equals(encoding.primaryUse)||PrimaryUse.Widevine.equals(encoding.primaryUse)) {
-                                mWidevineManager = new WidevineManager(getActivity(),media,contentService);
-                                mWidevineManager.playWidewineEncodedContent(encoding, new WVCallback() {
-                                    @Override
-                                    public void onSuccess(final String path) {
-                                        if (mLogger != null) {
-                                            mLogger.debug(TAG+" Remote widevine Content: path : "+path);
-                                        }
-                                        try {
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    setVideoPath(path);
-                                                }
-                                            });
-                                        } catch (Exception ex) {
-                                            playerError();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable throwable) {
-                                        reset();
-                                        if (mPlayerCallback != null)
-                                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
-                                    }
-
-                                    @Override
-                                    public void onProgress(int percentFinished) {
-                                        if (mPlayerCallback != null)
-                                            mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
-                                    }
-
-                                    @Override
-                                    public void onSendMessage(String message) {
-                                        if(mPlayerCallback != null)
-                                            mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
-                                    }
-                                });
-                            } else {
-                                if(null != encoding.mEncodingUrl){
-                                    final String url = encoding.mEncodingUrl.toString();
-                                    if (mLogger != null) {
-                                        mLogger.debug(TAG+" Encoding remote URL: " + url);
-                                    }
-                                    try {
-                                        getActivity().runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                setVideoUri(Uri.parse(url));
-                                                //play();
-                                            }
-                                        });
-                                    } catch (Exception ex) {
-                                        playerError();
-                                    }
-                                }else{
-                                    if (mLogger != null) {
-                                        mLogger.debug(TAG+" Encoding Remote url is null");
-                                    }
-                                    if (mPlayerCallback != null)
-                                        mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"InValid Media !");
-                                }
-                            }
-                        }else{
-                            String mimetype = MimeTypeMap.getFileExtensionFromUrl(media);
-                            if("wvm".equalsIgnoreCase(mimetype)){
+                            public void onSuccess(final String path) {
                                 if (mLogger != null) {
-                                    mLogger.debug(TAG+" widevine direct url Content: "+media);
+                                    mLogger.debug(TAG+" Remote widevine Content: path : "+path);
                                 }
-                                Delivery delivery =  new Delivery();
-                                delivery.mRemoteURL = Uri.parse(media);
-                                String[] paths = media.split("/");
-                                delivery.mMediaId = paths[5];
-                                if (mLogger != null) {
-                                    mLogger.debug(TAG+" Local widevine Content: media Id : "+delivery.mMediaId);
-                                }
-                                delivery.mProtected = true;
-                                mWidevineManager = new WidevineManager(getActivity(), media,contentService);
-                                mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
-                                    @Override
-                                    public void onSuccess(final String path) {
-                                        if (mLogger != null) {
-                                            mLogger.debug(TAG+" Delivery widevine media path" + path);
-                                        }
-                                        try {
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    setVideoPath(path);
-                                                }
-                                            });
-                                        } catch (Exception ex) {
-                                            playerError();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable throwable) {
-                                        reset();
-                                        if (mPlayerCallback != null)
-                                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
-                                    }
-
-                                    @Override
-                                    public void onProgress(int percentFinished) {
-                                        if (mPlayerCallback != null)
-                                            mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
-                                    }
-
-                                    @Override
-                                    public void onSendMessage(String message) {
-                                        if(mPlayerCallback != null)
-                                            mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
-                                    }
-                                });
-                            }
-                            else {
-                                //this is direct remote URL
                                 try {
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            setVideoPath(media);
-                                            return;
+                                            setVideoPath(path);
                                         }
                                     });
                                 } catch (Exception ex) {
                                     playerError();
-                                    return;
                                 }
                             }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                reset();
+                                if (mPlayerCallback != null)
+                                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                            }
+
+                            @Override
+                            public void onProgress(int percentFinished) {
+                                if (mPlayerCallback != null)
+                                    mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
+                            }
+
+                            @Override
+                            public void onSendMessage(String message) {
+                                if(mPlayerCallback != null)
+                                    mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
+                            }
+                        });
+                    } else {
+                        if(null != encoding.mEncodingUrl){
+                            final String url = encoding.mEncodingUrl.toString();
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" Encoding remote URL: " + url);
+                            }
+                            try {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        setVideoUri(Uri.parse(url));
+                                    }
+                                });
+                            } catch (Exception ex) {
+                                playerError();
+                            }
+                        }else{
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" Encoding Remote url is null");
+                            }
+                            if (mPlayerCallback != null)
+                                mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Invalid Media !");
                         }
-                    }else{
-                        //play directly
+                    }
+                }else{
+                    String mimetype = MimeTypeMap.getFileExtensionFromUrl(remoteURL);
+                    if("wvm".equalsIgnoreCase(mimetype)){
+                        if (mLogger != null) {
+                            mLogger.debug(TAG+" widevine direct url Content: "+remoteURL);
+                        }
+                        Delivery delivery =  new Delivery();
+                        delivery.mRemoteURL = Uri.parse(remoteURL);
+                        String[] paths = remoteURL.split("/");
+                        delivery.mMediaId = paths[5];
+                        if (mLogger != null) {
+                            mLogger.debug(TAG+" Local widevine Content: media Id : "+delivery.mMediaId);
+                        }
+                        delivery.mProtected = true;
+                        mWidevineManager = new WidevineManager(getActivity(),contentService);
+                        mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
+                            @Override
+                            public void onSuccess(final String path) {
+                                if (mLogger != null) {
+                                    mLogger.debug(TAG+" Delivery widevine media path" + path);
+                                }
+                                try {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            setVideoPath(path);
+                                        }
+                                    });
+                                } catch (Exception ex) {
+                                    playerError();
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                reset();
+                                if (mPlayerCallback != null)
+                                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                            }
+
+                            @Override
+                            public void onProgress(int percentFinished) {
+                                if (mPlayerCallback != null)
+                                    mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
+                            }
+
+                            @Override
+                            public void onSendMessage(String message) {
+                                if(mPlayerCallback != null)
+                                    mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
+                            }
+                        });
+                    }
+                    else {
+                        //this is direct remote URL
                         try {
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    setVideoPath(media);
+                                    setVideoPath(remoteURL);
                                     return;
                                 }
                             });
@@ -448,111 +424,186 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         }
                     }
                 }
-            }
-            //it may be 3GP or just media Id
-            //if media ID, fetch encodings and find suitable delivery and play
-            else if(media!= null && media.trim().length()>0){
-                if (mPlayerCallback != null)
-                    mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
-                String scheme = Uri.parse(media).getScheme();
-                if (mLogger != null) {
-                    mLogger.debug(TAG+" 3gp or delivery media : " + media);
+            }else{
+                //play directly
+                try {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setVideoPath(remoteURL);
+                            return;
+                        }
+                    });
+                } catch (Exception ex) {
+                    playerError();
+                    return;
                 }
-                if("RTSP".equalsIgnoreCase(scheme)){
-                    setVideoPath(media);
-                }else{
-                    if (mLogger != null) {
-                        mLogger.debug(TAG+" Fetch encodings to get delivery for media id:" + media);
-                    }
-                    if(contentService == null){
-                        if (mLogger != null) {
-                            mLogger.debug(TAG+" media URL : "+media);
-                        }
-                        if (mPlayerCallback != null)
-                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Media Library !");
-                        return;
-                    }
-                    contentService.getAllEncodingsForMediaId(media, new EncodingsCallback() {
+            }
+        }
 
-                        @Override
-                        public void onError(Throwable throwable) {
-                            if (mPlayerCallback != null)
-                                mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
-                        }
+        /**
+         * This method is to play the given RTSP url this is for 3GP.
+         * @param rtspURL The rtsp UTL of the content to play.
+         * @param contentService The ContentService object.
+         */
+        private void playRTSP(final String rtspURL) {
+            if (mPlayerCallback != null)
+                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+            if (mLogger != null) {
+                mLogger.debug(TAG+" 3gp media : " + rtspURL);
+            }
+            setVideoPath(rtspURL);
+        }
 
-                        @Override
-                        public void onSuccess(ArrayList<Encoding> encodingList) {
-                            mMediaId = media;
-                            final Delivery delivery = contentService.getDeliveryForMedia(encodingList);
-                            if(delivery!= null){
-                                if (delivery.mProtected) {
+        /**
+         * This method is to play the given mediaID.
+         * @param mediaID The mediaID of the content to play.
+         * @param contentService The ContentService object.
+         */
+        private void playMediaID(final String mediaID, final ContentService contentService) {
+            if (mPlayerCallback != null)
+                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+            if (mLogger != null) {
+                mLogger.debug(TAG+" delivery media : " + mediaID);
+            }
+            if (mLogger != null) {
+                mLogger.debug(TAG+" Fetch encodings to get delivery for media id:" + mediaID);
+            }
+            if(contentService == null){
+                if (mLogger != null) {
+                    mLogger.debug(TAG+" media URL : "+mediaID);
+                }
+                if (mPlayerCallback != null)
+                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Media Library !");
+                return;
+            }
+            contentService.getAllEncodingsForMediaId(mediaID, new EncodingsCallback() {
+
+                @Override
+                public void onError(Throwable throwable) {
+                    if (mPlayerCallback != null)
+                        mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                }
+
+                @Override
+                public void onSuccess(ArrayList<Encoding> encodingList) {
+                    mMediaId = mediaID;
+                    final Delivery delivery = contentService.getDeliveryForMedia(encodingList);
+                    if(delivery!= null){
+                        if (delivery.mProtected) {
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" Delivery is widevine" + mediaID);
+                            }
+                            mWidevineManager = new WidevineManager(getActivity(),contentService);
+                            mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
+                                @Override
+                                public void onSuccess(final String path) {
                                     if (mLogger != null) {
-                                        mLogger.debug(TAG+" Delivery is widevine" + media);
+                                        mLogger.debug(TAG+" Delivery widevine media path" + path);
                                     }
-                                    mWidevineManager = new WidevineManager(getActivity(), media,contentService);
-                                    mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
-                                        @Override
-                                        public void onSuccess(final String path) {
-                                            if (mLogger != null) {
-                                                mLogger.debug(TAG+" Delivery widevine media path" + path);
-                                            }
-                                            try {
-                                                getActivity().runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        setVideoPath(path);
-                                                    }
-                                                });
-                                            } catch (Exception ex) {
-                                                playerError();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable throwable) {
-                                            reset();
-                                            if (mPlayerCallback != null)
-                                                mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
-                                        }
-
-                                        @Override
-                                        public void onProgress(int percentFinished) {
-                                            if (mPlayerCallback != null)
-                                                mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
-                                        }
-
-                                        @Override
-                                        public void onSendMessage(String message) {
-                                            if(mPlayerCallback != null)
-                                                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
-                                        }
-                                    });
-                                }
-                                else {
                                     try {
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                setVideoUri(Uri.parse(delivery.mRemoteURL.toString()));
-                                                //play();
+                                                setVideoPath(path);
                                             }
                                         });
                                     } catch (Exception ex) {
                                         playerError();
                                     }
                                 }
-                            }else{
-                                if (mPlayerCallback != null)
-                                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Proper Delivery Found");
+
+                                @Override
+                                public void onError(Throwable throwable) {
+                                    reset();
+                                    if (mPlayerCallback != null)
+                                        mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                                }
+
+                                @Override
+                                public void onProgress(int percentFinished) {
+                                    if (mPlayerCallback != null)
+                                        mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
+                                }
+
+                                @Override
+                                public void onSendMessage(String message) {
+                                    if(mPlayerCallback != null)
+                                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
+                                }
+                            });
+                        }
+                        else {
+                            try {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        setVideoUri(Uri.parse(delivery.mRemoteURL.toString()));
+                                    }
+                                });
+                            } catch (Exception ex) {
+                                playerError();
                             }
                         }
-                    });
+                    }else{
+                        if (mPlayerCallback != null)
+                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Proper Delivery Found");
+                    }
                 }
-            }else{
-                if (mLogger != null) {
-                    mLogger.debug(TAG+" Simply play");
+            });
+
+        }
+
+        /**
+         * This method is to play the media.
+         * @param media The media string which can hold mediaID,remote URL or local URL.
+         * @param contentService The ContentService object.
+         */
+        public void play(final String media, final ContentService contentService) {
+            /*if URL is valid, it can be direct remote URL ,encoding remote URL or Local content URL
+            if it is encoding URL fetch URL from encoding URL map
+            if direct remote URL then play
+            if local content URL  then play.*/
+            if (mLogger != null) {
+                mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+                mLogger.debug(TAG+" Media play:"+ media);
+            }
+            if(media!= null && media.trim().length()>0){
+                if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
+                    mPlayerView.stopPlayback();
+                    mPlayerView.mPlayerState = PlayerState.stopped;
                 }
-                play();
+
+                if(URLUtil.isValidUrl(media)){
+                    //Local content URL
+                    if(URLUtil.isContentUrl(media)){
+                        playLocalURL(media);
+                    }
+                    //encoded remote URL or direct remote url
+                    else{
+                        playRemoteURL(media, contentService);
+                    }
+                }
+                //it may be 3GP or just media Id
+                //if media ID, fetch encodings and find suitable delivery and play
+                else{
+                    String scheme = Uri.parse(media).getScheme();
+                    if (mLogger != null) {
+                        mLogger.debug(TAG+" 3gp or delivery media : " + media);
+                    }
+                    if("RTSP".equalsIgnoreCase(scheme)){
+                        playRTSP(media);
+                    }
+                    else
+                    {
+                        playMediaID(media, contentService);
+                    }
+                }
+            }
+            else
+            {
+                if (mPlayerCallback != null)
+                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Invalid Media!");
             }
         }
 
@@ -754,8 +805,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     }
                 });
                 startTimerForBuffer();
+                mPlayerControl.play();
             }else{
                 mPlayerCallback.playerPrepared(mPlayerControl);
+                mPlayerControl.play();
             }
         }
         if (mLogger != null) {

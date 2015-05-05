@@ -321,7 +321,6 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
             mPlayerFragment.show();
             mPlayerFragment.showKeyboard(false);
         }
-        mControl.play(null,null);
     }
 
     @Override

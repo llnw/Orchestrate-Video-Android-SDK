@@ -57,7 +57,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         void onSendMessage(String message);
     }
 
-    WidevineManager(Context ctx,String media,ContentService svc){
+    WidevineManager(Context ctx,ContentService svc){
         mContext = ctx;
         mLogger = LoggerUtil.getLogger(mContext,LoggerUtil.sLoggerName);
         mContentService = svc;
