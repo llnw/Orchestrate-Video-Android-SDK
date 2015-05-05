@@ -50,3 +50,5 @@ SCREEN_SHOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
 
 FORWARD_SEC = 15
 REVERSE_SEC = 5
+
+ICON_DIR = os.path.join(SCREEN_SHOT_DIR, "player_btn")

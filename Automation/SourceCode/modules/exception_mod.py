@@ -36,7 +36,7 @@ def handle_exception(function):
             return function(*args, **kwargs)
         except Exception as ex:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            error("The traceback is :\n"+"" \
+            error("The traceback is ::::\n"+"" \
              .join(traceback.format_exception(exc_type, exc_value,
                                               exc_traceback)))
             error ("Exception Occurred: %s" %str(ex))

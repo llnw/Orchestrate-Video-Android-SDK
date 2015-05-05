@@ -11,12 +11,8 @@ import re
 import os
 import datetime
 from modules.appium_driver import Driver
-from modules.logger import info, error, warning, success
-from modules.constant import MEDIUM_WAIT, SORT_WAIT, \
-                     APPIUM_SERVER, TEST_TARGET_CFG, MAPPER, \
-                     FETCHING_MEDIA_MSG, \
-                     WIDEVINE_OFFLINE_DOWNLOAD_MSG, SCREEN_SHOT_DIR, \
-                     FORWARD_SEC, REVERSE_SEC
+from modules.logger import info, error, warning, exception, success, fail
+from modules.constant import *
 from modules import exception_mod
 from modules.OpenCvLib import OpenCvLibrary
 
@@ -240,6 +236,16 @@ class Limelight(object):
         info("screen shot taken : %s"%f_nam)
         return f_nam
 
+    def take_screenshot_of_element(self, element_name, generic_param=()):
+        """ Take screen shot from the device and save it in hard disk """
+        f_nam = datetime.datetime.now().strftime("SS-%Y_%m_%d_%H_%M_%S.png")
+        f_nam = os.path.join(SCREEN_SHOT_DIR, f_nam)
+        self.__obj.take_screenshot_of_element( element_name,
+                                               generic_param=generic_param,
+                                               file_name=f_nam)
+        info("screen shot taken : %s"%f_nam)
+        return f_nam
+
     def perform_home_btn_press(self):
         """ Perform home key press """
         global TAB_POINT
@@ -403,6 +409,90 @@ class Limelight(object):
         """ List comparison helper function"""
         return reduce( lambda v1, v2: v1 and v2,
                        map(lambda ei: ei in list1, list2))
+
+    @exception_mod.handle_exception
+    def check_icon(self, check_ele, verify_data, should_equal):
+        """
+        """
+        if check_ele.lower().strip().endswith(" tab"):
+            tab_name = re.search( "(\S+)\s+TAB", check_ele,
+                                  flags=re.IGNORECASE).group(1)
+            self.select_tab(tab_name)
+
+            for element_text, icon_name in verify_data:
+                info("checking : %s :: %s" % (element_text, icon_name))
+                last_excp = ""
+                for ech_try in range(3):
+                    try:
+                        scrn_sht_file = self.take_screenshot_of_element(
+                                                     "icon-of-item",
+                                                     (element_text, ))
+
+                        stat = OpenCvLibrary.search_picture_in_picture(
+                                      scrn_sht_file,
+                                      os.path.join(ICON_DIR, icon_name))
+                        if stat and should_equal:
+                            success("icon matched: %s - %s" % \
+                                 (element_text, icon_name))
+                        elif not stat and not should_equal:
+                            success("icon not matched: %s - %s" % \
+                                 (element_text, icon_name))
+                        elif should_equal:
+                            raise Exception("icon not matched: %s - %s" % \
+                                 (element_text, icon_name))
+                        elif not should_equal:
+                            raise Exception("icon matched: %s - %s" % \
+                                 (element_text, icon_name))
+                        try:
+                            os.remove(scrn_sht_file)
+                        except Exception as os_ex:
+                            info("Not able to delete file :: %s" % str(os_ex))
+                        break
+                    except Exception as ex:
+                        last_excp = str(ex)
+                        info(last_excp + "--- Retrying" )
+                        self.__obj.wait_for(LONG_WAIT)
+                else:
+                    raise Exception(last_excp)
+
+
+    @exception_mod.handle_exception
+    def check_errors(self, check_ele, verify_data, should_equal):
+        """
+        Match the error message from device with the error message from
+        feature file
+        """
+        # If we checking the data of a tab
+        if check_ele.lower().strip().endswith(" tab"):
+            tab_name = re.search( "(\S+)\s+TAB", check_ele,
+                                  flags=re.IGNORECASE).group(1)
+
+            self.select_tab(tab_name)
+            error_msg = ""
+            for ech_try in range(1,5):
+                try:
+                    error_msg = self.get_value("error-message-in-tab")
+                    break
+                except Exception as ex:
+                    info(str(ex))
+                    info("retrying %s wait for 2 secs" % ech_try)
+                    self.__obj.wait_for(2)
+
+            if error_msg.lower().strip() == verify_data[0].lower().strip() \
+              and should_equal:
+                success(exception_mod.equal_success_msg % error_msg)
+
+            elif error_msg.lower().strip() != verify_data[0].lower().strip() \
+              and not should_equal:
+                success(exception_mod.not_equal_success_msg % ( verify_data,
+                                                              error_msg))
+            elif should_equal :
+                raise exception_mod.NotEqualException(verify_data, error_msg)
+
+            else:
+                raise exception_mod.EqualException(error_msg)
+
+
 
     @exception_mod.handle_exception
     def check_contains(self, check_ele, verify_data, should_equal):
@@ -708,8 +798,11 @@ class Limelight(object):
                         break
                     except Exception as ex:
                         info(str(ex))
-
-                self.click_on("player")
+                try:
+                    self.click_on("player")
+                except Exception as ex:
+                    info(str(ex))
+                    self.__obj.wait_for(2)
                 info("player elapsed time not found, retrying again")
 
         elif opr.strip().lower() == "pause":
@@ -1013,8 +1106,9 @@ class Limelight(object):
         if not bfr_elapsed_time:
             if not self.is_item_visible("player-elapsed-time"):
                 self.click_on('player')
-            aftr_elapsed_time = self.get_value("player-elapsed-time")
+            bfr_elapsed_time = self.get_value("player-elapsed-time")
             self.__obj.wait_for(1)
+            aftr_elapsed_time = None
 
         if not aftr_elapsed_time:
             if not self.is_item_visible("player-elapsed-time"):
@@ -1218,7 +1312,7 @@ class Limelight(object):
         """
         @args :
               operation   : operations - play/pause/resume/continue-playing/
-                            remain-pause/seek/forwarded/reversed
+                            remain-pause/seek/forwarded/reversed/not play
               vdo_src_typ : Source of play - file/url/mediaId/media-tab
               duration    : Duration of play (min:sec)
               player_state: State of the player - play/pause
@@ -1332,6 +1426,15 @@ class Limelight(object):
             else:
                 skip_step = []
             self.check_player_is_paused(ret_data, skip_step=skip_step)
+
+        elif operation.lower().strip() == "not play" and \
+           player_state.lower().strip() == "play":
+            for ech_try in range(5):
+                if self.is_item_visible("player"):
+                    raise Exception("Player is loaded")
+                else:
+                    self.__obj.wait_for(SORT_WAIT)
+            success("Player does not load")
 
     @exception_mod.handle_exception
     def perform_device_operations(self, action_itm, perform, target):

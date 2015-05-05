@@ -18,6 +18,7 @@ from appium import webdriver
 from time import sleep
 import ConfigParser
 from modules.logger import info, warning
+from modules.OpenCvLib import OpenCvLibrary
 
 class Driver(object):
     """
@@ -96,6 +97,32 @@ class Driver(object):
         else: screenshot_fnam = file_name
         self.screen_shot_file_num += 1
         return self.driver.save_screenshot(screenshot_fnam)
+
+    def take_screenshot_of_element(self, element_name, generic_param=(),
+                                   file_name=""):
+        """
+        Take screen shot of the whole screen and crop out the element pic
+        """
+        ele_obj = self.get_element(element_name, generic_param=generic_param)
+        ele_height = int(ele_obj.size['height'])
+        ele_width = int(ele_obj.size['width'])
+        ele_x_val = int(ele_obj.location['x'])
+        ele_y_val = int(ele_obj.location['y'])
+
+        ele_x1_val = ele_x_val + ele_width
+        ele_y1_val = ele_y_val + ele_height
+
+        self.take_screenshot(file_name)
+
+        orientation_map = { 'LANDSCAPE': ( ele_x_val, ele_x1_val,
+                                           ele_y_val, ele_y1_val),
+                            'PORTRAIT': ( ele_y_val, ele_y1_val,
+                                          ele_x_val, ele_x1_val )
+                          }
+        current_orientation = self.get_current_orientation()
+        OpenCvLibrary.crop_file(file_name,
+                                *orientation_map[str(current_orientation)])
+        return file_name
 
     def value_should_contains(self, element, expected_value, generic_param=()):
         """
@@ -862,13 +889,35 @@ class Driver(object):
 
     def refresh_by_pull_down(self):
         """ Refresh your tab by pull it down """
-        self.scrol_bottom_to_top(retry=1)
-        self.scrol_bottom_to_top(retry=1, indx=0)
+        try:
+            self.scrol_bottom_to_top(retry=1)
+        except Exception as ex:
+            info(str(ex))
+        obj = self.get_element("tab-content")
+        obj_data = {'width' :  int(obj.size['width']),
+                    'height':  int(obj.size['height']),
+                    'x' :      int(obj.location['x']),
+                    'y' :      int(obj.location['y'])}
+
+        start_pt = (obj_data['x'] + (obj_data['width']/2) , obj_data['y'])
+        end_pt = (start_pt[0], start_pt[1] + int(obj_data['height'] * 0.75))
+        self.driver.swipe(start_pt[0], start_pt[1], end_pt[0], end_pt[1])
 
     def refresh_by_pull_up(self):
         """ Refresh your tab by pull it up """
         self.scrol_top_to_bottom (retry=1)
         self.scrol_top_to_bottom(retry=1, indx=0)
+        '''
+        obj = self.get_element("tab-data-list")
+        obj_data = {'width' :  int(obj.size['width']),
+                    'height':  int(obj.size['height']),
+                    'x' :      int(obj.location['x']),
+                    'y' :      int(obj.location['y'])}
+
+        end_pt = (obj_data['x'] + (obj_data['width']/2) , obj_data['y'])
+        start_pt = (end_pt[0], end_pt[1] + obj_data['height'])
+        self.driver.swipe(start_pt[0], start_pt[1], end_pt[0], end_pt[1])
+        '''
 
     def tap_on(self, point_x, point_y):
         """
@@ -878,3 +927,46 @@ class Driver(object):
             point_y : y coordinate
         """
         self.driver.swipe(point_x, point_y, point_x, point_y)
+
+if __name__ == "__main__":
+    from modules.constant import *
+    obj = Driver( APPIUM_SERVER, TEST_TARGET_CFG['os'],
+                 TEST_TARGET_CFG['os-version'],
+                 TEST_TARGET_CFG['device-name'])
+    obj.set_up()
+    ele = obj.get_element("tab-item-left-half", ('CHANNEL GROUPS'))
+    ele.click()
+    obj.wait_for(20)
+    obj.take_screenshot_of_element( "icon-of-item",
+                                    ("Rebaca Channel Group", ),
+                                    file_name="Rebaca-Channel-Group.png"
+                                   )
+    obj.take_screenshot_of_element( "icon-of-item",
+                                    ("Limelight", ),
+                                    file_name="Limelight.png"
+                                   )
+
+
+    ele = obj.get_element("tab-item-left-half", ('ALL CHANNELS'))
+    ele.click()
+    obj.wait_for(20)
+    obj.take_screenshot_of_element( "icon-of-item",
+                                    ("Some Sample Videos1", ),
+                                    file_name="Some-Sample-Videos1.png"
+                                   )
+    obj.take_screenshot_of_element( "icon-of-item",
+                                    ("Maru Madnes", ),
+                                    file_name="Maru-Madnes.png"
+                                   )
+
+    ele = obj.get_element("tab-item-left-half", ('ALL MEDIA'))
+    ele.click()
+    obj.wait_for(20)
+    obj.take_screenshot_of_element( "icon-of-item",
+                                    ("Late For Work", ),
+                                    file_name="Late-For-Work.png"
+                                   )
+    obj.take_screenshot_of_element( "icon-of-item",
+                                    ("Code Rush", ),
+                                    file_name="Code-Rush.png"
+                                   )

@@ -127,11 +127,23 @@ def step_impl(context, check_ele, op, table_header):
     @args :
         check_ele : the element that should contain the data
         op : have / not have
-        table_header : Header of data table
+        table_header : Header of data table / error message / icon set
+
     """
     should_equal = False if 'not' in op else True
     global LIME_LIGHT_OBJ
-    LIME_LIGHT_OBJ.check_contains(check_ele, [str(row[table_header.lower()]) for row in context.table], should_equal)
+    if table_header.lower().strip() == "error message":
+        LIME_LIGHT_OBJ.check_errors(check_ele,
+            [str(row[table_header.lower()]) for row in context.table],
+            should_equal)
+    elif table_header.lower().strip() == "icon set":
+        LIME_LIGHT_OBJ.check_icon( check_ele,
+                      [(row['name'], row['icon']) for row in context.table],
+                      should_equal )
+    else:
+        LIME_LIGHT_OBJ.check_contains(check_ele,
+             [str(row[table_header.lower()]) for row in context.table],
+             should_equal)
 
 @then('player should {opr} the playback from {source_type} to duration {duration} in {state} state')
 @test_step('then', 'player should %(opr)s the playback from %(source_type)s to duration %(duration)s in %(state)s state')
@@ -139,7 +151,7 @@ def step_impl(context, opr, source_type, duration, state):
     """
     @args :
         opr         : operations - play / pause / resume / continue-playing /
-                    remain-pause / seek / forwarded / reversed
+                    remain-pause / seek / forwarded / reversed / not play
         source_type : Source of play - file / url / mediaId / media-tab
         duration    : Duration of play (min:sec)
         state       : State of the player - play / pause
