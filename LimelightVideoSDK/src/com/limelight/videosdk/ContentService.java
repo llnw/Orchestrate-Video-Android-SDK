@@ -63,8 +63,8 @@ public class ContentService {
     private int mPageSize = 500;
     private final String[] mSortValues = {Constants.SORT_BY_UPDATE_DATE,Constants.SORT_BY_CREATE_DATE};
     private final String[] mSortOrderValues = {Constants.SORT_ORDER_ASC,Constants.SORT_ORDER_DESC};
-    private String mSortBy = "update_date";
-    private String mSortOrder = "asc";
+    private String mSortBy = Constants.SORT_BY_UPDATE_DATE;
+    private String mSortOrder = Constants.SORT_ORDER_ASC;
     private int mPageId;
     private boolean mHasNext;
 
@@ -104,7 +104,7 @@ public class ContentService {
         mOrgId = orgId;
         mAccessKey = access;
         mSecret = secret;
-        mLogger = LoggerUtil.getLogger(mContext,LoggerUtil.LOGGER_NAME);
+        mLogger = LoggerUtil.getLogger(mContext);
     }
 
     /**

@@ -39,7 +39,7 @@ import android.content.Context;
 public class LoggerUtil {
 
     private static LogConfigurator sLogConfigurator = new LogConfigurator();
-    public final static String LOGGER_NAME = "Limelight_Video_SDK";
+    private final static String LOGGER_NAME = "Limelight_Video_SDK";
 
     /**
      * Method to configure Logging.
@@ -48,7 +48,7 @@ public class LoggerUtil {
      * @param maxBackupSize Maximum number of backed up log files
      * @param maxFileSize maximum size of log file until rolling
      */
-    static void configure(final String fileName, final String filePattern,
+    private static void configure(final String fileName, final String filePattern,
             final int maxBackupSize, final long maxFileSize) {
 
         sLogConfigurator.setFileName(fileName);
@@ -61,16 +61,15 @@ public class LoggerUtil {
     /**
      * Method to return a logger object.
      * If the log file does not exists then configure the logger and create a log file.
-     * @param name Logger name
      * @return {@link Logger}
      */
-    public synchronized static Logger getLogger(final Context context,final String name) {
+    public synchronized static Logger getLogger(final Context context) {
         final String filePath = sLogConfigurator.getFileName();
         if(filePath == null && context != null){
             final File file = new File(context.getFilesDir(), LoggerUtil.LOGGER_NAME + ".log");
             LoggerUtil.configure(file.getAbsolutePath(),"%d - %p - %c - %t - %m%n", 5, 512 * 1024);
         }
-        return Logger.getLogger(name);
+        return Logger.getLogger(LoggerUtil.LOGGER_NAME);
     }
 
     /**

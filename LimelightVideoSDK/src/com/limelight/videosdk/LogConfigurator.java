@@ -42,12 +42,11 @@ class LogConfigurator {
     private boolean internalDebugging = false;
 
     public LogConfigurator() {
-        // TODO
+        //empty constructor.
     }
 
     Level getLevel(final String loggerName){
         return Logger.getLogger(loggerName).getLevel();
-//        return Level.DEBUG;
     }
     /**
      * @param fileName Name of the log file
@@ -175,7 +174,7 @@ class LogConfigurator {
         this.rootLevel = level;
     }
 
-    String getFilePattern() {
+    private String getFilePattern() {
         return filePattern;
     }
 
@@ -207,7 +206,7 @@ class LogConfigurator {
      * 
      * @return Maximum number of backed up log files
      */
-    int getMaxBackupSize() {
+    private int getMaxBackupSize() {
         return maxBackupSize;
     }
 
@@ -226,7 +225,7 @@ class LogConfigurator {
      * 
      * @return Maximum size of log file until rolling
      */
-    long getMaxFileSize() {
+    private long getMaxFileSize() {
         return maxFileSize;
     }
 
@@ -240,7 +239,7 @@ class LogConfigurator {
         this.maxFileSize = maxFileSize;
     }
 
-    boolean isImmediateFlush() {
+    private boolean isImmediateFlush() {
         return immediateFlush;
     }
 
@@ -253,7 +252,7 @@ class LogConfigurator {
      * 
      * @return True, if FileAppender is used for logging
      */
-    boolean isUseFileAppender() {
+    private boolean isUseFileAppender() {
         return useFileAppender;
     }
 
@@ -276,7 +275,7 @@ class LogConfigurator {
      * @return True, if the log4j configuration should be reset before applying
      *         this configuration.
      */
-    boolean isResetConfiguration() {
+    private boolean isResetConfiguration() {
         return resetConfiguration;
     }
 
@@ -284,7 +283,7 @@ class LogConfigurator {
         this.internalDebugging = internalDebugging;
     }
 
-    boolean isInternalDebugging() {
+    private boolean isInternalDebugging() {
         return internalDebugging;
     }
 }

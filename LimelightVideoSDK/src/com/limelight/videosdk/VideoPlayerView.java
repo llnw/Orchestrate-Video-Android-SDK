@@ -16,16 +16,16 @@ class VideoPlayerView extends VideoView{
 
     private IMediaControllerCallback mListener;
     public PlayerState mPlayerState = PlayerState.stopped;
-    public VideoPlayerView(final Context context) {
+    VideoPlayerView(final Context context) {
         super(context);
         
     }
 
-    public VideoPlayerView(final Context context, final AttributeSet attrs){
+    VideoPlayerView(final Context context, final AttributeSet attrs){
         super(context, attrs);
     }
 
-    public VideoPlayerView(final Context context, final AttributeSet attrs, final int defStyle){
+    VideoPlayerView(final Context context, final AttributeSet attrs, final int defStyle){
         super(context, attrs, defStyle);
     }
 
@@ -35,7 +35,7 @@ class VideoPlayerView extends VideoView{
 
     @Override
     public void seekTo(int msec) {
-        long before = this.getCurrentPosition();
+        final long before = this.getCurrentPosition();
         super.seekTo(msec);
         final long after = msec;
         if (mListener != null) {

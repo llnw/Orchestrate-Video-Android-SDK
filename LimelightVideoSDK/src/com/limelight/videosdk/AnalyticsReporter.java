@@ -61,11 +61,11 @@ class AnalyticsReporter {
     private final String mChannelId = "channelId";
     private final String mChannelListId = "channelListId";
 
-    public AnalyticsReporter(Context ctx) {
+    AnalyticsReporter(Context ctx) {
         mContext = ctx;
         init();
         mRequestExecutor= new RequestExecutor(MAX_THREAD_COUNT);
-        mLogger = LoggerUtil.getLogger(ctx,LoggerUtil.LOGGER_NAME);
+        mLogger = LoggerUtil.getLogger(ctx);
     }
 
     /**
@@ -219,15 +219,15 @@ class AnalyticsReporter {
         mAnalyticsData.addProperty("sourceVersion", 1);
     }
 
-    void pause(){
+    private void pause(){
         mRequestExecutor.pause();
     }
 
-    void resume(){
+    private void resume(){
         mRequestExecutor.resume();
     }
 
-    void post(final JsonObject obj){
+    private void post(final JsonObject obj){
         if(!Connection.isConnected(mContext)){
             pause();
         }
@@ -237,7 +237,7 @@ class AnalyticsReporter {
             public void run() {
                 HttpURLConnection urlConnection;
                 try {
-                    byte[] data = mAnalyticsData.toString().getBytes("UTF-8");
+                    byte[] data = mAnalyticsData.toString().getBytes(Constants.URL_CHARACTER_ENCODING_TYPE);
                     urlConnection = (HttpURLConnection) new URL(Setting.getAnalyticsEndPoint()).openConnection();
                     urlConnection.setRequestMethod("POST");
                     urlConnection.setRequestProperty("Content-Type", "application/json");
@@ -252,9 +252,9 @@ class AnalyticsReporter {
                     str.close();
 //                    System.out.println(TAG+" ResponseCode: "+urlConnection.getResponseCode());
                 } catch (ProtocolException e) {
-                    e.printStackTrace();//TODO
+                    mLogger.error(TAG+" ProtocolException");
                 }catch (IOException e1) {
-                    e1.printStackTrace();//TODO
+                    mLogger.error(TAG+" IOException");
                 }
             }
         };
@@ -311,8 +311,7 @@ class AnalyticsReporter {
                 }
             }
         };
-        IntentFilter filter;
-        filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+        IntentFilter filter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
         mContext.registerReceiver(mConnectionReceiver, filter);
     }
 
@@ -325,7 +324,7 @@ class AnalyticsReporter {
         try {
             mRequestExecutor.awaitTermination(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();//TODO
+            mLogger.debug(TAG + " InterruptedException");
         }
         //Interrupt the threads and shutdown the reqExecutor
         mRequestExecutor.shutdownNow();

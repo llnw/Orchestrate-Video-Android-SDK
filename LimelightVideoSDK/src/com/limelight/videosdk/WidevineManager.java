@@ -59,7 +59,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
 
     WidevineManager(final Context ctx,final ContentService svc){
         mContext = ctx;
-        mLogger = LoggerUtil.getLogger(mContext,LoggerUtil.LOGGER_NAME);
+        mLogger = LoggerUtil.getLogger(mContext);
         mContentService = svc;
     }
 
@@ -416,7 +416,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
             break;
         case DrmErrorEvent.TYPE_NO_INTERNET_CONNECTION:
             if(mCallback!= null){
-                mCallback.onError(new Throwable("Connection Error !"));
+                mCallback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }
             break;
         case DrmErrorEvent.TYPE_NOT_SUPPORTED:

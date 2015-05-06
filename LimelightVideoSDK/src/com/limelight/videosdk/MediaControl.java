@@ -20,17 +20,17 @@ class MediaControl extends MediaController{
     private FullScreenCallback mFullScreenCallback;
     private boolean mIsFullScreen;
 
-    public MediaControl(final Context context, final boolean useFastForward) {
+    MediaControl(final Context context, final boolean useFastForward) {
         super(context, useFastForward);
         mContext = context;
     }
 
-    public MediaControl(final Context context, final AttributeSet attrs) {
+    MediaControl(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
 
-    public MediaControl(final Context context) {
+    MediaControl(final Context context) {
         super(context);
         mContext = context;
     }

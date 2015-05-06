@@ -12,7 +12,6 @@ public class Constants {
     public static final String SHA256_HASH_ALGORITHM = "HmacSHA256";
     public static final String MD5_HASH_ALGORITHM = "HmacMD5";
     public static final String GET = "GET";
-    public static final String API_URL = "http://api.video.limelight.com/rest";
     public static final String ACCESS_KEY = "access_key";
     public static final String EXPIRES = "expires";
     public static final long BUFFERING_TIMEOUT = 5*60*1000;
@@ -88,6 +87,7 @@ public class Constants {
     public static final String THUMB_URL_ERROR = "Invalid Thumbnail URL !";
     public static final String ENCODING_ERROR = "Failed To Append Paging Parameter !";
     public static final String ORG_ERROR = "Please Ensure Organization ID is Set.";
+    public static final String DESERIALIZE_ERROR = "Exception raised In MediaThumbnail deserialize";
     /**
      * Various message states.<br>
      * status 0<br>

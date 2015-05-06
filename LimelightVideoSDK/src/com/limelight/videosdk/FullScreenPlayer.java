@@ -47,7 +47,7 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         mediaController.setFullScreenCallback(new FullScreenCallback() {
             @Override
             public void fullScreen() {
-                //TODO
+                mLogger.debug(TAG+" Full Screen Should not be Called here");
             }
 
             @Override
@@ -67,7 +67,7 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         mPlayerView.setOnErrorListener(this);
         mPlayerView.setOnCompletionListener(this);
         mPlayerView.setMediaControllerCallback(this);
-        mLogger = LoggerUtil.getLogger(this,LoggerUtil.LOGGER_NAME);
+        mLogger = LoggerUtil.getLogger(this);
         mReporter = new AnalyticsReporter(this);
         final Uri uri = Uri.parse(getIntent().getStringExtra("URI"));
         mPosition  = getIntent().getIntExtra("POSITION",0);
@@ -130,7 +130,7 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
      * This is the method to close the FullScreenPlayer and send the current state to normal player.
      * @param position
      */
-    void close(final int position){
+    private void close(final int position){
         final Intent intent = new Intent();
         intent.setAction("limelight.intent.action.PLAY_FULLSCREEN");
         intent.putExtra("POSITION",position);

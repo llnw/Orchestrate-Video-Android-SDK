@@ -14,6 +14,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.log4j.Logger;
 import android.util.Base64;
 
 /**
@@ -104,6 +105,8 @@ class URLAuthenticator {
      * @return signed data
      */
     static String signWithKey(final String key, final String data){
+        final String TAG = AnalyticsReporter.class.getSimpleName();
+        Logger mLogger = LoggerUtil.getLogger(null);//It is hack,since we dont have context here.
         try{
             final Key secretKey = new SecretKeySpec(key.getBytes(), Constants.SHA256_HASH_ALGORITHM);
             final Mac mac = Mac.getInstance(Constants.SHA256_HASH_ALGORITHM);
@@ -111,7 +114,9 @@ class URLAuthenticator {
             byte[] hashValue = mac.doFinal(data.getBytes(Constants.URL_CHARACTER_ENCODING_TYPE));
             return Base64.encodeToString(hashValue, Base64.DEFAULT).trim();
         }catch (Exception e){
-            //do nothing.handled in authenticatRequest()//TODO
+            if(mLogger != null){
+                mLogger.error(TAG + e==null?Constants.AUTH_ERROR:e.getMessage());
+            }
         }
         return null;
     }

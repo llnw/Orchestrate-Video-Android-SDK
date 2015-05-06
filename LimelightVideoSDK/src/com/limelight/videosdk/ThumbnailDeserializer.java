@@ -28,12 +28,13 @@ class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSeri
 
     @Override
     public MediaThumbnail deserialize(JsonElement jsonElement,Type type, JsonDeserializationContext context){
+        final String TAG = ThumbnailDeserializer.class.getSimpleName();
         if (null == jsonElement) {
             // The thumbnail element is null.
             return null;
         }
         MediaThumbnail mediaThumbnail = null;
-        Logger logger = LoggerUtil.getLogger(null,LoggerUtil.LOGGER_NAME);
+        Logger logger = LoggerUtil.getLogger(null);//It is hack,since we dont have context here.
         if (jsonElement.isJsonArray()) {
             final JsonArray thummbnailListArray = jsonElement.getAsJsonArray();
             JsonObject maxWidthThumbnailObj = null;
@@ -49,16 +50,22 @@ class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSeri
                         widthOfMaxWidthThumbnail = maxWidthThumbnailObj.get(Constants.WIDTH).getAsInt();
                     } catch (ClassCastException ex) {
                         widthOfMaxWidthThumbnail = 0;
-                        logger.debug("In MediaThumbnail deserialize, exception raised when creating integer from json");
+                        if(logger != null){
+                            logger.debug(TAG+" ClassCastException "+Constants.DESERIALIZE_ERROR);
+                        }
                     } catch (IllegalStateException ex) {
                         widthOfMaxWidthThumbnail = 0;
-                        logger.debug("In MediaThumbnail deserialize, exception raised when creating integer from json");
+                        if(logger != null){
+                            logger.debug(TAG+" IllegalStateException "+Constants.DESERIALIZE_ERROR);
+                        }
                     } catch (Exception ex) {
                         widthOfMaxWidthThumbnail = 0;
-                        logger.debug("In MediaThumbnail deserialize, exception raised when creating integer from json");
+                        if(logger != null){
+                            logger.debug(TAG+" Exception "+Constants.DESERIALIZE_ERROR);
+                        }
                     }
                 } else {
-                    JsonElement objTempJsonElement = tmpThumbnail.get(Constants.WIDTH);
+                    final JsonElement objTempJsonElement = tmpThumbnail.get(Constants.WIDTH);
 
                     if (false == objTempJsonElement.isJsonNull()) {
                         int width = 0;
@@ -66,13 +73,17 @@ class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSeri
                             width = objTempJsonElement.getAsInt();
                         } catch (ClassCastException ex) {
                             width = 0;
-                            logger.debug("In MediaThumbnail deserialize, exception raised when creating integer from json");
+                            if(logger != null){
+                                logger.debug(TAG+" ClassCastException "+Constants.DESERIALIZE_ERROR);
+                            }
                         } catch (IllegalStateException ex) {
                             width = 0;
-                            logger.debug("In MediaThumbnail deserialize, exception raised when creating integer from json");
+                            logger.debug(TAG+" IllegalStateException "+Constants.DESERIALIZE_ERROR);
                         } catch (Exception ex) {
                             width = 0;
-                            logger.debug("In MediaThumbnail deserialize, exception raised when creating integer from json");
+                            if(logger != null){
+                                logger.debug(TAG+" Exception "+Constants.DESERIALIZE_ERROR);
+                            }
                         }
                         if (width > widthOfMaxWidthThumbnail) {
                             maxWidthThumbnailObj = tmpThumbnail;
@@ -80,17 +91,23 @@ class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSeri
                                 widthOfMaxWidthThumbnail = maxWidthThumbnailObj.get(Constants.WIDTH).getAsInt();
                             } catch (ClassCastException ex) {
                                 widthOfMaxWidthThumbnail = 0;
-                                logger.debug("In MediaThumbnail deserialize, exception raised when creating integer from json");
+                                if(logger != null){
+                                    logger.debug(TAG+" ClassCastException "+Constants.DESERIALIZE_ERROR);
+                                }
                             } catch (IllegalStateException ex) {
                                 widthOfMaxWidthThumbnail = 0;
-                                logger.debug("In MediaThumbnail deserialize, exception raised when creating integer from json");
+                                if(logger != null){
+                                    logger.debug(TAG+" IllegalStateException "+Constants.DESERIALIZE_ERROR);
+                                }
                             } catch (Exception ex) {
                                 widthOfMaxWidthThumbnail = 0;
-                                logger.debug("In MediaThumbnail deserialize, exception raised when creating integer from json");
+                                if(logger != null){
+                                    logger.debug(TAG+" Exception "+Constants.DESERIALIZE_ERROR);
+                                }
                             }
                         }
                     } else {
-                        logger.error("Received null json element");
+                        logger.error(TAG + " Received null json element");
                     }
                 }// end of else
             }// end of for
@@ -103,7 +120,9 @@ class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSeri
                     mediaThumbnail = myGson.fromJson(maxWidthThumbnailObj, MediaThumbnail.class);
                 } catch (JsonSyntaxException ex) {
                     mediaThumbnail = null;
-                    logger.debug("In MediaThumbnail deserialize, exception raised for fromJson call");
+                    if(logger != null){
+                        logger.debug(TAG+" JsonSyntaxException "+Constants.DESERIALIZE_ERROR);
+                    }
                 }
             }
         }

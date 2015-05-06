@@ -11,14 +11,14 @@ import java.util.concurrent.locks.ReentrantLock;
 class RequestExecutor extends ScheduledThreadPoolExecutor {
     
     private boolean mIsExecutorPaused;
-    private ReentrantLock mExecutorPauseLock = new ReentrantLock();
-    private Condition mExeUnpausedCon = mExecutorPauseLock.newCondition();
+    private final ReentrantLock mExecutorLock = new ReentrantLock();
+    private final Condition mExeUnpausedCon = mExecutorLock.newCondition();
 
     /**
      * Default constructor
      * @return 
      */
-    public RequestExecutor(int corePoolSize) {
+    public RequestExecutor(final int corePoolSize) {
         super(corePoolSize);
     }
 
@@ -27,11 +27,11 @@ class RequestExecutor extends ScheduledThreadPoolExecutor {
      * will not start until the thread-pool is resumed.
      */
     public void pause() {
-        mExecutorPauseLock.lock();
+        mExecutorLock.lock();
         try {
             mIsExecutorPaused = true;
         } finally {
-            mExecutorPauseLock.unlock();
+            mExecutorLock.unlock();
         }
     }
 
@@ -39,37 +39,27 @@ class RequestExecutor extends ScheduledThreadPoolExecutor {
      * This method resumes the thread-pool.
      */
     public void resume() {
-        mExecutorPauseLock.lock();
+        mExecutorLock.lock();
         try {
             mIsExecutorPaused = false;
             mExeUnpausedCon.signalAll();
         } finally {
-            mExecutorPauseLock.unlock();
+            mExecutorLock.unlock();
         }
     }
 
 
     @Override
-    protected void beforeExecute(Thread t, Runnable r) {
-        mExecutorPauseLock.lock();
+    protected void beforeExecute(Thread thread, Runnable runnable) {
+        mExecutorLock.lock();
         try {
             while (mIsExecutorPaused)
                 mExeUnpausedCon.await();
         } catch (InterruptedException ie) {
-            t.interrupt();
+            thread.interrupt();
         } finally {
-            mExecutorPauseLock.unlock();
+            mExecutorLock.unlock();
         }
-        super.beforeExecute(t, r);
+        super.beforeExecute(thread, runnable);
     }
-
-    @Override
-    protected void afterExecute(Runnable r, Throwable t) {
-        try {
-            super.afterExecute(r, t);
-        }
-        finally {
-        }
-    }
-
 }

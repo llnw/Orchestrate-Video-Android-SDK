@@ -138,7 +138,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         mPlayerView.setOnErrorListener(this);
         mPlayerView.setOnCompletionListener(this);
         mPlayerView.setMediaControllerCallback(this);
-        mLogger = LoggerUtil.getLogger(getActivity(),LoggerUtil.LOGGER_NAME);
+        mLogger = LoggerUtil.getLogger(getActivity());
         mReporter = new AnalyticsReporter(getActivity());
         mPlayerControl = new PlayerControl();
         mPlayerView.setOnTouchListener(new OnTouchListener() {
