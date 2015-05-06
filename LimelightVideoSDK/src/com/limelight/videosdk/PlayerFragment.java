@@ -119,6 +119,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 i.putExtra("URI",mUri.toString());
                 i.putExtra("POSITION",mPlayerView.getCurrentPosition());
                 i.putExtra("STATE",mPlayerView.mPlayerState.name());
+                i.putExtra("MEDIAID",mMediaId);
                 try{
                     getActivity().startActivity(i);
                     mPlayerControl.pause();
@@ -137,7 +138,6 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         mPlayerLayout.addView(mPlayerView);
         mPlayerView.setOnErrorListener(this);
         mPlayerView.setOnCompletionListener(this);
-        mPlayerView.setMediaControllerCallback(this);
         mLogger = LoggerUtil.getLogger(getActivity());
         mReporter = new AnalyticsReporter(getActivity());
         mPlayerControl = new PlayerControl();
@@ -461,6 +461,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
          * @param contentService The ContentService object.
          */
         private void playMediaID(final String mediaID, final ContentService contentService) {
+            mPlayerView.setMediaControllerCallback(PlayerFragment.this);
             if (mPlayerCallback != null)
                 mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
             if (mLogger != null) {
@@ -568,6 +569,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
                 mLogger.debug(TAG+" Media play:"+ media);
             }
+            mPlayerView.setMediaControllerCallback(null);
             if(media!= null && media.trim().length()>0){
                 if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
                 mPlayerView.stopPlayback();
@@ -822,8 +824,6 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         if (mLogger != null) {
             mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
         }
-        mPlayerView.mPlayerState = PlayerState.completed;
-        mReporter.sendMediaComplete(mMediaId,null);
         mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
     }
 
@@ -939,6 +939,11 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     @Override
     public void onMediaControllerSeek(long positionBefore,long positionAfter) {
         mReporter.sendSeekWithPositionBefore(positionBefore, positionAfter,mMediaId,null);
+    }
+
+    @Override
+    public void onMediaControllerComplete() {
+        mReporter.sendMediaComplete(mMediaId, null);
     }
 
     @Override

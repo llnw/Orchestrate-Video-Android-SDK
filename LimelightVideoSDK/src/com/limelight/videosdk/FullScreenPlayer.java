@@ -73,6 +73,7 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         mPosition  = getIntent().getIntExtra("POSITION",0);
         final String state = getIntent().getStringExtra("STATE");
         mPlayerView.mPlayerState = PlayerState.valueOf(state);
+        mMediaId = getIntent().getStringExtra("MEDIAID");
         mPlayerView.setVideoURI(uri);
         mPlayerView.setOnPreparedListener(this);
         mReporter = new AnalyticsReporter(this);
@@ -81,25 +82,36 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
 
     @Override
     public void onMediaControllerPlay(final long position) {
-        mReporter.sendPlayWithPosition(position,mMediaId,null);
+        if(mMediaId!= null){
+            mReporter.sendPlayWithPosition(position,mMediaId,null);
+        }
     }
 
     @Override
     public void onMediaControllerPause(final long position) {
-        mReporter.sendPauseWithPosition(position,mMediaId,null);
+        if(mMediaId!= null){
+            mReporter.sendPauseWithPosition(position,mMediaId,null);
+        }
     }
 
     @Override
     public void onMediaControllerSeek(final long beforePosition, final long afterPosition) {
-        mReporter.sendSeekWithPositionBefore(beforePosition, afterPosition,mMediaId,null);
+        if(mMediaId!= null){
+            mReporter.sendSeekWithPositionBefore(beforePosition, afterPosition,mMediaId,null);
+        }
+    }
+
+    @Override
+    public void onMediaControllerComplete() {
+        if(mMediaId!= null){
+            mReporter.sendMediaComplete(mMediaId, null);
+        }
     }
 
     @Override
     public void onCompletion(final MediaPlayer mediaPlayer) {
         mLogger.debug(TAG+" Completed Playing");
         final int duration = mediaPlayer.getDuration();
-        mPlayerView.mPlayerState = PlayerState.completed;
-        mReporter.sendMediaComplete(mMediaId,null);
         close(duration);
     }
 

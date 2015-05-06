@@ -1,6 +1,8 @@
 package com.limelight.videosdk;
 
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.util.AttributeSet;
 import android.widget.VideoView;
 import com.limelight.videosdk.Constants.PlayerState;
@@ -12,13 +14,13 @@ import com.limelight.videosdk.Constants.PlayerState;
  * This information is used for Analytical Reporting.
  * @author kanchan
  */
-class VideoPlayerView extends VideoView{
+class VideoPlayerView extends VideoView implements OnCompletionListener{
 
     private IMediaControllerCallback mListener;
     public PlayerState mPlayerState = PlayerState.stopped;
+
     VideoPlayerView(final Context context) {
         super(context);
-        
     }
 
     VideoPlayerView(final Context context, final AttributeSet attrs){
@@ -60,6 +62,14 @@ class VideoPlayerView extends VideoView{
         mPlayerState = PlayerState.playing;
         if (mListener != null) {
             mListener.onMediaControllerPlay(this.getCurrentPosition());
+        }
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mediaPlayer) {
+        mPlayerState = PlayerState.completed;
+        if (mListener != null) {
+            mListener.onMediaControllerComplete();
         }
     }
 }
