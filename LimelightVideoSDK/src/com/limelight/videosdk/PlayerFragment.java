@@ -83,15 +83,15 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     private VideoPlayerView mPlayerView;
     private Uri mUri;
     private IPlayerCallback mPlayerCallback;
-    private Logger mLogger = null;
-    private int mPosition = 0;
+    private Logger mLogger;
+    private int mPosition;
     private RelativeLayout mPlayerLayout;
     private PlayerControl mPlayerControl;
     private MediaControl mMediaController;
     private CountDownTimer mTimer;
     private CountDownTimer mBufferingTimer;
-    private WidevineManager mWidevineManager = null;
-    private AnalyticsReporter mReporter = null;
+    private WidevineManager mWidevineManager;
+    private AnalyticsReporter mReporter;
     private String mMediaId = null;
     private boolean mIsMediacontrollerRemoved = true;
     private String mPlaylistId;
@@ -128,8 +128,12 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 i.putExtra("STATE",mPlayerView.mPlayerState.name());
                 i.putExtra("MEDIAID",mMediaId);
                 try{
+                    if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
+                        mPlayerView.stopPlayback();
+                        mPlayerView.mPlayerState = PlayerState.stopped;
+                    }
+                    
                     getActivity().startActivity(i);
-                    mPlayerControl.pause();
                 }catch(Exception ex){
                     if(ex != null)
                         mLogger.error(ex.getMessage());
@@ -150,7 +154,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         mPlayerControl = new PlayerControl();
         mPlayerView.setOnTouchListener(new OnTouchListener() {
             @Override
-            public boolean onTouch(View arg0, MotionEvent arg1) {
+            public boolean onTouch(final View arg0, final MotionEvent arg1) {
                 if(mIsMediacontrollerRemoved){
                     mPlayerView.setMediaController(mMediaController);
                     mIsMediacontrollerRemoved = false;
@@ -175,7 +179,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (mPlayerCallback == null) {
             try {
@@ -234,7 +238,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     }
 
     @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
+    public boolean onError(final MediaPlayer mediaPlayer, final int what, final int extra) {
         if (mLogger != null) {
             mLogger.error("Error in media player" + what + ":"+ extra);
         }
@@ -321,26 +325,32 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                             }
 
                             @Override
-                            public void onError(Throwable throwable) {
+                            public void onError(final Throwable throwable) {
                                 reset();
                                 if (mPlayerCallback != null)
                                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
                             }
 
                             @Override
-                            public void onProgress(int percentFinished) {
+                            public void onProgress(final int percentFinished) {
                                 if (mPlayerCallback != null)
                                     mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
                             }
 
                             @Override
-                            public void onSendMessage(String message) {
+                            public void onSendMessage(final String message) {
                                 if(mPlayerCallback != null)
                                     mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
                             }
                         });
                     } else {
-                        if(null != encoding.mEncodingUrl){
+                        if(encoding.mEncodingUrl == null){
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" Encoding Remote url is null");
+                            }
+                            if (mPlayerCallback != null)
+                                mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Invalid Media !");
+                        }else {
                             final String url = encoding.mEncodingUrl.toString();
                             if (mLogger != null) {
                                 mLogger.debug(TAG+" Encoding remote URL: " + url);
@@ -355,16 +365,10 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                             } catch (Exception ex) {
                                 playerError();
                             }
-                        }else{
-                            if (mLogger != null) {
-                                mLogger.debug(TAG+" Encoding Remote url is null");
-                            }
-                            if (mPlayerCallback != null)
-                                mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Invalid Media !");
                         }
                     }
                 }else{
-                    String mimetype = MimeTypeMap.getFileExtensionFromUrl(remoteURL);
+                    final String mimetype = MimeTypeMap.getFileExtensionFromUrl(remoteURL);
                     if("wvm".equalsIgnoreCase(mimetype)){
                         if (mLogger != null) {
                             mLogger.debug(TAG+" widevine direct url Content: "+remoteURL);
@@ -397,20 +401,20 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                             }
 
                             @Override
-                            public void onError(Throwable throwable) {
+                            public void onError(final Throwable throwable) {
                                 reset();
                                 if (mPlayerCallback != null)
                                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
                             }
 
                             @Override
-                            public void onProgress(int percentFinished) {
+                            public void onProgress(final int percentFinished) {
                                 if (mPlayerCallback != null)
                                     mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
                             }
 
                             @Override
-                            public void onSendMessage(String message) {
+                            public void onSendMessage(final String message) {
                                 if(mPlayerCallback != null)
                                     mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
                             }
@@ -424,7 +428,6 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                                 @Override
                                 public void run() {
                                     setVideoPath(remoteURL);
-                                    return;
                                 }
                             });
                         } catch (Exception ex) {
@@ -441,7 +444,6 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                         @Override
                         public void run() {
                             setVideoPath(remoteURL);
-                            return;
                         }
                     });
                 } catch (Exception ex) {
@@ -491,54 +493,54 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             contentService.getAllEncodingsForMediaId(mediaID, new EncodingsCallback() {
 
                 @Override
-                public void onError(Throwable throwable) {
-                    if (mPlayerCallback != null)
-                        mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
-                }
+               public void onError(final Throwable throwable) {
+                        if (mPlayerCallback != null)
+                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                    }
 
-                @Override
-                public void onSuccess(ArrayList<Encoding> encodingList) {
-                    mMediaId = mediaID;
-                    final Delivery delivery = contentService.getDeliveryForMedia(encodingList);
-                    if(delivery!= null){
-                        if (delivery.mProtected) {
-                            if (mLogger != null) {
-                                mLogger.debug(TAG+" Delivery is widevine" + mediaID);
-                            }
-                            mWidevineManager = new WidevineManager(getActivity(),contentService);
-                            mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
-                                @Override
-                                public void onSuccess(final String path) {
-                                    if (mLogger != null) {
-                                        mLogger.debug(TAG+" Delivery widevine media path" + path);
+                    @Override
+                    public void onSuccess(ArrayList<Encoding> encodingList) {
+                        mMediaId = mediaID;
+                        final Delivery delivery = contentService.getDeliveryForMedia(encodingList);
+                        if(delivery!= null){
+                            if (delivery.mProtected) {
+                                if (mLogger != null) {
+                                    mLogger.debug(TAG+" Delivery is widevine" + mediaID);
+                                }
+                                mWidevineManager = new WidevineManager(getActivity(),contentService);
+                                mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
+                                    @Override
+                                    public void onSuccess(final String path) {
+                                        if (mLogger != null) {
+                                            mLogger.debug(TAG+" Delivery widevine media path" + path);
+                                        }
+                                        try {
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    setVideoPath(path);
+                                                }
+                                            });
+                                        } catch (Exception ex) {
+                                            playerError();
+                                        }
                                     }
-                                    try {
-                                        getActivity().runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                setVideoPath(path);
-                                            }
-                                        });
-                                    } catch (Exception ex) {
-                                        playerError();
+
+                                    @Override
+                                public void onError(final Throwable throwable) {
+                                        reset();
+                                        if (mPlayerCallback != null)
+                                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                                }
+
+                                @Override
+                                public void onProgress(final int percentFinished) {
+                                        if (mPlayerCallback != null)
+                                            mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
                                     }
-                                }
 
                                 @Override
-                                public void onError(Throwable throwable) {
-                                    reset();
-                                    if (mPlayerCallback != null)
-                                        mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
-                                }
-
-                                @Override
-                                public void onProgress(int percentFinished) {
-                                    if (mPlayerCallback != null)
-                                        mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
-                                }
-
-                                @Override
-                                public void onSendMessage(String message) {
+                                public void onSendMessage(final String message) {
                                     if(mPlayerCallback != null)
                                         mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
                                 }
@@ -577,11 +579,11 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             if direct remote URL then play
             if local content URL  then play.*/
             if (mLogger != null) {
-                mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+                mLogger.debug(TAG+Constants.PLAYER_STATE_STRING+mPlayerView.mPlayerState.name());
                 mLogger.debug(TAG+" Media play:"+ media);
             }
             mPlayerView.setMediaControllerCallback(null);
-            if(media!= null && media.trim().length()>0){
+            if(media!= null && !media.trim().isEmpty()){
                 if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
                     mPlayerView.stopPlayback();
                     mPlayerView.mPlayerState = PlayerState.stopped;
@@ -763,7 +765,11 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Invalid URI");
                 return;
             }
-            if (mPlayerView != null) {
+            if (mPlayerView == null) {
+                if (mLogger != null) {
+                    mLogger.error(Constants.PLAYER_NOT_INIT_ERROR);
+                }
+            } else{
                 mPlayerView.start();
 
                 if (mLogger != null) {
@@ -772,10 +778,6 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                     mLogger.fatal("Player started");
                     mLogger.debug("Player started");
                     mLogger.warn("Player started");
-                }
-            } else {
-                if (mLogger != null) {
-                    mLogger.error("Player Not Initilized");
                 }
             }
             if (mLogger != null) {
@@ -791,13 +793,13 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 }
                 return;
             }
-            if (mPlayerView != null) {
+            if (mPlayerView == null) {
+                if (mLogger != null) {
+                    mLogger.error(Constants.PLAYER_NOT_INIT_ERROR);
+                }
+            } else{
                 mPlayerView.pause();
                 mPlayerView.mPlayerState = PlayerState.paused;
-            } else {
-                if (mLogger != null) {
-                    mLogger.error("Player Not Initilized");
-                }
             }
             if (mLogger != null) {
                 mLogger.debug(TAG+" PlayerState: pause: "+mPlayerView.mPlayerState.name());
@@ -806,21 +808,28 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
 
         @Override
         public void stop() {
-            if (mPlayerView != null){
-                reset();
-            }
-            else {
+            if (mPlayerView == null){
                 if (mLogger != null) {
-                    mLogger.error("Player Not Initilized");
+                    mLogger.error(Constants.PLAYER_NOT_INIT_ERROR);
                 }
+            } else{
+                reset();
             }
         }
 
         private void setVideoUri(Uri uri) {
             mPosition = 0;
-            if (uri != null) {
+            if (uri == null) {
+                if (mLogger != null) {
+                    mLogger.info("Please Check The URI");
+                }
+            }else {
                 mUri = uri;
-                if (mPlayerView != null) {
+                if (mPlayerView == null) {
+                    if (mLogger != null) {
+                        mLogger.error(Constants.PLAYER_NOT_INIT_ERROR);
+                    }
+                }else {
                     if(mPlayerView.mPlayerState!= PlayerState.stopped){
                         mPlayerView.stopPlayback();
                         mPlayerView.mPlayerState = PlayerState.stopped;
@@ -834,17 +843,9 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                         if (mPlayerCallback != null)
                             mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Media Player Error");
                     }
-                } else {
-                    if (mLogger != null) {
-                        mLogger.error("Player Not Initilized");
-                    }
                 }
                 if (mLogger != null) {
                     mLogger.debug(TAG+" Video path: "+mUri.toString());
-                }
-            } else {
-                if (mLogger != null) {
-                    mLogger.info("Please Check The URI");
                 }
             }
         }
@@ -852,7 +853,11 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
 
         private void setVideoPath(String path) {
             mPosition = 0;
-            if (path != null) {
+            if (path == null) {
+                if (mLogger != null) {
+                    mLogger.info("Please Check The URI");
+                }
+            }else {
                 mUri = Uri.parse(path);
                 if (mPlayerView != null) {
                     if(mPlayerView.mPlayerState!= PlayerState.stopped){
@@ -872,16 +877,12 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 if (mLogger != null) {
                     mLogger.debug(TAG+" Video path: "+mUri.toString());
                 }
-            } else {
-                if (mLogger != null) {
-                    mLogger.info("Please Check The URI");
-                }
             }
         }
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
+    public void onPrepared(MediaPlayer mediaPlayer) {
         stopTimerForPrepare();
         if(mPlayerView.mPlayerState == PlayerState.paused){
             mPlayerView.pause();
@@ -890,14 +891,15 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 mPlayerView.stopPlayback();
         }
         else{
+            final String str3gp = "3gp";
             //Special case for 3GP url as it takes long time to play.
-            if(!(URLUtil.isContentUrl(mUri.toString())) && "3gp".equalsIgnoreCase(MimeTypeMap.getFileExtensionFromUrl(mUri.toString()))){
+            if(!(URLUtil.isContentUrl(mUri.toString())) && str3gp.equalsIgnoreCase(MimeTypeMap.getFileExtensionFromUrl(mUri.toString()))){
                 if (mLogger != null) {
                     mLogger.debug(TAG+" 3GP case Uri:" + mUri.toString());
                 }
-                mp.setOnInfoListener(new OnInfoListener() {
+                mediaPlayer.setOnInfoListener(new OnInfoListener() {
                     @Override
-                    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                    public boolean onInfo(final MediaPlayer mediaPlayer, final int what, final int extra) {
                         if(what == MediaPlayer.MEDIA_INFO_BUFFERING_START||
                                 what == MediaPlayer.MEDIA_INFO_BUFFERING_END||
                                 what == MediaPlayer.MEDIA_INFO_METADATA_UPDATE){
@@ -911,12 +913,12 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                         return true;
                     }
                 });
-                mp.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+                mediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
 
                     @Override
-                    public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                    public void onBufferingUpdate(final MediaPlayer mediaPlayer, final int percent) {
                         if(mPlayerCallback!= null){
-                            mPlayerCallback.playerPrepared(mPlayerControl);
+                        mPlayerCallback.playerPrepared(mPlayerControl);
                         }
                         stopTimerForBuffer();
                     }
@@ -931,7 +933,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             }
         }
         if (mLogger != null) {
-            mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+            mLogger.debug(TAG+Constants.PLAYER_STATE_STRING+mPlayerView.mPlayerState.name());
         }
         hideMediaController();
     }
@@ -983,7 +985,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             mWidevineManager.cancelDownload();
         }
         if (mLogger != null) {
-            mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+            mLogger.debug(TAG+Constants.PLAYER_STATE_STRING+mPlayerView.mPlayerState.name());
         }
     }
 
@@ -995,7 +997,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     private void startTimerForBuffer() {
         mBufferingTimer = new CountDownTimer(Constants.BUFFERING_TIMEOUT, 1000) {
             @Override
-            public void onTick(long millisUntilFinished) {
+            public void onTick(final long millisUntilFinished) {
             }
 
             @Override
@@ -1031,7 +1033,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     private void startTimerForPrepare() {
         mTimer = new CountDownTimer(Constants.PREPARING_TIMEOUT, 1000) {
             @Override
-            public void onTick(long millisUntilFinished) {
+            public void onTick(final long millisUntilFinished) {
             }
 
             @Override
@@ -1060,12 +1062,12 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     }
 
     @Override
-    public void onMediaControllerPlay(long position) {
+    public void onMediaControllerPlay(final long position) {
         mReporter.sendPlayWithPosition(position,mMediaId,null);
     }
 
     @Override
-    public void onMediaControllerPause(long position) {
+    public void onMediaControllerPause(final long position) {
         mReporter.sendPauseWithPosition(position,mMediaId,null);
     }
 

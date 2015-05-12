@@ -6,8 +6,10 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +18,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.util.SparseArray;
+import android.webkit.URLUtil;
+import android.widget.TextView;
 import com.limelight.testvideosdk.ChannelFragment.ChannelCallback;
 import com.limelight.testvideosdk.ChannelGroupFragment.ChannelGroupCallback;
 import com.limelight.testvideosdk.MediaFragment.MediaCallback;
@@ -37,7 +41,6 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
     private PlayersFragment mPlayerFragment = null;
     private SparseArray<Fragment> mRefer = new SparseArray<Fragment>();
     private PlayerTestAdapter mPlayerTestAdapter;
-
     private ChannelFragment mChannelFragment;
     private MediaFragment mMediaFragment;
     private SpecificChannelGroupFragment mSpecificChannelGroupFragment;
@@ -248,11 +251,23 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
         }
         if(mPlayerFragment != null){
             if(what == Constants.Message.status.ordinal()){
-                if(extra == Constants.PlayerState.completed.ordinal()){
+               if(extra == Constants.PlayerState.completed.ordinal()){
                     mPlayerFragment.playCompleted();
                 }else{
                     mPlayerFragment.showProgress(true,msg);
                 }
+            }
+            else if(what == Constants.Message.error.ordinal()){
+                mPlayerFragment.hide();
+                mPlayerFragment.showProgress(false,null);
+                mPlayerFragment.showMessage(msg);
+                
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPlayerFragment.playCompleted();
+                    }
+                });
             }
             else if(what == Constants.Message.progress.ordinal()){
                 mPlayerFragment.showProgress(false,null);
@@ -276,7 +291,18 @@ public class PlayerActivity1 extends FragmentActivity implements IPlayerCallback
                     mPlayerFragment = (PlayersFragment) mRefer.get(0);
                 }
                 if(mPlayerFragment!= null){
-                    mPlayerFragment.setEditText(mUri.toString());
+                    if(URLUtil.isValidUrl(mUri.toString()) && URLUtil.isContentUrl(mUri.toString())){
+                        String[] proj = { MediaStore.Video.VideoColumns.DISPLAY_NAME };
+                        Cursor cursor = getContentResolver().query(mUri, proj, null, null, null);
+                        if (cursor != null && cursor.getCount() != 0) {
+                            cursor.moveToFirst();
+                            mPlayerFragment.setLocalfileName(cursor.getString(0));
+                        }
+                        if (cursor != null) {
+                            cursor.close();
+                        }
+                    }
+                        mPlayerFragment.setEditText(mUri.toString());
                     mPlayerFragment.show();
                 }
                 if (mControl != null) {

@@ -74,8 +74,8 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         final String state = getIntent().getStringExtra("STATE");
         mPlayerView.mPlayerState = PlayerState.valueOf(state);
         mMediaId = getIntent().getStringExtra("MEDIAID");
-        mPlayerView.setVideoURI(uri);
         mPlayerView.setOnPreparedListener(this);
+        mPlayerView.setVideoURI(uri);
         mReporter = new AnalyticsReporter(this);
         mLogger.debug(TAG+" Created");
     }
@@ -130,7 +130,6 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
                 mPlayerView.start();
             }
             mProgress.setVisibility(View.GONE);
-            mPlayerView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -153,5 +152,14 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         LocalBroadcastManager.getInstance(FullScreenPlayer.this).sendBroadcast(intent);
         mPlayerView.stopPlayback();
         this.finish();
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mReporter.unregisterReceiver();
+        mPlayerView = null;
+        mLogger = null;
+        mReporter = null;
     }
 }

@@ -3,6 +3,9 @@ package com.limelight.videosdk.model;
 import com.google.gson.annotations.SerializedName;
 import android.net.Uri;
 
+/**
+ * Encoding is the basic element of media. this class represents the details of single encoding.
+ */
 public class Encoding {
 
     /**

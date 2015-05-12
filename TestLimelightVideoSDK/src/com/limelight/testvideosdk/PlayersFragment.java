@@ -45,6 +45,8 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
     private static final int READ_REQUEST_CODE = 50;
     private IPlayerControl mControl;
     private SearchView mEdit;
+    private TextView mLocalfileText = null;
+    //localFileName mLocalfileText
     private String mMediaInfo;
     private PlayerSupportFragment mPlayer;
     private ProgressDialog mProgress = null;
@@ -70,7 +72,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_player, container,false);
         mEdit = (SearchView) rootView.findViewById(R.id.edit);
-//        mEdit.setQuery("28ed28ffc8e7438783732dc19fae6bbc", false);
+        mLocalfileText = (TextView) rootView.findViewById(R.id.localFileName);////findViewById
         Button choose = (Button) rootView.findViewById(R.id.choose);
         choose.setOnClickListener(new OnClickListener() {
             @Override
@@ -199,6 +201,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             mEditLayout.setVisibility(View.VISIBLE);
         }
         //clear playlist end
+        setLocalfileName("");
         showKeyboard(false);
         mEdit.setFocusable(false);
         CharSequence editPath = mEdit.getQuery();
@@ -234,6 +237,11 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
 
     public void setEditText(String media){
         mEdit.setQuery(media, false);
+    }
+    
+    public void setLocalfileName(String localFileName){
+        if(mLocalfileText != null)
+            mLocalfileText.setText(localFileName);
     }
 
     public void showKeyboard(boolean show) {   

@@ -65,6 +65,10 @@ public class Media {
      * 
      */
     public class MediaThumbnail {
+        /**
+         * Represents a Thumbnail URL.
+         * 
+         */
         @SerializedName("url")
         public Uri mUrl;
     }
@@ -81,15 +85,27 @@ public class Media {
      */
     public class Captions {
 
+        /**
+         * Represents a Caption language code.
+         */
         @SerializedName("language_code")
         public String mLanguageCode;
 
+        /**
+         * Represents a Caption language name.
+         */
         @SerializedName("language_name")
         public String mLanguageName;
 
+        /**
+         * Represents a Caption native language name.
+         */
         @SerializedName("native_language_name")
         public String mNativeLanguageName;
 
+        /**
+         * Represents a Caption URL.
+         */
         @SerializedName("url")
         public Uri mCaptionUrl;
     }

@@ -88,6 +88,8 @@ public class Constants {
     public static final String ENCODING_ERROR = "Failed To Append Paging Parameter !";
     public static final String ORG_ERROR = "Please Ensure Organization ID is Set.";
     public static final String DESERIALIZE_ERROR = "Exception raised In MediaThumbnail deserialize";
+    public static final String PLAYER_NOT_INIT_ERROR = "Player Not Initilized";
+    public static final String PLAYER_STATE_STRING = " PlayerState:";
     /**
      * Various message states.<br>
      * status 0<br>

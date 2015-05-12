@@ -68,7 +68,7 @@
             android:id="@+id/edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="60dp"
+            android:layout_marginRight="200dp"
             android:iconifiedByDefault="false"
             android:imeOptions="normal"
             android:queryHint="@string/hint"
@@ -82,7 +82,24 @@
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
             android:text="@string/choose" />
-
+        <CheckBox
+            android:id="@+id/deliveryCheck"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/choose"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:checked = "true"
+            android:text="Delivery" />
+        <Button
+            android:id="@+id/play"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_toLeftOf="@id/deliveryCheck"
+            android:text="@string/play" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -91,23 +108,11 @@
         android:layout_height="wrap_content"
         android:divider="@android:drawable/divider_horizontal_dark" >
 
-        <Button
-            android:id="@+id/play"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="100dp"
-            android:text="@string/play" />
-
-        <CheckBox
-            android:id="@+id/deliveryCheck"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-            android:gravity="center"
-            android:text="Delivery" />
-
+             <TextView
+                android:id="@+id/localFileName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
     </RelativeLayout>
 
 </LinearLayout>
