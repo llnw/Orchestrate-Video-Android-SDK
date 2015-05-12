@@ -75,6 +75,10 @@ class AnalyticsReporter {
         JsonObject obj = new JsonObject();
         obj.addProperty("appName", mAppName);
         obj.addProperty("userId", mUserId);
+        obj.addProperty("htmlCapabilities", "Android");
+        String userAgent = System.getProperty("http.agent");
+        System.out.println(userAgent);
+        obj.addProperty("userAgent", userAgent);
         obj.addProperty(mMilliSecondElapsed, 0);
         obj.addProperty("platform", mPlatform);
         obj.addProperty(mMediaId, "");

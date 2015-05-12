@@ -193,9 +193,16 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         }
 
         // get our license
-        final int val = mDrm.acquireRights(mDrmInfoRequest);
-        if(val != DrmManagerClient.ERROR_NONE && mCallback!= null){
-            mCallback.onError(new Throwable("AcquireRights Failed"));
+        final int status = mDrm.checkRightsStatus(mUri,DrmStore.Action.PLAY);
+        if(status == DrmStore.RightsStatus.RIGHTS_VALID){
+            if(mCallback!= null){
+                mCallback.onSuccess(mUri);
+            }
+        }else{
+            final int val = mDrm.acquireRights(mDrmInfoRequest);
+            if(val != DrmManagerClient.ERROR_NONE && mCallback!= null){
+                mCallback.onError(new Throwable("AcquireRights Failed"));
+            }
         }
         if(mFileStream != null){
             try {

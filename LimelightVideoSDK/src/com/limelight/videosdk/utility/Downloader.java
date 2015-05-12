@@ -85,7 +85,7 @@ public class Downloader {
         }
 
         if(!Connection.isConnected(mActivity)){
-            callback.onError(new Throwable("Device Not Connected"));
+            callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             return;
         }
 

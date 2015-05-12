@@ -1592,12 +1592,14 @@ public class ContentService {
      * @return Encoding
      */
     Encoding getEncodingFromUrl(final String encodingUrl) {
-        for(Encoding encoding: mEncodingList ){
-            if(encoding.mEncodingUrl.toString().equalsIgnoreCase(encodingUrl)){
-                return encoding;
+        synchronized (mEncodingList) {
+            for(Encoding encoding: mEncodingList ){
+                if(encoding.mEncodingUrl.toString().equalsIgnoreCase(encodingUrl)){
+                    return encoding;
+                }
             }
+            return null;
         }
-        return null;
     }
 
     /**
@@ -1681,10 +1683,12 @@ public class ContentService {
                     delivery.mDownloadable = true;
                     break;
                 default:
+                    delivery = null;
                     continue;
                 }
                 delivery.mRemoteURL = enc.get(0).mEncodingUrl;
                 delivery.mMediaId = enc.get(0).mMediaID;
+                delivery.mEncodings = encodingList;
                 deliveryList.add(delivery);
             }
             return getSuitableDelivery(deliveryList);
