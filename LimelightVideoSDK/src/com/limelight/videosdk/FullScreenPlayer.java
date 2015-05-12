@@ -53,6 +53,7 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
             @Override
             public void closeFullScreen() {
                 close(mPlayerView.getCurrentPosition());
+                mPlayerView.stopPlayback();
             }
         },false);
         mediaController.setAnchorView(mPlayerView);
@@ -102,27 +103,22 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
     }
 
     @Override
-    public void onMediaControllerComplete() {
-        if(mMediaId!= null){
-            mReporter.sendMediaComplete(mMediaId, null);
-        }
-    }
-
-    @Override
     public void onCompletion(final MediaPlayer mediaPlayer) {
         mLogger.debug(TAG+" Completed Playing");
         final int duration = mediaPlayer.getDuration();
         if(mMediaId!= null){
             mReporter.sendMediaComplete(mMediaId, null);
         }
+        mediaPlayer.stop();
         close(duration);
     }
 
     @Override
     public void onPrepared(final MediaPlayer mediaPlayer) {
         if(mPlayerView.mPlayerState==PlayerState.stopped || mPlayerView.mPlayerState== PlayerState.completed){
-            mPlayerView.mPlayerState = PlayerState.stopped;
-            close(0);
+            mPlayerView.mPlayerState=PlayerState.stopped;
+            mediaPlayer.stop();
+            close(mPosition);
         }
         else{
             mPlayerView.seekTo(mPosition);
@@ -136,8 +132,9 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
     @Override
     public boolean onError(final MediaPlayer mediaPlayer, final int what, final int extra) {
         mPlayerView.mPlayerState = PlayerState.stopped;
+        mediaPlayer.stop();
         close(0);
-        return false;
+        return true;
     }
 
     /**
@@ -150,10 +147,9 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         intent.putExtra("POSITION",position);
         intent.putExtra("STATE",mPlayerView.mPlayerState.name());
         LocalBroadcastManager.getInstance(FullScreenPlayer.this).sendBroadcast(intent);
-        mPlayerView.stopPlayback();
-        this.finish();
+        finish();
     }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();

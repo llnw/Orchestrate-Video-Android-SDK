@@ -205,7 +205,7 @@ public class Downloader {
                         input.close();
                     }
                 } catch (IOException ignored) {
-                    //TODO
+                    //ignored
                 }
             }
             return fileLocation;

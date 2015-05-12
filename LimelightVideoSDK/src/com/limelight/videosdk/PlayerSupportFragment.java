@@ -132,11 +132,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         mPlayerView.stopPlayback();
                         mPlayerView.mPlayerState = PlayerState.stopped;
                     }
-                    
                     getActivity().startActivity(i);
                 }catch(Exception ex){
-                    if(ex != null)
+                    if(ex != null){
                         mLogger.error(ex.getMessage());
+                    }
                     if(!toast.getView().isShown()){
                         toast.show();
                     }
@@ -170,8 +170,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
      * So this Method hides the player control bar instantly.
      */
     public void hideMediaController() {
-        if(mMediaController != null)
-        {
+        if(mMediaController != null){
             mMediaController.hide();
             mPlayerView.setMediaController(null);
             mIsMediacontrollerRemoved = true;
@@ -197,8 +196,12 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                mPlayerView.mPlayerState = PlayerState.valueOf(intent.getStringExtra("STATE"));
+                //sometimes playerview or state becomes null.
+                final String state = intent.getStringExtra("STATE");
                 mPosition  = intent.getIntExtra("POSITION",0);
+                if(mPlayerView != null){
+                    mPlayerView.mPlayerState = state == null?PlayerState.stopped:PlayerState.valueOf(state);
+                }
             }
         }, filter);
     }
@@ -941,8 +944,12 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     @Override
     public void onCompletion(MediaPlayer player) {
         if(mPlayerView.mPlayerState != PlayerState.completed){
+            mPlayerView.mPlayerState = PlayerState.completed;
             if (mLogger != null) {
                 mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+            }
+            if (mMediaId != null) {
+                mReporter.sendMediaComplete(mMediaId, null);
             }
             if(mIsAutoPlay){
                 if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
@@ -1074,11 +1081,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     @Override
     public void onMediaControllerSeek(long positionBefore,long positionAfter) {
         mReporter.sendSeekWithPositionBefore(positionBefore, positionAfter,mMediaId,null);
-    }
-
-    @Override
-    public void onMediaControllerComplete() {
-        mReporter.sendMediaComplete(mMediaId, null);
     }
 
     @Override

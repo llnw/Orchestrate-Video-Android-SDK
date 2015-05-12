@@ -23,8 +23,5 @@ interface IMediaControllerCallback {
      * @param aftrerPosition
      */
     void onMediaControllerSeek(long beforePosition,long afterPosition);
-    /**
-     * This method passes the play completed notification from VideoPlayerView to Player
-     */
-    void onMediaControllerComplete();
+
 }
