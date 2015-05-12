@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import com.limelight.videosdk.Constants.PlayerState;
 import com.limelight.videosdk.ContentService.EncodingsCallback;
+import com.limelight.videosdk.ContentService.MediaCallback;
 import com.limelight.videosdk.MediaControl.FullScreenCallback;
 import com.limelight.videosdk.WidevineManager.WVCallback;
 import com.limelight.videosdk.model.Delivery;
 import com.limelight.videosdk.model.Encoding;
+import com.limelight.videosdk.model.Media;
 import com.limelight.videosdk.model.PrimaryUse;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -92,6 +94,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private AnalyticsReporter mReporter = null;
     private String mMediaId = null;
     private boolean mIsMediacontrollerRemoved = true;
+    private String mPlaylistId;
+    private ContentService mPlaylistContentSvc;
+    private boolean mIsAutoPlay = true;
+    private int mCurrentPlayPos;
+    private boolean isPlaylistPlaying;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -264,6 +271,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          * @param localURL The content URL to the local file.
          */
         private void playLocalURL(final String localURL) {
+            mMediaId = null;
             if (mLogger != null) {
                 mLogger.debug(TAG+" Local Content: "+localURL);
             }
@@ -409,6 +417,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         });
                     }
                     else {
+                        mMediaId = null;
                         //this is direct remote URL
                         try {
                             getActivity().runOnUiThread(new Runnable() {
@@ -425,6 +434,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     }
                 }
             }else{
+                mMediaId = null;
                 //play directly
                 try {
                     getActivity().runOnUiThread(new Runnable() {
@@ -560,6 +570,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          * @param media The media string which can hold mediaID,remote URL or local URL.
          * @param contentService The ContentService object.
          */
+        @Override
         public void play(final String media, final ContentService contentService) {
             /*if URL is valid, it can be direct remote URL ,encoding remote URL or Local content URL
             if it is encoding URL fetch URL from encoding URL map
@@ -602,11 +613,134 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     }
                 }
             }
-            else
-            {
+            else{
                 if (mPlayerCallback != null)
                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Invalid Media!");
             }
+            //clearing out playlist informations start
+            isPlaylistPlaying = false;
+            mCurrentPlayPos = 0;
+            mPlaylistContentSvc = null;
+            mPlaylistId = null;
+            //clearing out playlist informations end
+        }
+
+        @Override
+        public void setAutoPlay(boolean isAutoPlay){
+            mIsAutoPlay = isAutoPlay;
+        }
+
+        @Override
+        public int getPlaylistPosition(){
+            return mCurrentPlayPos;
+        }
+
+        /* (non-Javadoc)
+         * @see com.limelight.videosdk.IPlayerControl#playChannel(java.lang.String, com.limelight.videosdk.ContentService, int, com.limelight.videosdk.IPlaylistCallback)
+         */
+        @Override
+        public void playChannel(String channelId, final ContentService contentService,final IPlaylistCallback callback){
+
+            if(contentService == null){
+                if (mPlayerCallback != null){
+                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Media Library !");
+                }
+                return;
+            }
+            if(callback == null){
+                if (mPlayerCallback != null){
+                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Callback Provided !");
+                }
+                return;
+            }
+            if(channelId == null){
+                if (mPlayerCallback != null){
+                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Invalid Channel !");
+                }
+                return;
+            }
+
+            if (mPlayerCallback != null){
+                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+            }
+
+            if (mLogger != null) {
+                mLogger.debug(TAG+" Channel Id For Playlist : "+channelId);
+            }
+
+            if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
+                mPlayerView.stopPlayback();
+                mPlayerView.mPlayerState = PlayerState.stopped;
+            }
+
+            mCurrentPlayPos = 0;
+
+            if(channelId.equals(mPlaylistId)){
+                if(mPlaylistContentSvc!= null &&  !mPlaylistContentSvc.getMediaList().isEmpty()
+                        && mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos)!= null){
+                    playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID,mPlaylistContentSvc);
+                    callback.getChannelPlaylist(mPlaylistContentSvc.getMediaList());
+                }
+                else{
+                    fetchPlaylist(channelId, callback);
+                }
+            }else{
+                mPlaylistId = channelId;
+                mPlaylistContentSvc = contentService;
+                isPlaylistPlaying = false;//reset to initial
+                fetchPlaylist(channelId, callback);
+            }
+        }
+
+        @Override
+        public void playInPlaylist(int position){
+            if(mPlaylistContentSvc!= null &&  !mPlaylistContentSvc.getMediaList().isEmpty()
+                    && mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos)!= null){
+                if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
+                    mPlayerView.stopPlayback();
+                    mPlayerView.mPlayerState = PlayerState.stopped;
+                }
+                mCurrentPlayPos = position;
+                playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID,mPlaylistContentSvc);
+            }
+        }
+        /**
+         * Method to fetch the media list belonging to specified channel.
+         * @param channelId
+         * @param callback
+         */
+        private void fetchPlaylist(final String channelId,final IPlaylistCallback callback){
+            mPlaylistContentSvc.setPagingParameters(50, Constants.SORT_BY_CREATE_DATE, Constants.SORT_ORDER_ASC);
+            mPlaylistContentSvc.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
+
+                @Override
+                public void onSuccess(ArrayList<Media> list) {
+                    if(list!= null && !list.isEmpty()){
+                        callback.getChannelPlaylist(list);
+                        //may be this is for fetching next page.
+                        //Already playlist is playing.No need to start play
+                        if(!isPlaylistPlaying){
+                            playMediaID(list.get(mCurrentPlayPos).mMediaID,mPlaylistContentSvc);
+                            isPlaylistPlaying = true;
+                        }
+                        if(mPlaylistContentSvc.hasNextPage()){
+                            fetchPlaylist(channelId, callback);
+                        }
+                    }else{
+                        if (mPlayerCallback != null){
+                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Media For This Channel !");
+                        }
+                        return;
+                    }
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    if (mPlayerCallback != null){
+                        mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                    }
+                }
+            });
         }
 
         private void playerError() {
@@ -631,7 +765,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
             if (mPlayerView != null) {
                 mPlayerView.start();
-                mPlayerView.mPlayerState = PlayerState.playing;
+
                 if (mLogger != null) {
                     mLogger.info("Player started");
                     mLogger.error("Player started");
@@ -649,6 +783,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
 
+        @Override
         public void pause() {
             if (mUri == null) {
                 if (mLogger != null) {
@@ -669,30 +804,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
 
+        @Override
         public void stop() {
             if (mPlayerView != null){
                 reset();
             }
-            else {
-                if (mLogger != null) {
-                    mLogger.error("Player Not Initilized");
-                }
-            }
-        }
-
-        public void next() {
-            if (mPlayerView != null)
-                mPlayerView.start();
-            else {
-                if (mLogger != null) {
-                    mLogger.error("Player Not Initilized");
-                }
-            }
-        }
-
-        public void previous() {
-            if (mPlayerView != null)
-                mPlayerView.start();
             else {
                 if (mLogger != null) {
                     mLogger.error("Player Not Initilized");
@@ -762,11 +878,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 }
             }
         }
-
-        @Override
-        public void resume() {
-            mPlayerView.resume();
-        }
     }
 
     @Override
@@ -793,7 +904,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             if (mLogger != null) {
                                 mLogger.debug(TAG+" Info now"+": "+what +":"+extra);
                             }
-                            mPlayerCallback.playerPrepared(mPlayerControl);
+                            if(mPlayerCallback!= null){
+                                mPlayerCallback.playerPrepared(mPlayerControl);
+                            }
                         }
                         return true;
                     }
@@ -802,14 +915,18 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 
                     @Override
                     public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                        mPlayerCallback.playerPrepared(mPlayerControl);
+                        if(mPlayerCallback!= null){
+                            mPlayerCallback.playerPrepared(mPlayerControl);
+                        }
                         stopTimerForBuffer();
                     }
                 });
                 startTimerForBuffer();
                 mPlayerControl.play();
             }else{
-                mPlayerCallback.playerPrepared(mPlayerControl);
+                if(mPlayerCallback!= null){
+                    mPlayerCallback.playerPrepared(mPlayerControl);
+                }
                 mPlayerControl.play();
             }
         }
@@ -820,11 +937,27 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     }
 
     @Override
-    public void onCompletion(MediaPlayer mp) {
-        if (mLogger != null) {
-            mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+    public void onCompletion(MediaPlayer player) {
+        if(mPlayerView.mPlayerState != PlayerState.completed){
+            if (mLogger != null) {
+                mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+            }
+            if(mIsAutoPlay){
+                if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
+                    if(mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                        mCurrentPlayPos++;
+                        if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
+                            mPlayerView.stopPlayback();
+                            mPlayerView.mPlayerState = PlayerState.stopped;
+                        }
+                        mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                    }
+                }
+            }
+            if(mPlayerCallback!= null){
+                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+            }
         }
-        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
     }
 
     /**

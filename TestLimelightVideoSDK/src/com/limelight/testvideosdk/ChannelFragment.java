@@ -23,10 +23,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.Channel;
+import com.limelight.testvideosdk.MediaFragment.PlaylistCallback;
 
 public class ChannelFragment extends Fragment implements LoaderManager.LoaderCallbacks<ModelHolder>,OnItemClickListener,OnRefreshListener,OnScrollListener{
 
@@ -48,7 +48,8 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     public interface ChannelCallback{
-        void callback(String id);
+        void callback(String id); 
+        void playChannel(String channelId);
     }
 
     @Override
@@ -72,7 +73,18 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setEmptyText("No Channels");
-        mAdapter =  new ModelAdapter(getActivity());
+        mAdapter =  new ModelAdapter(getActivity(),Constants.TYPE_CHANNEL,new PlaylistCallback() {
+            
+            @Override
+            public void removeFromPlaylist(int position) {
+                //do nothing. cant remove
+            }
+            
+            @Override
+            public void addToPlaylist(int position) {
+                mCallback.playChannel(mChannels.get(position).mChannelId);
+            }
+        });
         setListAdapter(mAdapter);
         setListShown(false);
         getActivity().getSupportLoaderManager().initLoader(11, null, this);

@@ -30,8 +30,10 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.IPlayerControl;
+import com.limelight.videosdk.IPlaylistCallback;
 import com.limelight.videosdk.PlayerSupportFragment;
 import com.limelight.videosdk.ContentService.EncodingsCallback;
 import com.limelight.videosdk.model.Encoding;
@@ -55,8 +57,13 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
     private ListView mPlayListView;
     private RelativeLayout mEditLayout;
     private RelativeLayout mPlayLayout;
-    private int mCurrentPlayPosition = 0;
+    private int mCurrentPlayPosition = -1;
     private boolean mIsPlaylistPlaying = false;
+    private boolean isChannelPlaylist;
+    private PlaylistAdapter mChannelPlayListAdapter;
+    private ListView mChannelPlayListView;
+    private String mChannelId;
+    private IPlaylistCallback mCallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,20 +80,23 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         });
 
         mPlayListView = (ListView) rootView.findViewById(R.id.playlist);
-        mPlayListAdapter = new PlaylistAdapter(getActivity(), new PlaylistCallback() {
+        mChannelPlayListView = (ListView) rootView.findViewById(R.id.channelplaylist);
+        mChannelPlayListAdapter = new PlaylistAdapter(getActivity(), Constants.TYPE_CHANNEL,null);
+        mChannelPlayListAdapter.setData(mPlayList);
+        mChannelPlayListView.setAdapter(mChannelPlayListAdapter);
+        mChannelPlayListView.setOnItemClickListener(this);
+        mPlayListAdapter = new PlaylistAdapter(getActivity(), Constants.TYPE_MEDIA,new PlaylistCallback() {
             @Override
             public void removeFromPlaylist(int position) {
                 PlayersFragment.this.removeFromPlaylist(mPlayList.get(position));
-                if(mCurrentPlayPosition == position)
-                {
-                        if(mControl != null)
-                            mControl.stop();
-                    if(mPlayList.size() ==0)
-                    {
+                if(mCurrentPlayPosition == position){
+                    if(mControl != null){
+                        mControl.stop();
+                    }
+                    if(mPlayList.size() == 0){
                         mCurrentPlayPosition = -1;
                     }
-                    else
-                    {
+                    else{
                         if(mAutoPlayCheck.isChecked() && (mCurrentPlayPosition +1) < mPlayList.size()){
                             mPlayListAdapter.setCurrentPlayingPosition(mCurrentPlayPosition);
                             mPlayListAdapter.notifyDataSetChanged();
@@ -101,8 +111,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                                 showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
                             }
                         }
-                        else
-                        {
+                        else{
                             mPlayListAdapter.setCurrentPlayingPosition(-1);
                             mPlayListAdapter.notifyDataSetChanged();
                         }
@@ -142,6 +151,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         });
         mDeliveryCheck = (CheckBox)rootView.findViewById(R.id.deliveryCheck);
         mAutoPlayCheck = (CheckBox)rootView.findViewById(R.id.is_autoPlay);
+        mAutoPlayCheck.setChecked(true);
         mEdit.setFocusable(false);
         showKeyboard(false);
         mPlayer = new PlayerSupportFragment();
@@ -173,7 +183,22 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
     }
 
     public void play(ContentService svc) {
-        mIsPlaylistPlaying = false;
+        //clear playlist start
+        if(mIsPlaylistPlaying || isChannelPlaylist){
+            mIsPlaylistPlaying = false;
+            isChannelPlaylist = false;
+            mCurrentPlayPosition = -1;
+            for(int i = 0 ; i < mPlayList.size() ;){
+                mPlayList.remove(i);
+            }
+            mChannelId = null;
+            mPlayListNameLayout.setVisibility(View.GONE);
+            mChannelPlayListView.setVisibility(View.GONE);
+            mPlayListView.setVisibility(View.GONE);
+            mPlayLayout.setVisibility(View.VISIBLE);
+            mEditLayout.setVisibility(View.VISIBLE);
+        }
+        //clear playlist end
         showKeyboard(false);
         mEdit.setFocusable(false);
         CharSequence editPath = mEdit.getQuery();
@@ -195,10 +220,9 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                 if("RTSP".equalsIgnoreCase(scheme)){
                     mControl.play(mMediaInfo, null);//used with delivery
                 }else{
-                    if(mDeliveryCheck.isChecked()){
+                    if(mDeliveryCheck.isChecked())
                         //This content service object is passed from Media or ALL media tab.
                         mControl.play(mMediaInfo, svc);//used with delivery
-                    }
                     else{
                         getAllEncodings(mMediaInfo, svc);
                     }
@@ -357,11 +381,22 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
     }
 
     public void addToPlaylist(Media media){
+        if(isChannelPlaylist){
+            isChannelPlaylist = false;
+            for(int i = 0 ; i < mPlayList.size() ;){
+                mPlayList.remove(i);
+            }
+            mCurrentPlayPosition = -1;
+            mChannelId = null;
+        }
         mPlayListNameLayout.setVisibility(View.VISIBLE);
         mPlayListView.setVisibility(View.VISIBLE);
         mPlayLayout.setVisibility(View.GONE);
         mEditLayout.setVisibility(View.GONE);
         mPlayList.add(media);
+        mPlayListAdapter.setData(mPlayList);
+        mPlayListAdapter.setCurrentPlayingPosition(mCurrentPlayPosition);
+        mPlayListView.setSelection(mCurrentPlayPosition);
         mPlayListAdapter.notifyDataSetChanged();
     }
 
@@ -378,11 +413,17 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             mPlayLayout.setVisibility(View.GONE);
             mEditLayout.setVisibility(View.GONE);
         }
+        mPlayListAdapter.setData(mPlayList);
+        mPlayListAdapter.setCurrentPlayingPosition(mCurrentPlayPosition);
+        mPlayListView.setSelection(mCurrentPlayPosition);
         mPlayListAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View item, int position, long arg3) {
+        mIsPlaylistPlaying = true;
+        switch(arg0.getId()){
+        case R.id.playlist:
         mCurrentPlayPosition = position;
         mPlayListAdapter.setCurrentPlayingPosition(position);
         mPlayListAdapter.notifyDataSetChanged();
@@ -396,26 +437,95 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             mControl.play(mPlayList.get(position).mMediaID,contentService);
             showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
         }
-        mIsPlaylistPlaying = true;
+        break;
+        case R.id.channelplaylist:
+            mCurrentPlayPosition = position;
+            mChannelPlayListAdapter.setCurrentPlayingPosition(position);
+            mChannelPlayListAdapter.notifyDataSetChanged();
+            mChannelPlayListView.setSelection(mCurrentPlayPosition);
+            if(mControl != null){
+                mControl.playInPlaylist(position);
+                showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
+            }
+            break;
+        }
     }
 
     public void playCompleted() {
-        if(mIsPlaylistPlaying){
-            if(mControl != null){
-                if(mAutoPlayCheck.isChecked() && (mCurrentPlayPosition +1) < mPlayList.size()){
-                    mCurrentPlayPosition++;
-                    mPlayListAdapter.setCurrentPlayingPosition(mCurrentPlayPosition);
-                    mPlayListAdapter.notifyDataSetChanged();
-                    mPlayListView.setSelection(mCurrentPlayPosition);
-                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    String orgId = preferences.getString(getActivity().getResources().getString(R.string.OrgIDEditPrefKey), null);
-                    String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
-                    String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
-                    ContentService contentService = new ContentService(getActivity(),orgId,accessKey,secret);
-                    mControl.play(mPlayList.get(mCurrentPlayPosition).mMediaID,contentService);
-                    showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
+        if(isChannelPlaylist){
+            if(mIsPlaylistPlaying){
+                if(mControl != null){
+                    mCurrentPlayPosition = mControl.getPlaylistPosition();
+                    mChannelPlayListAdapter.setCurrentPlayingPosition(mCurrentPlayPosition);
+                    mChannelPlayListAdapter.notifyDataSetChanged();
+                    mChannelPlayListView.setSelection(mCurrentPlayPosition);
+                }
+            }
+        }else{
+            if(mIsPlaylistPlaying){
+                if(mControl != null){
+                    if(mAutoPlayCheck.isChecked() && (mCurrentPlayPosition +1) < mPlayList.size()){
+                        mCurrentPlayPosition++;
+                        mPlayListAdapter.setCurrentPlayingPosition(mCurrentPlayPosition);
+                        mPlayListAdapter.notifyDataSetChanged();
+                        mPlayListView.setSelection(mCurrentPlayPosition);
+                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                        String orgId = preferences.getString(getActivity().getResources().getString(R.string.OrgIDEditPrefKey), null);
+                        String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
+                        String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
+                        ContentService contentService = new ContentService(getActivity(),orgId,accessKey,secret);
+                        mControl.play(mPlayList.get(mCurrentPlayPosition).mMediaID,contentService);
+                        showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
+                    }
                 }
             }
         }
 }
+
+    public void playChannel(String channelId) {
+        //initial state for channel playlist
+        mIsPlaylistPlaying = true;
+        isChannelPlaylist = true;
+        mCurrentPlayPosition = 0;
+        mChannelId = channelId;
+        for(int i = 0 ; i < mPlayList.size() ;){
+            mPlayList.remove(i);
+        }
+        mChannelPlayListAdapter.setData(mPlayList);
+        mChannelPlayListAdapter.setCurrentPlayingPosition(mCurrentPlayPosition);
+        mChannelPlayListView.setSelection(mCurrentPlayPosition);
+        mChannelPlayListAdapter.notifyDataSetChanged();
+
+        mCallback = new IPlaylistCallback() {
+            @Override
+            public void getChannelPlaylist(final ArrayList<Media> playlist) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPlayListNameLayout.setVisibility(View.VISIBLE);
+                        mChannelPlayListView.setVisibility(View.VISIBLE);
+                        mPlayListView.setVisibility(View.GONE);
+                        mPlayLayout.setVisibility(View.GONE);
+                        mEditLayout.setVisibility(View.GONE);
+                        mPlayList.addAll(playlist);
+                        mChannelPlayListAdapter.setData(mPlayList);
+                        mChannelPlayListAdapter.setCurrentPlayingPosition(mCurrentPlayPosition);
+                        mChannelPlayListView.setSelection(mCurrentPlayPosition);
+                        mChannelPlayListAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        };
+
+        if(mControl!= null){
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String orgId = preferences.getString(getActivity().getResources().getString(R.string.OrgIDEditPrefKey), null);
+            String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
+            String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
+            ContentService contentService = new ContentService(getActivity(),orgId,accessKey,secret);
+            mControl.setAutoPlay(mAutoPlayCheck.isChecked());
+            mControl.playChannel(channelId, contentService,mCallback);
+//            showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
+        }
+    }
 }

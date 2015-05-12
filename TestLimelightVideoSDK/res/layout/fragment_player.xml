@@ -50,6 +50,12 @@
             android:layout_height="200dp"
             android:layout_below="@id/playListNameLayout"
             android:visibility="gone" />
+        <ListView
+            android:id="@+id/channelplaylist"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_below="@id/playListNameLayout"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <RelativeLayout

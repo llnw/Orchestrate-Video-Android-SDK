@@ -112,6 +112,9 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
     public void onCompletion(final MediaPlayer mediaPlayer) {
         mLogger.debug(TAG+" Completed Playing");
         final int duration = mediaPlayer.getDuration();
+        if(mMediaId!= null){
+            mReporter.sendMediaComplete(mMediaId, null);
+        }
         close(duration);
     }
 

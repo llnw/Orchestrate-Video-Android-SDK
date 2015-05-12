@@ -59,5 +59,16 @@
         style="@android:style/Widget.Button.Inset"
         android:text=" Add To Playlist "
         android:visibility="gone"/>
+    <Button
+        android:id="@+id/playChannel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/goImage"
+        android:gravity="center"
+        android:focusable="false"
+        style="@android:style/Widget.Button.Inset"
+        android:text=" Play"
+        android:visibility="gone"/>
 
 </RelativeLayout>

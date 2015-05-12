@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.limelight.testvideosdk.MediaFragment.PlaylistCallback;
+import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.model.Media;
 import com.limelight.videosdk.utility.Downloader;
 import com.limelight.videosdk.utility.Thumbnail;
@@ -26,6 +27,7 @@ public class PlaylistAdapter extends BaseAdapter {
     Downloader mDownloader = null;
     PlaylistCallback mCallback;
     private int mPosition = -1;
+    private int mModelType = -1;
 
     public PlaylistAdapter(FragmentActivity mActivity) {
         mFragmentActivity = mActivity;
@@ -33,11 +35,12 @@ public class PlaylistAdapter extends BaseAdapter {
         mDownloader = new Downloader(mFragmentActivity);
     }
 
-    public PlaylistAdapter(FragmentActivity mActivity,PlaylistCallback playlistCallback) {
+    public PlaylistAdapter(FragmentActivity mActivity,int type,PlaylistCallback playlistCallback) {
         mFragmentActivity = mActivity;
         mLoadingBitmap = BitmapFactory.decodeResource(mFragmentActivity.getResources(), android.R.drawable.ic_menu_gallery);
         mDownloader = new Downloader(mFragmentActivity);
         mCallback = playlistCallback;
+        mModelType = type;
     }
 
     public void setData(ArrayList<Media> list){
@@ -111,13 +114,18 @@ public class PlaylistAdapter extends BaseAdapter {
                 }
             });
         }
-        holder.mRemovePlaylist.setVisibility(View.VISIBLE);
-        holder.mRemovePlaylist.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.removeFromPlaylist(position);
-            }
-        });
+        if(mModelType == Constants.TYPE_MEDIA){
+            holder.mRemovePlaylist.setVisibility(View.VISIBLE);
+            holder.mRemovePlaylist.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.removeFromPlaylist(position);
+                }
+            });
+        }
+        if(mModelType == Constants.TYPE_CHANNEL){
+            holder.mRemovePlaylist.setVisibility(View.GONE);
+        }
         return rowView;
     }
 }

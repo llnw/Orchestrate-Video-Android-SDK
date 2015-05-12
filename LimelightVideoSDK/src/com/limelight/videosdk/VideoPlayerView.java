@@ -58,18 +58,22 @@ class VideoPlayerView extends VideoView implements OnCompletionListener{
 
     @Override
     public void start() {
-        super.start();
-        mPlayerState = PlayerState.playing;
-        if (mListener != null) {
-            mListener.onMediaControllerPlay(this.getCurrentPosition());
+        if(!this.isPlaying()){
+            super.start();
+            mPlayerState = PlayerState.playing;
+            if (mListener != null) {
+                mListener.onMediaControllerPlay(this.getCurrentPosition());
+            }
         }
     }
 
-    @Override
-    public void onCompletion(MediaPlayer mediaPlayer) {
-        mPlayerState = PlayerState.completed;
-        if (mListener != null) {
-            mListener.onMediaControllerComplete();
-        }
-    }
+   @Override
+   public void onCompletion(MediaPlayer mediaPlayer) {
+       if(mPlayerState != PlayerState.completed){
+           mPlayerState = PlayerState.completed;
+           if (mListener != null) {
+               mListener.onMediaControllerComplete();
+           }
+       }
+   }
 }

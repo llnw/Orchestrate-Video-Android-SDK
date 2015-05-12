@@ -79,6 +79,7 @@ public class ModelAdapter extends BaseAdapter {
         public ImageView mThumbnailImage;
         public ProgressBar mProgress;
         public Button mAddPlaylist;
+        public Button mPlayChannel;
       }
     
     @Override
@@ -94,6 +95,9 @@ public class ModelAdapter extends BaseAdapter {
             viewHolder.mProgress = (ProgressBar) rowView.findViewById(R.id.progressThumbnail);
             if(mModelType == Constants.TYPE_MEDIA){
                 viewHolder.mAddPlaylist = (Button) rowView.findViewById(R.id.addPlaylist);
+            }
+            else if(mModelType == Constants.TYPE_CHANNEL){
+                viewHolder.mPlayChannel = (Button) rowView.findViewById(R.id.playChannel);
             }
             rowView.setTag(viewHolder);
         }
@@ -122,6 +126,15 @@ public class ModelAdapter extends BaseAdapter {
         if(mModelType == Constants.TYPE_MEDIA){
             holder.mAddPlaylist.setVisibility(View.VISIBLE);
             holder.mAddPlaylist.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.addToPlaylist(position);
+                }
+            });
+        }
+        else if(mModelType == Constants.TYPE_CHANNEL){
+            holder.mPlayChannel.setVisibility(View.VISIBLE);
+            holder.mPlayChannel.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mCallback.addToPlaylist(position);

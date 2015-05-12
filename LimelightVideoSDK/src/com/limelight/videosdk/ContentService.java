@@ -99,6 +99,22 @@ public class ContentService {
         return mSecret;
     }
 
+    /**
+     * This method return the medialist. This is particularly used to for channel playlist.
+     * @return
+     */
+    ArrayList<Media> getMediaList() {
+        return mMediaList;
+    }
+
+    /**
+     * This method return true if there is next page for the last requested content.
+     * @return true if next page else false.
+     */
+    public boolean hasNextPage() {
+        return mHasNext;
+    }
+
     public ContentService(final Context context, final String orgId,final String access,final String secret){
         mContext = context;
         mOrgId = orgId;

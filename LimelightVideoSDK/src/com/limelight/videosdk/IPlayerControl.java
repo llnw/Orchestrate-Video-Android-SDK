@@ -14,26 +14,37 @@ public interface IPlayerControl {
      * To play player by program.<br>
      * Call play with media id to fetch the encoding, get the delivery and play the media.<br>
      * Call play with encoding url to play the media for the selected encoding.
+     * @param data media to play<br>
+     * @param contentSrvc ContentService which fetched this media.<br>
      */
     void play(String data, ContentService contentSrvc);
+    /**
+     * To play all the media in a channel. Channel acts as a playlist.<br>
+     * @param channelId Channel id to play.<br>
+     * @param contentService ContentService which fetched this channelid<br>
+     * @param playlist playlist callback<br>
+     */
+    void playChannel(String channelId, ContentService contentService,IPlaylistCallback playlist);
     /**
      * This method programmatically pause the player.
      */
     void pause();
     /**
-     * This method programmatically resume the player.
-     */
-    void resume();
-    /**
      * This method programmatically stops the player.
      */
     void stop();
     /**
-     * To programmatically go to next in player.
+     * To set the autoplay for playlist.<br>
+     * @param isAutoPlay true if autoplay playlist else false<br>
      */
-    void next();
+    void setAutoPlay(boolean isAutoPlay);/**
+     * To get the current play position in playlist.<br>
+     * @return current play position<br>
+     */
+    int getPlaylistPosition();
     /**
-     * To programmatically go to previous in player.
+     * To play a particular media in a channel. Channel acts as a playlist.<br>
+     * @param position position in  playlist<br>
      */
-    void previous();
+    void playInPlaylist(int position);
 }
