@@ -15,6 +15,12 @@ import time
 from logger import info, error, warning, exception, success, fail
 from constant import LIME_LIGHT_OBJ, LONG_WAIT, MEDIUM_WAIT, SORT_WAIT
 
+from behave.matchers import register_type
+def parse_optional(text):
+    return text.strip()
+parse_optional.pattern = r'\s*-?\s*'
+register_type(optional=parse_optional)
+
 ret_data = {}
 
 def test_step(grammar_type, grammar):
@@ -51,19 +57,40 @@ def step_impl(context):
     else:
         info("APP IS RUNNING FROM PREVIOUS SCENARIO, SO RE-USING IT.")
 
-@when('I {opr} {val} as value for {target_ele} in {page_name} Page')
-@test_step('when', 'I %(opr)s %(val)s as value for %(target_ele)s in %(page_name)s Page')
-def step_impl(context, opr, val, target_ele, page_name):
+@given('the application has launched with following ' + \
+       'configuration in {tab_name} tab -')
+@test_step('given', 'the application has launched with following ' + \
+                    'configuration in %(tab_name)s tab')
+def step_impl(context, tab_name):
+    """This will launch the application"""
+    global LIME_LIGHT_OBJ
+    if not LIME_LIGHT_OBJ or not LIME_LIGHT_OBJ.is_app_running():
+        info("NO APP RUNNING, LAUNCHING THE APP.")
+        LIME_LIGHT_OBJ = Limelight()
+        LIME_LIGHT_OBJ.launch_app()
+        LIME_LIGHT_OBJ.select_tab(tab_name)
+        for row in context.table:
+            LIME_LIGHT_OBJ.set_select_value( tab_name, str(row['name']),
+                                             'set', str(row['value']))
+        for ech_tab in ['CHANNEL GROUPS', 'ALL CHANNELS', 'ALL MEDIA']:
+            LIME_LIGHT_OBJ.perform_oper_on_tab(ech_tab, "refresh")
+    else:
+        info("APP IS RUNNING FROM PREVIOUS SCENARIO, SO RE-USING IT.")
+
+
+@when('I {opr} {val} as value for {target_ele} in {tab_name} tab')
+@test_step('when', 'I %(opr)s %(val)s as value for %(target_ele)s in %(tab_name)s tab')
+def step_impl(context, opr, val, target_ele, tab_name):
     """
     @args :
         opr : operations - set / select
         val : value that need to set
         target_ele : The element on which we are going to perform the operation
-        page_name : The page where we need to go
+        tab_name : The tab where we need to go
     """
     global LIME_LIGHT_OBJ
-    LIME_LIGHT_OBJ.select_tab(page_name)
-    LIME_LIGHT_OBJ.set_select_value(page_name, target_ele, opr, val)
+    LIME_LIGHT_OBJ.select_tab(tab_name)
+    LIME_LIGHT_OBJ.set_select_value(tab_name, target_ele, opr, val)
 
 @when('I {opr} the {tab_name} tab')
 @test_step('when', 'I %(opr)s the %(tab_name)s tab')
@@ -107,13 +134,61 @@ def step_impl(context, action_itm, perform, target):
                                              perform.strip(),
                                              target.strip())
 
-@then('value of {target_ele} in {page_name} page should be {val}')
-@test_step('then', 'value of %(target_ele)s in %(page_name)s page should be %(val)s')
+
+@when('I {operation} {target} media in play list from {tab_name} tab{is_table:optional}')
+@test_step('when', 'I %(operation)s %(target)s media in play list from %(tab_name)s tab%(is_table)s')
+def step_impl(context, operation, target, tab_name, is_table):
+    """
+    @args :
+        operation : add / remove
+        target    : following / all
+        tab_name  : tab name of the app
+        is_table  : "-"
+    """
+    global LIME_LIGHT_OBJ
+    media_name = []
+    if is_table and is_table.strip() == "-":
+        media_name = [str(row["media name"]) for row in context.table]
+    LIME_LIGHT_OBJ.add_delete_from_playlist( operation.lower().strip(),
+                                             target.lower().strip(),
+                                             tab_name, media_name)
+
+
+@then('{target} media from {source_tab_name} tab gets {operation} in ' + \
+      'play list of {playlist_tab_name} tab{is_table:optional}')
+@test_step('then', '%(target)s media from %(source_tab_name)s ' + \
+                   'tab gets %(operation)s in play list of ' + \
+                   '%(playlist_tab_name)s tab%(is_table)s')
+def step_impl( context, target, source_tab_name, operation,
+               playlist_tab_name, is_table):
+    """
+    @args :
+        target    : following / all
+        source_tab_name : The tabe name feom where we are adding the media
+                          This is very important while verifying the add all
+                          scenario
+        operation : added / removed
+        playlist_tab_name  : tab name of the app that contains the playlist
+        is_table  : "-"
+    """
+    global LIME_LIGHT_OBJ
+    media_name = []
+    if is_table and is_table.strip() == "-":
+        media_name = [str(row["media name"]) for row in context.table]
+    LIME_LIGHT_OBJ.verify_add_delete_from_playlist( operation.lower().strip(),
+                                                  target.lower().strip(),
+                                                  source_tab_name,
+                                                  playlist_tab_name,
+                                                  media_name)
+
+
+@then('value of {target_ele} in {page_name} tab should be {val}')
+@test_step('then', 'value of %(target_ele)s in %(page_name)s tab should be %(val)s')
 def step_impl(context, target_ele, page_name, val):
     """
     @args :
         target_ele : The element on which we are going to perform the operation
-        page_name : The page where we need to go
+        page_name : The tab where we need to go
         val : value that need to check
     """
     global LIME_LIGHT_OBJ

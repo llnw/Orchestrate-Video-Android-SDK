@@ -15,6 +15,16 @@ import time
 import os
 import webbrowser
 
+FILE_NAME_EXTN = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+CMD_OUT_FILE_NAME = "outputFile_%s.log" % FILE_NAME_EXTN
+JSON_OUT_FILE_NAME= "%s_json_out.json" % FILE_NAME_EXTN
+HTML_REPORT_FILE_NAME = "report-%s.html" % FILE_NAME_EXTN
+
+# comment below line if you want to see the output in terminal
+#sys.stdout = open(CMD_OUT_FILE_NAME, 'w')
+
+
+
 from lib.bin.behave_cmd import behave_main0 as runCli
 from modules.report_generator import report_generator
 
@@ -31,17 +41,13 @@ def main():
     # ['main.py', 'feature-files\\tut.feature', '--format', 'json.pretty',
     # '--out', 'steps_json-pretty_fail.json']
     """
-    json_out_file = datetime.datetime.now().\
-                    strftime("%Y_%m_%d_%H_%M_%S_json_out.json")
-    json_out_file = os.path.join("output", json_out_file)
-    html_report_file = datetime.datetime.now().\
-                    strftime("report-%Y_%m_%d_%H_%M_%S.html")
-    html_report_file = os.path.join("output", html_report_file)
-
+    json_out_file = os.path.join("output", JSON_OUT_FILE_NAME)
+    html_report_file = os.path.join("output", HTML_REPORT_FILE_NAME)
     sys.argv.extend(['--format', 'json.pretty', '--out', json_out_file])
     runCli()
     report_generator(json_out_file, html_report_file)
     print "REPORT PATH::", os.path.join(ROOT_DIR_PATH, html_report_file)
     webbrowser.open("file:///"+os.path.join(ROOT_DIR_PATH, html_report_file))
+
 if __name__ == '__main__':
     main()

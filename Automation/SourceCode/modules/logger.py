@@ -9,7 +9,24 @@
 # Copyright  :  (c) Rebaca 2015
 #-------------------------------------------------------------------------------
 """
+from __future__ import print_function
 from datetime import datetime
+from colorama import init, Fore, Back, Style
+init()
+
+COLOR_MAP = {'FAIL': Fore.RED,
+             'SUCCESS': Fore.GREEN,
+             'EXCEPTION': Fore.RESET,
+             'WARNING': Fore.RESET,
+             'INFO': Fore.RESET,
+             'ERROR': Fore.RESET}
+
+BG_COLOR_MAP = {'FAIL': Back.RED,
+                'SUCCESS': Back.GREEN}
+
+DEFAULT = Fore.RESET
+DEFAULT_BG = Back.RESET
+
 
 def info(msg):
     """Print the normal info messages"""
@@ -37,4 +54,5 @@ def fail(msg):
 
 def log(prefix, msg):
     """ Print the all message with datetime stamp"""
-    print datetime.now().strftime("%Y-%m-%d %H:%M:%S [%%s] %%s")%(prefix, msg)
+    msg = datetime.now().strftime("%Y-%m-%d %H:%M:%S [%%s] %%s") % (prefix, msg)
+    print(COLOR_MAP.get(prefix, DEFAULT) + msg + DEFAULT)

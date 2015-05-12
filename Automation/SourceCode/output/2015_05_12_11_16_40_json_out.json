@@ -1,0 +1,1230 @@
+[
+{
+  "elements": [
+    {
+      "keyword": "Scenario", 
+      "location": "featureFiles\\play-media-content-using-player.feature:3", 
+      "name": "I should be able to play, pause, move forward, move backward, resume flash encoded video", 
+      "steps": [
+        {
+          "keyword": "Given", 
+          "location": "featureFiles\\play-media-content-using-player.feature:4", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "the application has launched", 
+          "result": {
+            "duration": 13.361000061035156, 
+            "status": "passed"
+          }, 
+          "step_type": "given"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:5", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "play"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "Code Rush"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "ALL MEDIA"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "Flash 128 X472kbps 270X480"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I play the \"Code Rush\" video from ALL MEDIA with \"Flash 128 X472kbps 270X480\" encoding", 
+          "result": {
+            "duration": 70.8270001411438, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:6", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "play"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "duration", 
+                "value": "00:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "play"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should play the playback from remote to duration 00:00 in play state", 
+          "result": {
+            "duration": 39.02899980545044, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:7", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "pause"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "Code Rush"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "ALL MEDIA"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "Flash 128 X472kbps 270X480"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I pause the \"Code Rush\" video from ALL MEDIA with \"Flash 128 X472kbps 270X480\" encoding", 
+          "result": {
+            "duration": 1.8429999351501465, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:8", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "pause"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "duration", 
+                "value": "00:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "pause"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should pause the playback from remote to duration 00:00 in pause state", 
+          "result": {
+            "duration": 41.039000034332275, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:9", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "forwarded"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "Code Rush"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "ALL MEDIA"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "Flash 128 X472kbps 270X480"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I forwarded the \"Code Rush\" video from ALL MEDIA with \"Flash 128 X472kbps 270X480\" encoding", 
+          "result": {
+            "duration": 1.7369999885559082, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:10", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "forwarded"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "duration", 
+                "value": "00:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "pause"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should forwarded the playback from remote to duration 00:00 in pause state", 
+          "result": {
+            "duration": 41.64900016784668, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:11", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "reversed"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "Code Rush"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "ALL MEDIA"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "Flash 128 X472kbps 270X480"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I reversed the \"Code Rush\" video from ALL MEDIA with \"Flash 128 X472kbps 270X480\" encoding", 
+          "result": {
+            "duration": 1.0920000076293945, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:12", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "reversed"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "duration", 
+                "value": "00:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "pause"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should reversed the playback from remote to duration 00:00 in pause state", 
+          "result": {
+            "duration": 42.66100001335144, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:13", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "resume"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "Code Rush"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "ALL MEDIA"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "Flash 128 X472kbps 270X480"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I resume the \"Code Rush\" video from ALL MEDIA with \"Flash 128 X472kbps 270X480\" encoding", 
+          "result": {
+            "duration": 1.178999900817871, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:14", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "resume"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "duration", 
+                "value": "00:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "play"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should resume the playback from remote to duration 00:00 in play state", 
+          "result": {
+            "duration": 41.174999952316284, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }
+      ], 
+      "tags": [], 
+      "type": "scenario"
+    }, 
+    {
+      "keyword": "Scenario", 
+      "location": "featureFiles\\play-media-content-using-player.feature:16", 
+      "name": "I should be able to play, pause, move forward, move backward, resume and seek the HLS encoded video", 
+      "steps": [
+        {
+          "keyword": "Given", 
+          "location": "featureFiles\\play-media-content-using-player.feature:17", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "the application has launched", 
+          "result": {
+            "duration": 0.005000114440917969, 
+            "status": "passed"
+          }, 
+          "step_type": "given"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:18", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "play"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "Asiabanking"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "ALL MEDIA"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "HttpLiveStreaming 96 X600kbps 360X640"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I play the \"Asiabanking\" video from ALL MEDIA with \"HttpLiveStreaming 96 X600kbps 360X640\" encoding", 
+          "result": {
+            "duration": 34.17899990081787, 
+            "error_message": [
+              "Traceback (most recent call last):", 
+              "  File \"E:\\Limelight\\Limelight\\Automation\\lib\behave\\model.py\", line 1456, in run", 
+              "    match.run(runner.context)", 
+              "  File \"E:\\Limelight\\Limelight\\Automation\\lib\behave\\model.py\", line 1903, in run", 
+              "    self.func(context, *args, **kwargs)", 
+              "  File \"steps\\limelight_glue_code.py\", line 38, in wrapper", 
+              "    ret_control = function(*args, **kwargs)", 
+              "  File \"steps\\limelight_glue_code.py\", line 99, in step_impl", 
+              "    encoding_type)", 
+              "  File \"E:\\Limelight\\Limelight\\Automation\\modules\\exception_mod.py\", line 36, in wrapper", 
+              "    return function(*args, **kwargs)", 
+              "  File \"E:\\Limelight\\Limelight\\Automation\\modules\\limelight_mod.py\", line 782, in perform_video_operations", 
+              "    self.select_encoding(encoding_type, media_type)", 
+              "  File \"E:\\Limelight\\Limelight\\Automation\\modules\\limelight_mod.py\", line 605, in select_encoding", 
+              "    self.click_on(\"dropdown\", generic_param=(encoding_name, ))", 
+              "  File \"E:\\Limelight\\Limelight\\Automation\\modules\\limelight_mod.py\", line 111, in click_on", 
+              "    return self.__obj.click_on(element, generic_param=generic_param)", 
+              "  File \"E:\\Limelight\\Limelight\\Automation\\modules\u0007ppium_driver.py\", line 408, in click_on", 
+              "    ele_obj = self.get_element(ele, generic_param=generic_param)", 
+              "  File \"E:\\Limelight\\Limelight\\Automation\\modules\u0007ppium_driver.py\", line 292, in get_element", 
+              "    raise Exception(\"Element - %s not found.\"%ele)", 
+              "Exception: Element - dropdown not found."
+            ], 
+            "status": "failed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:19", 
+          "name": "player should play the playback from remote to duration 00:00 in play state", 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:20", 
+          "name": "I pause the \"Asiabanking\" video from ALL MEDIA with \"HttpLiveStreaming 96 X600kbps 360X640\" encoding", 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:21", 
+          "name": "player should pause the playback from remote to duration 00:00 in pause state", 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:22", 
+          "name": "I forwarded the \"Asiabanking\" video from ALL MEDIA with \"HttpLiveStreaming 96 X600kbps 360X640\" encoding", 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:23", 
+          "name": "player should forwarded the playback from remote to duration 00:00 in pause state", 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:24", 
+          "name": "I reversed the \"Asiabanking\" video from ALL MEDIA with \"HttpLiveStreaming 96 X600kbps 360X640\" encoding", 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:25", 
+          "name": "player should reversed the playback from remote to duration 00:00 in pause state", 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:26", 
+          "name": "I seek-1:00 the \"Asiabanking\" video from ALL MEDIA with \"HttpLiveStreaming 96 X600kbps 360X640\" encoding", 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:27", 
+          "name": "player should seek the playback from file to duration 1:00 in pause state", 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:28", 
+          "name": "I resume the \"Asiabanking\" video from ALL MEDIA with \"HttpLiveStreaming 96 X600kbps 360X640\" encoding", 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:29", 
+          "name": "player should resume the playback from remote to duration 00:00 in play state", 
+          "step_type": "then"
+        }
+      ], 
+      "tags": [], 
+      "type": "scenario"
+    }, 
+    {
+      "keyword": "Scenario", 
+      "location": "featureFiles\\play-media-content-using-player.feature:31", 
+      "name": "I should be able to play, pause, move forward, move backward, resume and seek the local video content.", 
+      "steps": [
+        {
+          "keyword": "Given", 
+          "location": "featureFiles\\play-media-content-using-player.feature:32", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "the application has launched", 
+          "result": {
+            "duration": 12.120000123977661, 
+            "status": "passed"
+          }, 
+          "step_type": "given"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:33", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "play"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "local"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "Downloads/tGsMo2013-1.mp4"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "local"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I play the \"local\" video from Downloads/tGsMo2013-1.mp4 with \"local\" encoding", 
+          "result": {
+            "duration": 72.92899990081787, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:34", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "play"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "file"
+              }, 
+              {
+                "name": "duration", 
+                "value": "xx:xx"
+              }, 
+              {
+                "name": "state", 
+                "value": "play"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should play the playback from file to duration xx:xx in play state", 
+          "result": {
+            "duration": 40.75399994850159, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:35", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "pause"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "local"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "Downloads/tGsMo2013-1.mp4"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "local"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I pause the \"local\" video from Downloads/tGsMo2013-1.mp4 with \"local\" encoding", 
+          "result": {
+            "duration": 3.7089998722076416, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:36", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "pause"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "file"
+              }, 
+              {
+                "name": "duration", 
+                "value": "xx:xx"
+              }, 
+              {
+                "name": "state", 
+                "value": "pause"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should pause the playback from file to duration xx:xx in pause state", 
+          "result": {
+            "duration": 41.11399984359741, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:37", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "forwarded"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "local"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "Downloads/tGsMo2013-1.mp4"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "local"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I forwarded the \"local\" video from Downloads/tGsMo2013-1.mp4 with \"local\" encoding", 
+          "result": {
+            "duration": 1.2260000705718994, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:38", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "forwarded"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "file"
+              }, 
+              {
+                "name": "duration", 
+                "value": "xx:xx"
+              }, 
+              {
+                "name": "state", 
+                "value": "pause"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should forwarded the playback from file to duration xx:xx in pause state", 
+          "result": {
+            "duration": 41.5239999294281, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:39", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "reversed"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "local"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "Downloads/tGsMo2013-1.mp4"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "local"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I reversed the \"local\" video from Downloads/tGsMo2013-1.mp4 with \"local\" encoding", 
+          "result": {
+            "duration": 1.0499999523162842, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:40", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "reversed"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "file"
+              }, 
+              {
+                "name": "duration", 
+                "value": "xx:xx"
+              }, 
+              {
+                "name": "state", 
+                "value": "pause"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should reversed the playback from file to duration xx:xx in pause state", 
+          "result": {
+            "duration": 42.801000118255615, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:41", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "seek-2:00"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "local"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "Downloads/tGsMo2013-1.mp4"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "local"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I seek-2:00 the \"local\" video from Downloads/tGsMo2013-1.mp4 with \"local\" encoding", 
+          "result": {
+            "duration": 1.4900000095367432, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:42", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "seek"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "file"
+              }, 
+              {
+                "name": "duration", 
+                "value": "2:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "pause"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should seek the playback from file to duration 2:00 in pause state", 
+          "result": {
+            "duration": 42.365999937057495, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:43", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "resume"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "local"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "Downloads/tGsMo2013-1.mp4"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "local"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I resume the \"local\" video from Downloads/tGsMo2013-1.mp4 with \"local\" encoding", 
+          "result": {
+            "duration": 2.42900013923645, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:44", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "resume"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "file"
+              }, 
+              {
+                "name": "duration", 
+                "value": "xx:xx"
+              }, 
+              {
+                "name": "state", 
+                "value": "play"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should resume the playback from file to duration xx:xx in play state", 
+          "result": {
+            "duration": 42.03200006484985, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }
+      ], 
+      "tags": [], 
+      "type": "scenario"
+    }, 
+    {
+      "keyword": "Scenario", 
+      "location": "featureFiles\\play-media-content-using-player.feature:46", 
+      "name": "I should be able to play, pause, move forward, move backward, resume and seek the remote video content using media id.", 
+      "steps": [
+        {
+          "keyword": "Given", 
+          "location": "featureFiles\\play-media-content-using-player.feature:47", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "the application has launched", 
+          "result": {
+            "duration": 0.005000114440917969, 
+            "status": "passed"
+          }, 
+          "step_type": "given"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:48", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "play"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "6fe75d0081224f74966d9a2e2f40b7da"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "Flash 128 X472kbps 270X480"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I play the \"remote\" video from 6fe75d0081224f74966d9a2e2f40b7da with \"Flash 128 X472kbps 270X480\" encoding", 
+          "result": {
+            "duration": 149.72300004959106, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:49", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "play"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "duration", 
+                "value": "00:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "play"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should play the playback from remote to duration 00:00 in play state", 
+          "result": {
+            "duration": 40.92199993133545, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:50", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "pause"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "6fe75d0081224f74966d9a2e2f40b7da"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "Flash 128 X472kbps 270X480"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I pause the \"remote\" video from 6fe75d0081224f74966d9a2e2f40b7da with \"Flash 128 X472kbps 270X480\" encoding", 
+          "result": {
+            "duration": 3.131999969482422, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:51", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "pause"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "duration", 
+                "value": "00:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "pause"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should pause the playback from remote to duration 00:00 in pause state", 
+          "result": {
+            "duration": 42.06100010871887, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:52", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "forwarded"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "6fe75d0081224f74966d9a2e2f40b7da"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "Flash 128 X472kbps 270X480"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I forwarded the \"remote\" video from 6fe75d0081224f74966d9a2e2f40b7da with \"Flash 128 X472kbps 270X480\" encoding", 
+          "result": {
+            "duration": 1.2409999370574951, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:53", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "forwarded"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "duration", 
+                "value": "00:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "pause"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should forwarded the playback from remote to duration 00:00 in pause state", 
+          "result": {
+            "duration": 39.6710000038147, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:54", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "reversed"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "6fe75d0081224f74966d9a2e2f40b7da"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "Flash 128 X472kbps 270X480"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I reversed the \"remote\" video from 6fe75d0081224f74966d9a2e2f40b7da with \"Flash 128 X472kbps 270X480\" encoding", 
+          "result": {
+            "duration": 1.122999906539917, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:55", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "reversed"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "duration", 
+                "value": "00:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "pause"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should reversed the playback from remote to duration 00:00 in pause state", 
+          "result": {
+            "duration": 43.1010000705719, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "When", 
+          "location": "featureFiles\\play-media-content-using-player.feature:56", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "resume"
+              }, 
+              {
+                "name": "media_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "media_source", 
+                "value": "6fe75d0081224f74966d9a2e2f40b7da"
+              }, 
+              {
+                "name": "encoding_type", 
+                "value": "Flash 128 X472kbps 270X480"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "I resume the \"remote\" video from 6fe75d0081224f74966d9a2e2f40b7da with \"Flash 128 X472kbps 270X480\" encoding", 
+          "result": {
+            "duration": 1.363999843597412, 
+            "status": "passed"
+          }, 
+          "step_type": "when"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:57", 
+          "match": {
+            "arguments": [
+              {
+                "name": "opr", 
+                "value": "resume"
+              }, 
+              {
+                "name": "source_type", 
+                "value": "remote"
+              }, 
+              {
+                "name": "duration", 
+                "value": "00:00"
+              }, 
+              {
+                "name": "state", 
+                "value": "play"
+              }
+            ], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "player should resume the playback from remote to duration 00:00 in play state", 
+          "result": {
+            "duration": 41.07799983024597, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }, 
+        {
+          "keyword": "Then", 
+          "location": "featureFiles\\play-media-content-using-player.feature:58", 
+          "match": {
+            "arguments": [], 
+            "location": "steps\\limelight_glue_code.py:33"
+          }, 
+          "name": "exit from the application", 
+          "result": {
+            "duration": 4.799000024795532, 
+            "status": "passed"
+          }, 
+          "step_type": "then"
+        }
+      ], 
+      "tags": [], 
+      "type": "scenario"
+    }
+  ], 
+  "keyword": "Feature", 
+  "location": "featureFiles\\play-media-content-using-player.feature:1", 
+  "name": "Play, Pause, Move Forward, Move Backward, Resume and Seek Media Content Using Player", 
+  "status": "failed", 
+  "tags": []
+}
+]

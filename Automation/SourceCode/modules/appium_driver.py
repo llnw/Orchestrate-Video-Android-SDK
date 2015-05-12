@@ -244,20 +244,13 @@ class Driver(object):
 
             # Performing Horizontal scroll
             if scroll_h != 0 and not ele_obj_list:
-                left_x, right_x = 5, 670
-                scrol_typ = 'H'
-                if scroll_h < 0:
-                    from_point = [left_x,
-                                  int(ele_data['tap-point'].split(',')[:2][1])]
-                    to_point = [right_x, from_point[1]]
-                else:
-                    from_point = [right_x,
-                                  int(ele_data['tap-point'].split(',')[:2][1])]
-                    to_point = [left_x, from_point[1]]
-
                 for e_itr in xrange(abs(scroll_h)):
-                    self.scroll(scrol_typ, direction=None,
-                                frm_pt=from_point, to_pt=to_point)
+                    if scroll_h < 0:
+                        # Go left (new element comes from left)
+                        self.horizontal_scroll_once(to_left=True)
+                    else:
+                        # Go right
+                        self.horizontal_scroll_once(to_left=False)
                     if search_flag:
                         try:
                             ele_obj_list = self.find_element(ele_data,
@@ -268,20 +261,15 @@ class Driver(object):
 
             # Performing Vertical scroll
             if scroll_v != 0 and not ele_obj_list:
-                top_y, bottom_y = 242, 1098
-                scrol_typ = 'V'
-                if scroll_v < 0:
-                    from_point = [int(ele_data['tap-point'].split(',')[:2][0]),
-                                  top_y]
-                    to_point = [from_point[0], bottom_y]
-                else:
-                    from_point = [int(ele_data['tap-point'].split(',')[:2][0]),
-                                  bottom_y]
-                    to_point = [from_point[0], top_y]
-
                 for e_itr in xrange(abs(scroll_v)):
-                    self.scroll(scrol_typ, direction=None,
-                                frm_pt=from_point, to_pt=to_point)
+                    if scroll_v < 0:
+                        # Go up
+                        self.vertical_scroll_once(to_up=True,
+                                scroll_ele_typ=ele_data.get('element-type', ''))
+                    else:
+                        # Go down
+                        self.vertical_scroll_once(to_up=False,
+                                scroll_ele_typ=ele_data.get('element-type', ''))
                     self.wait_for(1)
                     if search_flag:
                         try:
@@ -655,8 +643,7 @@ class Driver(object):
             end_x, end_y = 650, 242
 
 
-        self.driver.swipe(start_x, start_y, end_x, end_y)
-        #self.wait_for(1)
+        self.driver.swipe(start_x, start_y, end_x, end_y, 2000)
 
     def show_current_activity(self):
         """Showing the current activity"""
@@ -760,9 +747,9 @@ class Driver(object):
         # When both point is same point then
         if from_pt[1] == to_pt[1]:
             if indx == 0:
-                to_pt = (to_pt[0], to_pt[1]-200)
+                to_pt = (to_pt[0], to_pt[1] - 200)
             else:
-                to_pt = (to_pt[0], to_pt[1]-50)
+                to_pt = (to_pt[0], to_pt[1] -  50)
 
         tmp_retry = retry
         while tmp_retry > 0:
@@ -907,17 +894,6 @@ class Driver(object):
         """ Refresh your tab by pull it up """
         self.scrol_top_to_bottom (retry=1)
         self.scrol_top_to_bottom(retry=1, indx=0)
-        '''
-        obj = self.get_element("tab-data-list")
-        obj_data = {'width' :  int(obj.size['width']),
-                    'height':  int(obj.size['height']),
-                    'x' :      int(obj.location['x']),
-                    'y' :      int(obj.location['y'])}
-
-        end_pt = (obj_data['x'] + (obj_data['width']/2) , obj_data['y'])
-        start_pt = (end_pt[0], end_pt[1] + obj_data['height'])
-        self.driver.swipe(start_pt[0], start_pt[1], end_pt[0], end_pt[1])
-        '''
 
     def tap_on(self, point_x, point_y):
         """
@@ -927,6 +903,61 @@ class Driver(object):
             point_y : y coordinate
         """
         self.driver.swipe(point_x, point_y, point_x, point_y)
+
+    def vertical_scroll_once(self, to_up=True, scroll_ele_typ=None):
+        """
+        Single scroll that will get performed on a perticular tab
+        @args:
+            to_up : True, if travel to up
+            scroll_ele_typ : popup/ normal
+        """
+        if not scroll_ele_typ :
+            ele = "//android.widget.ListView[1]//android.widget.TextView[1]"
+        else:
+            ele = "//android.widget.CheckedTextView"
+        obj_list = self.get_element_by_xpath(ele)
+        obj_list = [obj_list[0], obj_list[-1]]
+        top_pt = (int(obj_list[0].location['x']) + \
+                  (int(obj_list[0].size['width']) / 2),
+                  int(obj_list[0].location['y']))
+        if top_pt[1] == int(obj_list[-1].location['y']):
+            down_pt = (top_pt[0],
+                       int(obj_list[-1].location['y']) + \
+                       int(obj_list[-1].size['height']))
+        else:
+            down_pt = (top_pt[0],
+                       int(obj_list[-1].location['y']))
+            # because sometime some part of the element is visible
+            # so if we add height then it will goes out of bound
+
+        if to_up:
+            self.scroll('V', frm_pt=top_pt, to_pt=down_pt)
+        else:
+            self.scroll('V', frm_pt=down_pt, to_pt=top_pt)
+
+    def horizontal_scroll_once(self, to_left=True):
+        """
+        Single scroll that will get performed on a perticular tab
+        @args:
+            to_left : True, if travel to left
+        """
+        ele = "//android.widget.HorizontalScrollView[1]/" + \
+              "android.widget.LinearLayout[1]//android.widget.TextView[1]"
+
+        obj_list = self.get_element_by_xpath(ele)
+        obj_list = [obj_list[0], obj_list[-1]]
+
+        left_pt = (int(obj_list[0].location['x']) + 5,
+                    int(obj_list[0].location['y']) + \
+                     (int(obj_list[0].size['height']) / 2))
+
+        right_pt = ( int(obj_list[-1].location['x']),
+                     left_pt[1])
+
+        if to_left:
+            self.scroll('H', frm_pt=left_pt, to_pt=right_pt)
+        else:
+            self.scroll('H', frm_pt=right_pt, to_pt=left_pt)
 
 if __name__ == "__main__":
     from modules.constant import *

@@ -1,11 +1,16 @@
 Feature: checking the negative scenario
 
     Scenario: After providing wrong organization id, error message should shown up on all tabs
-    Given the application has launched
-    When I select Rebaca Channel Group as value for channel-group in CHANNEL GROUPS page
-    And I select Some Sample Videos as value for channel in CHANNELS page
+    Given the application has launched with following configuration in SETTINGS tab -
+     |  name             |  value                            |
+     | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
+     | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
+     | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     
+    When I select ENTERTAINMENT as value for channel-group in CHANNEL GROUPS tab
+     And I select Cartoon as value for channel in CHANNELS tab
 
-    When I set xxxxxxxxxxxxxxxxxxx as value for Organization ID in SETTINGS page
+    When I set xxxxxxxxxxxxxxxxxxx as value for Organization ID in SETTINGS tab
     And I refresh the CHANNEL GROUPS tab
     Then the CURRENT tab should have following error message -
      | error message                                                         |
@@ -33,14 +38,24 @@ Feature: checking the negative scenario
     And exit from the application
 
     Scenario: After providing wrong organization id, I should not be able to play a media from media tab 
-    Given the application has launched
-    When I set xxxxxxxxxxxxxxxxxxx as value for Organization ID in SETTINGS page
-    And I play the "Code Rush" video from ALL MEDIA with "Flash 128 X472kbps 270X480" encoding
+    Given the application has launched with following configuration in SETTINGS tab -
+     |  name             |  value                            |
+     | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
+     | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
+     | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     
+    When I set xxxxxxxxxxxxxxxxxxx as value for Organization ID in SETTINGS tab
+    And I play the "Now You See Me" video from ALL MEDIA with "Flash 128 X472kbps 268X640" encoding
     Then player should not play the playback from remote to duration 00:00 in play state
     And exit from the application
     
     Scenario: If we not select any channel group then the channel tab should show the message
-    Given the application has launched
+    Given the application has launched with following configuration in SETTINGS tab -
+     |  name             |  value                            |
+     | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
+     | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
+     | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     
     When I select the CHANNELS tab
     Then the CURRENT tab should have following error message -
      | error message               |
@@ -51,7 +66,12 @@ Feature: checking the negative scenario
      | No Channel Group Selected   |
      
     Scenario: If we not select any channel then the media tab should show the message
-    Given the application has launched
+    Given the application has launched with following configuration in SETTINGS tab -
+     |  name             |  value                            |
+     | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
+     | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
+     | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     
     When I select the MEDIA tab
     Then the CURRENT tab should have following error message -
      | error message         |
@@ -62,35 +82,19 @@ Feature: checking the negative scenario
      | No Channel Selected   |
      
     Scenario: The video playback should get paused when we move to another tab.
-    Given the application has launched
-    When I play the "Code Rush" video from ALL MEDIA with "Flash 128 X472kbps 270X480" encoding
+    Given the application has launched with following configuration in SETTINGS tab -
+     |  name             |  value                            |
+     | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
+     | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
+     | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     
+    When I play the "Underwater Marine Life" video from ALL MEDIA with "Flash 128 X322kbps 240X426" encoding
     And I select the MEDIA tab
     And I select the PLAYER tab
     Then player should pause the playback from remote to duration 00:00 in pause state
-    When I resume the "Code Rush" video from ALL MEDIA with "Flash 128 X472kbps 270X480" encoding
-    And I pause the "Code Rush" video from ALL MEDIA with "Flash 128 X472kbps 270X480" encoding
+    When I resume the "Underwater Marine Life" video from ALL MEDIA with "Flash 128 X322kbps 240X426" encoding
+    And I pause the "Underwater Marine Life" video from ALL MEDIA with "Flash 128 X322kbps 240X426" encoding
     And I select the MEDIA tab
     And I select the PLAYER tab
     Then player should pause the playback from remote to duration 00:00 in pause state
     And exit from the application
-
-    Scenario: I should be able to see the icon.         
-     Given the application has launched
-
-     When I select the CHANNEL GROUPS tab
-     Then the CURRENT tab should have following icon set -
-     | name                 | icon                     |
-     | Rebaca Channel Group | Rebaca-Channel-Group.png |
-     | Limelight            | Limelight.png            |
-     
-     When I select the ALL CHANNELS tab
-     Then the CURRENT tab should have following icon set -
-     | name                | icon                    |
-     | Some Sample Videos1 | Some-Sample-Videos1.png |
-     | Maru Madnes         | Maru-Madnes.png         |
-     
-     When I select the ALL MEDIA tab
-     Then the CURRENT tab should have following icon set -
-     | name           | icon              |
-     | Late For Work  | Late-For-Work.png |
-     | Code Rush      | Code-Rush.png     |

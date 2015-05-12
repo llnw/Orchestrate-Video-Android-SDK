@@ -1,0 +1,476 @@
+
+    <html>
+    <head>
+    <title>Automation Report</title>
+    <style>
+    .feature-table{
+       margin-bottom: 10px;
+    }
+    table {
+       empty-cells: show;
+       font-size: 8pt;
+       word-wrap: break-word;
+       border: 0px solid slategray /*1px solid #DDDDDD*/;
+       background-color: #F0F0F0;
+       font-family: arial;
+       color: #222222;
+       width: 100%;
+    }
+    tr {
+       line-height: 20px;
+    }
+    th {
+       background-color: #dcdcf0;
+       padding: 0.2em 0.3em;
+    }
+    th, td {
+       border: 1px solid slategray;
+       padding: 4px;
+       /*font-family: Helvetica,sans-serif;*/
+       min-width: 140px;
+       vertical-align: top;
+    }
+    .passed {
+       background-color: #5f9d18/*#99ff66*/;
+       color:white;
+       font-weight:bold;
+    }
+    .failed {
+       background-color: #a43838/*#FF3333*/;
+       color:white;
+       font-weight:bold;
+    }
+    h4 {
+       padding: 0px;
+       margin: 0px;
+       font-size: 10pt;
+    }
+    .key {
+       font-size: 10pt !important;
+       font-weight: bold;
+       vertical-align: text-top;
+       width: 100px;
+
+    }
+    .line-brk{
+       border:0px;
+       height:9px
+    }
+    .togBtn{
+        background-color: #dcdcf0;
+        border: 1px solid black;
+        border-radius: 9px;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 7.5pt;
+        padding: 2px;
+        text-align: center;
+        margin-left : 10px;
+
+    }
+    .full-err-msg{
+        background-color: #ffffff;
+        border: 1px dashed #ccd5de;
+        color: black;
+        font-weight: lighter;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 5px;
+        display: none;
+    }
+    .err-msg-link{
+        cursor: pointer;
+    }
+    </style>
+    <script type="text/javascript"
+    src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js">
+    </script>
+    <script type="text/javascript">
+
+    $( document ).ready(function() {
+        $(".stepsTable").toggle();
+        $('.togBtn').click(function(){
+            $(this).parent().parent().next().children()
+            .next().children(".stepsTable").toggle();
+            if ($(this).text() === 'Show Steps') {
+                $(this).text('Hide Steps');
+            } else {
+                $(this).text('Show Steps');
+            }
+        });
+
+    $('.err-msg-link').click(function(){
+      var msg = "<pre>"+$(this).next(".full-err-msg").html()+"</pre>";
+      var w = window.open('', '', 'width=600,height=400,resizeable,scrollbars');
+      w.document.write(msg);
+      w.document.close(); // needed for chrome and safari
+    });
+   });
+
+  </script>
+  </head>
+  <body>
+    <table class="tab-failed feature-table" cellspacing="1"><tr><td class="key">Feature : </td>
+                       <td><h4>Play, Pause, Move Forward, Move Backward, Resume and Seek Media Content Using Player</h4></td></tr>
+              <tr><td class="key">Tag : </td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location : </td>
+                  <td>featureFiles\play-media-content-using-player.feature:1</td></tr>
+            
+           <tr><td class="key">Duration (hh:mm:ss) : </td>
+             <td>00:17:24</td>
+           </tr>
+        
+           <tr class="failed">
+             <td class="key">Overall Status : </td>
+             <td>FAILED</td>
+           </tr>
+        <tr>
+            <td class="key">Scenario : </td><td><table cellspacing="1"><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume flash encoded video</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:04:56</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player.feature:3</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched</td><td>Given</td><td>featureFiles\play-media-content-using-player.feature:4</td>
+                         <td></td><td>13.361</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "Code Rush" video from ALL MEDIA with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:5</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = Code Rush<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>70.827</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:6</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>39.029</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "Code Rush" video from ALL MEDIA with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:7</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = Code Rush<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>1.843</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:8</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>41.039</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I forwarded the "Code Rush" video from ALL MEDIA with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:9</td>
+                         <td>name = opr<br />value = forwarded<br />name = media_type<br />value = Code Rush<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>1.737</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should forwarded the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:10</td>
+                         <td>name = opr<br />value = forwarded<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>41.649</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I reversed the "Code Rush" video from ALL MEDIA with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:11</td>
+                         <td>name = opr<br />value = reversed<br />name = media_type<br />value = Code Rush<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>1.092</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should reversed the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:12</td>
+                         <td>name = opr<br />value = reversed<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>42.661</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I resume the "Code Rush" video from ALL MEDIA with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:13</td>
+                         <td>name = opr<br />value = resume<br />name = media_type<br />value = Code Rush<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>1.179</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should resume the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:14</td>
+                         <td>name = opr<br />value = resume<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>41.175</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume and seek the HLS encoded video</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:34</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player.feature:16</td></tr>
+                <tr class="failed">
+                   <td class="key">Status : </td>
+                   <td>
+                       FAILED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched</td><td>Given</td><td>featureFiles\play-media-content-using-player.feature:17</td>
+                         <td></td><td>0.005</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="failed">
+                         <td>I play the "Asiabanking" video from ALL MEDIA with "HttpLiveStreaming 96 X600kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:18</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = Asiabanking<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = HttpLiveStreaming 96 X600kbps 360X640<br /></td><td>34.179</td><td>FAILED</td>
+                         <td>
+                       <a class='err-msg-link'>Exception: Element - dropdown not found.</a>
+                       <div class='full-err-msg'>Traceback (most recent call last):<br />  File "E:\Limelight\Limelight\Automation\libehave\model.py", line 1456, in run<br />    match.run(runner.context)<br />  File "E:\Limelight\Limelight\Automation\libehave\model.py", line 1903, in run<br />    self.func(context, *args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 38, in wrapper<br />    ret_control = function(*args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 99, in step_impl<br />    encoding_type)<br />  File "E:\Limelight\Limelight\Automation\modules\exception_mod.py", line 36, in wrapper<br />    return function(*args, **kwargs)<br />  File "E:\Limelight\Limelight\Automation\modules\limelight_mod.py", line 782, in perform_video_operations<br />    self.select_encoding(encoding_type, media_type)<br />  File "E:\Limelight\Limelight\Automation\modules\limelight_mod.py", line 605, in select_encoding<br />    self.click_on("dropdown", generic_param=(encoding_name, ))<br />  File "E:\Limelight\Limelight\Automation\modules\limelight_mod.py", line 111, in click_on<br />    return self.__obj.click_on(element, generic_param=generic_param)<br />  File "E:\Limelight\Limelight\Automation\modulesppium_driver.py", line 408, in click_on<br />    ele_obj = self.get_element(ele, generic_param=generic_param)<br />  File "E:\Limelight\Limelight\Automation\modulesppium_driver.py", line 292, in get_element<br />    raise Exception("Element - %s not found."%ele)<br />Exception: Element - dropdown not found.</div>
+                    </td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:19</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I pause the "Asiabanking" video from ALL MEDIA with "HttpLiveStreaming 96 X600kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:20</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:21</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I forwarded the "Asiabanking" video from ALL MEDIA with "HttpLiveStreaming 96 X600kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:22</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should forwarded the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:23</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I reversed the "Asiabanking" video from ALL MEDIA with "HttpLiveStreaming 96 X600kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:24</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should reversed the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:25</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I seek-1:00 the "Asiabanking" video from ALL MEDIA with "HttpLiveStreaming 96 X600kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:26</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should seek the playback from file to duration 1:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:27</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I resume the "Asiabanking" video from ALL MEDIA with "HttpLiveStreaming 96 X600kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:28</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should resume the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:29</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume and seek the local video content.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:05:46</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player.feature:31</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched</td><td>Given</td><td>featureFiles\play-media-content-using-player.feature:32</td>
+                         <td></td><td>12.120</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:33</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>72.929</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from file to duration xx:xx in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:34</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = play<br /></td><td>40.754</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:35</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>3.709</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from file to duration xx:xx in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:36</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = pause<br /></td><td>41.114</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I forwarded the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:37</td>
+                         <td>name = opr<br />value = forwarded<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>1.226</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should forwarded the playback from file to duration xx:xx in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:38</td>
+                         <td>name = opr<br />value = forwarded<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = pause<br /></td><td>41.524</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I reversed the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:39</td>
+                         <td>name = opr<br />value = reversed<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>1.050</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should reversed the playback from file to duration xx:xx in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:40</td>
+                         <td>name = opr<br />value = reversed<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = pause<br /></td><td>42.801</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I seek-2:00 the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:41</td>
+                         <td>name = opr<br />value = seek-2:00<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>1.490</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should seek the playback from file to duration 2:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:42</td>
+                         <td>name = opr<br />value = seek<br />name = source_type<br />value = file<br />name = duration<br />value = 2:00<br />name = state<br />value = pause<br /></td><td>42.366</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I resume the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:43</td>
+                         <td>name = opr<br />value = resume<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>2.429</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should resume the playback from file to duration xx:xx in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:44</td>
+                         <td>name = opr<br />value = resume<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = play<br /></td><td>42.032</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume and seek the remote video content using media id.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:06:08</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player.feature:46</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched</td><td>Given</td><td>featureFiles\play-media-content-using-player.feature:47</td>
+                         <td></td><td>0.005</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "remote" video from 6fe75d0081224f74966d9a2e2f40b7da with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:48</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = remote<br />name = media_source<br />value = 6fe75d0081224f74966d9a2e2f40b7da<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>149.723</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:49</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>40.922</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "remote" video from 6fe75d0081224f74966d9a2e2f40b7da with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:50</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = remote<br />name = media_source<br />value = 6fe75d0081224f74966d9a2e2f40b7da<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>3.132</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:51</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>42.061</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I forwarded the "remote" video from 6fe75d0081224f74966d9a2e2f40b7da with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:52</td>
+                         <td>name = opr<br />value = forwarded<br />name = media_type<br />value = remote<br />name = media_source<br />value = 6fe75d0081224f74966d9a2e2f40b7da<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>1.241</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should forwarded the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:53</td>
+                         <td>name = opr<br />value = forwarded<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>39.671</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I reversed the "remote" video from 6fe75d0081224f74966d9a2e2f40b7da with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:54</td>
+                         <td>name = opr<br />value = reversed<br />name = media_type<br />value = remote<br />name = media_source<br />value = 6fe75d0081224f74966d9a2e2f40b7da<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>1.123</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should reversed the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:55</td>
+                         <td>name = opr<br />value = reversed<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>43.101</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I resume the "remote" video from 6fe75d0081224f74966d9a2e2f40b7da with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:56</td>
+                         <td>name = opr<br />value = resume<br />name = media_type<br />value = remote<br />name = media_source<br />value = 6fe75d0081224f74966d9a2e2f40b7da<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>1.364</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should resume the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:57</td>
+                         <td>name = opr<br />value = resume<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>41.078</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:58</td>
+                         <td></td><td>4.799</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr></table></td>
+         </tr>
+         </table></body></html>

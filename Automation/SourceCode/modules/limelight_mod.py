@@ -343,7 +343,7 @@ class Limelight(object):
                 self.click_on('setting-popup-ok-btn')
             elif operation.lower().strip() == "select":
                 self.should_visible("setting-popup-title")
-                self.click_on("setting-log-level-dropdown",
+                self.click_on("dropdown",
                               generic_param=(value , ))
             else:
                 raise exception_mod.InvalidKeyWordUsed(operation=operation)
@@ -614,7 +614,7 @@ class Limelight(object):
                 if self.is_item_visible("alert-msg") :
                     info("%s :: alert popup still visible" % \
                          self.get_value("alert-msg"))
-                    self.__obj.wait_for(SORT_WAIT)
+                    self.__obj.wait_for(MEDIUM_WAIT)
                 else:
                     info("alert popup is not visible")
                     break
@@ -672,7 +672,7 @@ class Limelight(object):
                         info("%s is visible" % WIDEVINE_OFFLINE_DOWNLOAD_MSG)
                         if strict_check :
                             strict_check = False
-                        self.__obj.wait_for(SORT_WAIT)
+                        self.__obj.wait_for(MEDIUM_WAIT)
                     else:
                         info("%s not visible" % WIDEVINE_OFFLINE_DOWNLOAD_MSG)
                         # currently commented out this raise
@@ -951,9 +951,21 @@ class Limelight(object):
             duration : the duration that need to verify
             shud_diff : True if it should difference else False
         """
-        if not self.is_item_visible("player-elapsed-time"):
-            self.click_on('player')
-        elapse_time = self.get_value("player-elapsed-time")
+        num_of_try = 0
+        while num_of_try < 5:
+            try:
+                if not self.is_item_visible("player-elapsed-time"):
+                    self.click_on('player')
+                elapse_time = self.get_value("player-elapsed-time")
+                break
+            except Exception as ex:
+                last_err = str(ex)
+                info("error while getting elapsed time :: %s" % last_err)
+                num_of_try += 1
+                self.__obj.wait_for(SORT_WAIT)
+        else:
+            raise Exception(last_err)
+
         elapse_time_sec = elapse_time.split(':')
         elapse_time_sec = int(elapse_time_sec[0]) * 60 + int(elapse_time_sec[1])
 
@@ -1457,3 +1469,234 @@ class Limelight(object):
             exception_mod.InvalidCombination( action_itm=action_itm,
                                               perform=perform,
                                               target=target)
+    def add_to_playlist(self, target, media_names=None, tab_name=None):
+        """
+        @args :
+        target      : following / all
+        media_names  : [] -> a list of media name
+        tab_name    : tab name of the app
+
+        Steps:
+        1. Go to that tab
+
+        If need to add selective media then:
+         2. Click on the the add to playlist button for each media that has been
+         passed from feature file.
+
+        If need to add all media:
+         3. click on the "Add All To Playlist" button
+        """
+        # Step 1
+        self.select_tab(tab_name)
+
+        # Step 2
+        if target == "all" and not media_names:
+            self.click_on("add-all-to-playlist-btn")
+        elif target == "following" and media_names:
+            for ech_media_name in media_names:
+                self.click_on("add-to-playlist-btn", (ech_media_name, ))
+        else:
+            raise exception_mod.InvalidCombination(target=target,
+                                                   media_names=media_names)
+
+
+    def remove_from_playlist(self, target, media_names=None, tab_name=None):
+        """
+        @args :
+        target      : following / all
+        media_names : [] -> a list of media name
+        tab_name    : tab name of the app
+
+        Steps:
+        1. Go to that tab
+
+        If need to remove selective media then:
+         2. Click on the the remove button for each media that has been
+         passed from feature file.
+
+        If need to add all media:
+         3. click on the remove button for all media
+        """
+        # Step 1
+        self.select_tab(tab_name)
+        self.__obj.scrol_bottom_to_top(retry=8)
+        # Step 2
+        if target == "all" and not media_names:
+            self.__obj.scrol_bottom_to_top(retry=8)
+
+            while True:
+                try:
+                    data = self.__obj.scrol_top_to_bottom(ret_all_data=True)
+                except Exception as ex :
+                    info(str(ex))
+                    break
+                if not data: break
+                info("resetting the scroll")
+                self.__obj.scrol_bottom_to_top(retry=8)
+                info("resetting the scroll done")
+                remove_item = []
+                for ech_media_name in data:
+                    if ech_media_name in remove_item:
+                        continue
+                    remove_item.append(ech_media_name)
+                    self.click_on("remove-from-playlist-btn", (ech_media_name, ))
+                    try:
+                        self.__obj.scrol_bottom_to_top(retry=8)
+                    except:
+                        pass
+                info("Items removed: %s" % remove_item)
+
+        elif target == "following" and media_names:
+            for ech_media_name in media_names:
+                self.click_on("remove-from-playlist-btn", (ech_media_name, ))
+                try:
+                    self.__obj.scrol_bottom_to_top()
+                except:
+                    pass
+        else:
+            raise exception_mod.InvalidCombination(target=target,
+                                                   media_names=media_names)
+
+    @exception_mod.handle_exception
+    def add_delete_from_playlist(self, operation, target, tab_name, media_name):
+        """
+        @args :
+        operation : add / remove
+        target    : following / all
+        tab_name  : tab name of the app
+        media_name  : [] -> a list of media name
+        """
+        if operation == "add" and target == "all" :
+            # perform steps to add all media in playlist
+            self.add_to_playlist(target, tab_name=tab_name)
+        elif operation == "add" and target == "following" :
+            # perform steps to add following media from feature file in playlist
+            if not media_name:
+                raise exception_mod.InvalidCombination(target=target,
+                                                       media_name=media_name)
+            self.add_to_playlist(target, media_name, tab_name)
+        elif operation == "remove" and target == "all" :
+            # perform steps to remove all media in playlist
+            self.remove_from_playlist(target, tab_name=tab_name)
+        elif operation == "remove" and target == "following" :
+            # perform steps to remove provided media from feature file to
+            # playlist
+            if not media_name:
+                raise exception_mod.InvalidCombination(target=target,
+                                                       media_name=media_name)
+            self.remove_from_playlist(target, media_name, tab_name)
+        else:
+            raise exception_mod.InvalidCombination( operation=operation,
+                                                    target=target,
+                                                    tab_name=tab_name,
+                                                    media_name=media_name)
+
+    @exception_mod.handle_exception
+    def verify_add_delete_from_playlist(self, operation, target,
+                                        source_tab_name, playlist_tab_name,
+                                        media_name):
+        """
+        @args :
+        target    : following / all
+        source_tab_name : The tabe name feom where we are adding the media
+                          This is very important while verifying the add all
+                          scenario
+        operation : added / removed
+        playlist_tab_name  : tab name of the app that contains the playlist
+        media_name  : [] -> a list of media name
+        """
+        if operation == "added" and target == "all" :
+            # Steps :
+            # 1. Go to tab source_tab_name
+            self.select_tab(source_tab_name)
+            # 2. Get all media name those are present in that tab
+            self.__obj.scrol_bottom_to_top(retry=8)
+            source_media_list = self.__obj.scrol_top_to_bottom(retry=4,
+                                                           ret_all_data=True)
+            self.__obj.scrol_bottom_to_top(retry=8) # reset the screen
+            # 3. Go to tab playlist_tab_name
+            self.select_tab(playlist_tab_name)
+            # 4. Get all media that present in playlist
+            self.__obj.scrol_bottom_to_top(retry=8)
+            playlist_data = self.__obj.scrol_top_to_bottom(retry=4,
+                                                           ret_all_data=True)
+            self.__obj.scrol_bottom_to_top(retry=8) # reset the screen
+
+            # 5. Verify that all media from source tab is present in playlist
+            for ech_media_name in source_media_list:
+                if ech_media_name in playlist_data:
+                    info("media %s -- present" % ech_media_name)
+                else:
+                    raise Exception("media %s -- not present" % ech_media_name)
+            success("All media from %s tab is present in playlist" % \
+                    source_tab_name)
+
+        elif operation == "added" and target == "following" :
+            if not media_name:
+                raise exception_mod.InvalidCombination(target=target,
+                                                       media_name=media_name)
+            # Steps :
+            # 1. Go to tab playlist_tab_name
+            self.select_tab(playlist_tab_name)
+
+            # 2. Get all media that present in playlist
+            self.__obj.scrol_bottom_to_top(retry=8)
+            playlist_data = self.__obj.scrol_top_to_bottom(retry=4,
+                                                           ret_all_data=True)
+            self.__obj.scrol_bottom_to_top(retry=8) # reset the screen
+
+            # 3. Verify that all media from feature file is present in playlist
+            info(playlist_data)
+            for ech_media_name in media_name:
+                if ech_media_name in playlist_data:
+                    info("media %s -- present" % ech_media_name)
+                else:
+                    raise Exception("media %s -- not present" % ech_media_name)
+
+            success("All media from feature file is present in playlist")
+
+        elif operation == "removed" and target == "all" :
+            # Steps :
+            # 1. Go to tab playlist_tab_name
+            self.select_tab(playlist_tab_name)
+            # 2. Get all media that present in playlist
+            playlist_data = []
+            if self.is_item_visible("playlist-container"):
+                self.__obj.scrol_bottom_to_top(retry=8)
+                playlist_data = self.__obj.scrol_top_to_bottom(retry=4,
+                                                              ret_all_data=True)
+                self.__obj.scrol_bottom_to_top(retry=8) # reset the screen
+
+            # 3. Verify that all media has removed
+            if playlist_data:
+                raise Exception("all media has not removed from play list")
+            else:
+                success("all media has removed from play list")
+
+        elif operation == "removed" and target == "following" :
+            # Steps :
+            # 1. Go to tab playlist_tab_name
+            self.select_tab(playlist_tab_name)
+            # 2. Get all media that present in playlist
+            playlist_data = []
+            if self.is_item_visible("playlist-container"):
+                self.__obj.scrol_bottom_to_top(retry=8)
+                playlist_data = self.__obj.scrol_top_to_bottom(retry=4,
+                                                           ret_all_data=True)
+                self.__obj.scrol_bottom_to_top(retry=8) # reset the screen
+            # 3. Verify that all media from feature file doesn't present
+            #    in playlist
+            for ech_media_name in media_name:
+                if ech_media_name not in playlist_data:
+                    info("media %s :: not present" % ech_media_name)
+                else:
+                    raise Exception("media %s :: present" % ech_media_name)
+
+            success("All media from feature file doesn't present in playlist")
+
+        else:
+            raise exception_mod.InvalidCombination( target=target,
+                                            source_tab_name=source_tab_name,
+                                            operation=operation,
+                                            playlist_tab_name=playlist_tab_name,
+                                            media_name=media_name)

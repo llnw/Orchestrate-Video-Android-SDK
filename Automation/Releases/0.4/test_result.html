@@ -1,0 +1,2588 @@
+
+    <html>
+    <head>
+    <title>Automation Report</title>
+    <style>
+    .feature-table{
+       margin-bottom: 10px;
+    }
+    table {
+       empty-cells: show;
+       font-size: 8pt;
+       word-wrap: break-word;
+       border: 0px solid slategray /*1px solid #DDDDDD*/;
+       background-color: #F0F0F0;
+       font-family: arial;
+       color: #222222;
+       width: 100%;
+    }
+    tr {
+       line-height: 20px;
+    }
+    th {
+       background-color: #dcdcf0;
+       padding: 0.2em 0.3em;
+    }
+    th, td {
+       border: 1px solid slategray;
+       padding: 4px;
+       /*font-family: Helvetica,sans-serif;*/
+       min-width: 140px;
+       vertical-align: top;
+    }
+    .passed {
+       background-color: #5f9d18/*#99ff66*/;
+       color:white;
+       font-weight:bold;
+    }
+    .failed {
+       background-color: #a43838/*#FF3333*/;
+       color:white;
+       font-weight:bold;
+    }
+    h4 {
+       padding: 0px;
+       margin: 0px;
+       font-size: 10pt;
+    }
+    .key {
+       font-size: 10pt !important;
+       font-weight: bold;
+       vertical-align: text-top;
+       width: 100px;
+
+    }
+    .line-brk{
+       border:0px;
+       height:9px
+    }
+    .togBtn{
+        background-color: #dcdcf0;
+        border: 1px solid black;
+        border-radius: 9px;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 7.5pt;
+        padding: 2px;
+        text-align: center;
+        margin-left : 10px;
+
+    }
+    .full-err-msg{
+        background-color: #ffffff;
+        border: 1px dashed #ccd5de;
+        color: black;
+        font-weight: lighter;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 5px;
+        display: none;
+    }
+    .err-msg-link{
+        cursor: pointer;
+    }
+    </style>
+    <script type="text/javascript"
+    src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js">
+    </script>
+    <script type="text/javascript">
+
+    $( document ).ready(function() {
+        $(".stepsTable").toggle();
+        $('.togBtn').click(function(){
+            $(this).parent().parent().next().children()
+            .next().children(".stepsTable").toggle();
+            if ($(this).text() === 'Show Steps') {
+                $(this).text('Hide Steps');
+            } else {
+                $(this).text('Show Steps');
+            }
+        });
+
+    $('.err-msg-link').click(function(){
+      var msg = "<pre>"+$(this).next(".full-err-msg").html()+"</pre>";
+      var w = window.open('', '', 'width=600,height=400,resizeable,scrollbars');
+      w.document.write(msg);
+      w.document.close(); // needed for chrome and safari
+    });
+   });
+
+  </script>
+  </head>
+  <body>
+    <table class="tab-passed feature-table" cellspacing="1"><tr><td class="key">Feature : </td>
+                       <td><h4>Configuring the Settings</h4></td></tr>
+              <tr><td class="key">Tag : </td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location : </td>
+                  <td>featureFiles\configuring-the-settings.feature:1</td></tr>
+            
+           <tr><td class="key">Duration (hh:mm:ss) : </td>
+             <td>00:07:35</td>
+           </tr>
+        
+           <tr class="passed">
+             <td class="key">Overall Status : </td>
+             <td>PASSED</td>
+           </tr>
+        <tr>
+            <td class="key">Scenario : </td><td><table cellspacing="1"><tr><td class="key">Scenario : </td>
+               <td>I should be able to specify the organization id, Access key and Secret key on the settings tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:04:12</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\configuring-the-settings.feature:2</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\configuring-the-settings.feature:3</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>133.135</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set a851c50193064ed6be08c7e75f8f4910 as value for Organization ID in SETTINGS tab</td><td>When</td><td>featureFiles\configuring-the-settings.feature:8</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = a851c50193064ed6be08c7e75f8f4910<br />name = target_ele<br />value = Organization ID<br />name = tab_name<br />value = SETTINGS<br /></td><td>25.647</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of Organization ID in SETTINGS tab should be a851c50193064ed6be08c7e75f8f4910</td><td>Then</td><td>featureFiles\configuring-the-settings.feature:9</td>
+                         <td>name = target_ele<br />value = Organization ID<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = a851c50193064ed6be08c7e75f8f4910<br /></td><td>10.650</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set 6QDyPljwRS8L2w7Q7AnRo3sYIoQ= as value for Access Key in SETTINGS tab</td><td>When</td><td>featureFiles\configuring-the-settings.feature:10</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=<br />name = target_ele<br />value = Access Key<br />name = tab_name<br />value = SETTINGS<br /></td><td>30.335</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of Access Key in SETTINGS tab should be 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=</td><td>Then</td><td>featureFiles\configuring-the-settings.feature:11</td>
+                         <td>name = target_ele<br />value = Access Key<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=<br /></td><td>10.213</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set +d62cBI73hxWcRPpput4RR7a8v8= as value for Secret Key in SETTINGS tab</td><td>When</td><td>featureFiles\configuring-the-settings.feature:12</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = +d62cBI73hxWcRPpput4RR7a8v8=<br />name = target_ele<br />value = Secret Key<br />name = tab_name<br />value = SETTINGS<br /></td><td>31.840</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of Secret Key in SETTINGS tab should be +d62cBI73hxWcRPpput4RR7a8v8=</td><td>Then</td><td>featureFiles\configuring-the-settings.feature:13</td>
+                         <td>name = target_ele<br />value = Secret Key<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = +d62cBI73hxWcRPpput4RR7a8v8=<br /></td><td>10.226</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>Should be able to set web service end point</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:01:09</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\configuring-the-settings.feature:15</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\configuring-the-settings.feature:16</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set https://staging-api.lvp.llnw.net/rest as value for URL in SETTINGS tab</td><td>When</td><td>featureFiles\configuring-the-settings.feature:21</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = https://staging-api.lvp.llnw.net/rest<br />name = target_ele<br />value = URL<br />name = tab_name<br />value = SETTINGS<br /></td><td>58.466</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of URL in SETTINGS tab should be https://staging-api.lvp.llnw.net/rest</td><td>Then</td><td>featureFiles\configuring-the-settings.feature:22</td>
+                         <td>name = target_ele<br />value = URL<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = https://staging-api.lvp.llnw.net/rest<br /></td><td>10.423</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>Should be able to set Widevine service license proxy URL and portal key</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:01:48</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\configuring-the-settings.feature:24</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\configuring-the-settings.feature:25</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.000</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set https://staging-wlp.lvp.llnw.net/license as value for License Proxy in SETTINGS tab</td><td>When</td><td>featureFiles\configuring-the-settings.feature:30</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = https://staging-wlp.lvp.llnw.net/license<br />name = target_ele<br />value = License Proxy<br />name = tab_name<br />value = SETTINGS<br /></td><td>64.414</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of License Proxy in SETTINGS tab should be https://staging-wlp.lvp.llnw.net/license</td><td>Then</td><td>featureFiles\configuring-the-settings.feature:31</td>
+                         <td>name = target_ele<br />value = License Proxy<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = https://staging-wlp.lvp.llnw.net/license<br /></td><td>10.447</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set limelight as value for Portal Key in SETTINGS tab</td><td>When</td><td>featureFiles\configuring-the-settings.feature:32</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = limelight<br />name = target_ele<br />value = Portal Key<br />name = tab_name<br />value = SETTINGS<br /></td><td>22.990</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of Portal Key in SETTINGS tab should be limelight</td><td>Then</td><td>featureFiles\configuring-the-settings.feature:33</td>
+                         <td>name = target_ele<br />value = Portal Key<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = limelight<br /></td><td>10.514</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to set the log level in the settings tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:26</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\configuring-the-settings.feature:35</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\configuring-the-settings.feature:36</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select INFO as value for Log level in SETTINGS tab</td><td>When</td><td>featureFiles\configuring-the-settings.feature:41</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = INFO<br />name = target_ele<br />value = Log level<br />name = tab_name<br />value = SETTINGS<br /></td><td>11.488</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>value of Log level in SETTINGS tab should be INFO</td><td>Then</td><td>featureFiles\configuring-the-settings.feature:42</td>
+                         <td>name = target_ele<br />value = Log level<br />name = page_name<br />value = SETTINGS<br />name = val<br />value = INFO<br /></td><td>10.130</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>Then</td><td>featureFiles\configuring-the-settings.feature:43</td>
+                         <td></td><td>4.167</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr></table></td>
+         </tr>
+         </table><table class="tab-failed feature-table" cellspacing="1"><tr><td class="key">Feature : </td>
+                       <td><h4>Fetching Library</h4></td></tr>
+              <tr><td class="key">Tag : </td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location : </td>
+                  <td>featureFiles\fetching-library.feature:1</td></tr>
+            
+           <tr><td class="key">Duration (hh:mm:ss) : </td>
+             <td>00:17:44</td>
+           </tr>
+        
+           <tr class="failed">
+             <td class="key">Overall Status : </td>
+             <td>FAILED</td>
+           </tr>
+        <tr>
+            <td class="key">Scenario : </td><td><table cellspacing="1"><tr><td class="key">Scenario : </td>
+               <td>I should be able to see the list of channel groups (associated with the organization id) when I go to channel group tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:23</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:2</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:3</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>127.642</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the CHANNEL GROUPS tab</td><td>When</td><td>featureFiles\fetching-library.feature:9</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = CHANNEL GROUPS<br /></td><td>9.341</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following channel group -</td><td>Then</td><td>featureFiles\fetching-library.feature:10</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = channel group<br /></td><td>6.375</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to see the list of all channels when I go to all channels tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:16</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:15</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:16</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.000</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the ALL CHANNELS tab</td><td>When</td><td>featureFiles\fetching-library.feature:22</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = ALL CHANNELS<br /></td><td>6.851</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following channel(s) -</td><td>Then</td><td>featureFiles\fetching-library.feature:23</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = channel(s)<br /></td><td>9.203</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to see the list of all media when I go to all media tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:38</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:30</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:31</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the ALL MEDIA tab</td><td>When</td><td>featureFiles\fetching-library.feature:37</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = ALL MEDIA<br /></td><td>9.246</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following media -</td><td>Then</td><td>featureFiles\fetching-library.feature:38</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = media<br /></td><td>28.678</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to see the list of channels belonging to channel group, on selecting that channel group in channel group tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:18</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:45</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:46</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.000</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select ENTERTAINMENT as value for channel-group in CHANNEL GROUPS tab</td><td>When</td><td>featureFiles\fetching-library.feature:52</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = ENTERTAINMENT<br />name = target_ele<br />value = channel-group<br />name = tab_name<br />value = CHANNEL GROUPS<br /></td><td>9.527</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following channel(s) -</td><td>Then</td><td>featureFiles\fetching-library.feature:53</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = channel(s)<br /></td><td>8.539</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to see the list of media belonging to channel, on selecting that channel in channels tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:22</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:58</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:59</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select Cartoon as value for channel in CHANNELS tab</td><td>When</td><td>featureFiles\fetching-library.feature:65</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = Cartoon<br />name = target_ele<br />value = channel<br />name = tab_name<br />value = CHANNELS<br /></td><td>10.580</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following media -</td><td>Then</td><td>featureFiles\fetching-library.feature:66</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = media<br /></td><td>11.393</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to refresh media list from all media tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:01:19</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:74</td></tr>
+                <tr class="failed">
+                   <td class="key">Status : </td>
+                   <td>
+                       FAILED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:75</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.000</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the ALL MEDIA tab</td><td>When</td><td>featureFiles\fetching-library.feature:81</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = ALL MEDIA<br /></td><td>43.621</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="failed">
+                         <td>the CURRENT tab should have following media -</td><td>Then</td><td>featureFiles\fetching-library.feature:82</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = media<br /></td><td>35.314</td><td>FAILED</td>
+                         <td>
+                       <a class='err-msg-link'>NotEqualException: Expected Value: ['Avengers Age of Ultron', 'Underwater Marine Life', 'Tom And Jerry', 'Act Of Caring'], Got Value: [u'Adobe', u'Maxiple', u'Underwater Marine Life', u'Iron Sky', u'Tom And Jerry', u'Amazing Underwater', u'Gravity Scene', u'Act Of Caring', u'The Cars', u'The Chipettes', u'Nadals Quest', u'Pixars Up', u'Election BBC News', u'Sport World Cup', u'Crazy Honey Badger', u'Football Commercial', u'TED Video', u'How To Film', u'Sports Compilation', u'Star Wars', u'Toy Story', u'Salman News', u'Now You See Me', u'Inception', u'The Lord of the Rings', u'The Dark Knight', u'Jack Reacher', u'IP MAN', u'Fast Furious 6']</a>
+                       <div class='full-err-msg'>Traceback (most recent call last):<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1456, in run<br />    match.run(runner.context)<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1903, in run<br />    self.func(context, *args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 38, in wrapper<br />    ret_control = function(*args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 223, in step_impl<br />    should_equal)<br />  File "E:\LimelightSDKAutomation\modules\exception_mod.py", line 36, in wrapper<br />    return function(*args, **kwargs)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 511, in check_contains<br />    raise exception_mod.NotEqualException(verify_data, data_got)<br />NotEqualException: Expected Value: ['Avengers Age of Ultron', 'Underwater Marine Life', 'Tom And Jerry', 'Act Of Caring'], Got Value: [u'Adobe', u'Maxiple', u'Underwater Marine Life', u'Iron Sky', u'Tom And Jerry', u'Amazing Underwater', u'Gravity Scene', u'Act Of Caring', u'The Cars', u'The Chipettes', u'Nadals Quest', u'Pixars Up', u'Election BBC News', u'Sport World Cup', u'Crazy Honey Badger', u'Football Commercial', u'TED Video', u'How To Film', u'Sports Compilation', u'Star Wars', u'Toy Story', u'Salman News', u'Now You See Me', u'Inception', u'The Lord of the Rings', u'The Dark Knight', u'Jack Reacher', u'IP MAN', u'Fast Furious 6']</div>
+                    </td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to refresh channel list from all channels tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:26</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:89</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:90</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>121.514</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the ALL CHANNELS tab</td><td>When</td><td>featureFiles\fetching-library.feature:96</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = ALL CHANNELS<br /></td><td>14.496</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following channel(s) -</td><td>Then</td><td>featureFiles\fetching-library.feature:97</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = channel(s)<br /></td><td>10.344</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to refresh channel group list from all channel groups tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:16</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:104</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:105</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the CHANNEL GROUPS tab</td><td>When</td><td>featureFiles\fetching-library.feature:111</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = CHANNEL GROUPS<br /></td><td>8.528</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following channel group -</td><td>Then</td><td>featureFiles\fetching-library.feature:112</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = channel group<br /></td><td>7.574</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to refresh channel list from channel tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:35</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:117</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:118</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select ENTERTAINMENT as value for channel-group in CHANNEL GROUPS tab</td><td>When</td><td>featureFiles\fetching-library.feature:124</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = ENTERTAINMENT<br />name = target_ele<br />value = channel-group<br />name = tab_name<br />value = CHANNEL GROUPS<br /></td><td>9.754</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the CHANNELS tab</td><td>And</td><td>featureFiles\fetching-library.feature:125</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = CHANNELS<br /></td><td>16.595</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following channel(s) -</td><td>Then</td><td>featureFiles\fetching-library.feature:126</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = channel(s)<br /></td><td>8.682</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to refresh  media list from media tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:41</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:131</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:132</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select Cartoon as value for channel in ALL CHANNELS tab</td><td>When</td><td>featureFiles\fetching-library.feature:138</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = Cartoon<br />name = target_ele<br />value = channel<br />name = tab_name<br />value = ALL CHANNELS<br /></td><td>9.533</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the MEDIA tab</td><td>And</td><td>featureFiles\fetching-library.feature:139</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = MEDIA<br /></td><td>22.533</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following media -</td><td>Then</td><td>featureFiles\fetching-library.feature:140</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = media<br /></td><td>9.363</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to fetch next set of media after scrolling down in all-media list.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:01:32</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:148</td></tr>
+                <tr class="failed">
+                   <td class="key">Status : </td>
+                   <td>
+                       FAILED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:149</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.000</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I scroll-down the ALL MEDIA tab</td><td>When</td><td>featureFiles\fetching-library.feature:155</td>
+                         <td>name = opr<br />value = scroll-down<br />name = tab_name<br />value = ALL MEDIA<br /></td><td>39.926</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="failed">
+                         <td>the CURRENT tab should have following media -</td><td>Then</td><td>featureFiles\fetching-library.feature:156</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = media<br /></td><td>52.279</td><td>FAILED</td>
+                         <td>
+                       <a class='err-msg-link'>NotEqualException: Expected Value: ['Avengers Age of Ultron', 'Now You See Me', 'Inception', 'Fast Furious 6', 'The Dark Knight', 'Jack Reacher', 'IP MAN'], Got Value: [u'Adobe', u'Maxiple', u'Underwater Marine Life', u'Iron Sky', u'Tom And Jerry', u'Amazing Underwater', u'Gravity Scene', u'Act Of Caring', u'The Cars', u'The Chipettes', u'Nadals Quest', u'Pixars Up', u'Election BBC News', u'Sport World Cup', u'Crazy Honey Badger', u'Football Commercial', u'TED Video', u'How To Film', u'Sports Compilation', u'Star Wars', u'Toy Story', u'Salman News', u'Now You See Me', u'Inception', u'The Lord of the Rings', u'The Dark Knight', u'Jack Reacher', u'IP MAN', u'Fast Furious 6']</a>
+                       <div class='full-err-msg'>Traceback (most recent call last):<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1456, in run<br />    match.run(runner.context)<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1903, in run<br />    self.func(context, *args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 38, in wrapper<br />    ret_control = function(*args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 223, in step_impl<br />    should_equal)<br />  File "E:\LimelightSDKAutomation\modules\exception_mod.py", line 36, in wrapper<br />    return function(*args, **kwargs)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 511, in check_contains<br />    raise exception_mod.NotEqualException(verify_data, data_got)<br />NotEqualException: Expected Value: ['Avengers Age of Ultron', 'Now You See Me', 'Inception', 'Fast Furious 6', 'The Dark Knight', 'Jack Reacher', 'IP MAN'], Got Value: [u'Adobe', u'Maxiple', u'Underwater Marine Life', u'Iron Sky', u'Tom And Jerry', u'Amazing Underwater', u'Gravity Scene', u'Act Of Caring', u'The Cars', u'The Chipettes', u'Nadals Quest', u'Pixars Up', u'Election BBC News', u'Sport World Cup', u'Crazy Honey Badger', u'Football Commercial', u'TED Video', u'How To Film', u'Sports Compilation', u'Star Wars', u'Toy Story', u'Salman News', u'Now You See Me', u'Inception', u'The Lord of the Rings', u'The Dark Knight', u'Jack Reacher', u'IP MAN', u'Fast Furious 6']</div>
+                    </td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to fetch next set of channel after scrolling down in all-channel list.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:27</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:166</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:167</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>120.426</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I scroll-down the ALL CHANNELS tab</td><td>When</td><td>featureFiles\fetching-library.feature:173</td>
+                         <td>name = opr<br />value = scroll-down<br />name = tab_name<br />value = ALL CHANNELS<br /></td><td>17.131</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following media -</td><td>Then</td><td>featureFiles\fetching-library.feature:174</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = media<br /></td><td>9.175</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to fetch next set of channel group after scrolling down in channel-group list.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:17</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:181</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:182</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I scroll-down the CHANNEL GROUPS tab</td><td>When</td><td>featureFiles\fetching-library.feature:188</td>
+                         <td>name = opr<br />value = scroll-down<br />name = tab_name<br />value = CHANNEL GROUPS<br /></td><td>10.004</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following channel group -</td><td>Then</td><td>featureFiles\fetching-library.feature:189</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = channel group<br /></td><td>6.685</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to fetch next set of media after scrolling down in media list.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:01:07</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:194</td></tr>
+                <tr class="failed">
+                   <td class="key">Status : </td>
+                   <td>
+                       FAILED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:195</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select TV as value for channel in ALL CHANNELS tab</td><td>When</td><td>featureFiles\fetching-library.feature:201</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = TV<br />name = target_ele<br />value = channel<br />name = tab_name<br />value = ALL CHANNELS<br /></td><td>7.516</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I scroll-down the MEDIA tab</td><td>And</td><td>featureFiles\fetching-library.feature:202</td>
+                         <td>name = opr<br />value = scroll-down<br />name = tab_name<br />value = MEDIA<br /></td><td>36.056</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="failed">
+                         <td>the CURRENT tab should have following media -</td><td>Then</td><td>featureFiles\fetching-library.feature:203</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = media<br /></td><td>23.607</td><td>FAILED</td>
+                         <td>
+                       <a class='err-msg-link'>NotEqualException: Expected Value: ['IP MAN', 'Jack Reacher', 'Fast Furious 6', 'Iron Sky', 'Gravity Scene'], Got Value: [u'Jack Reacher', u'The Dark Knight', u'Fast Furious 6', u'The Lord of the Rings', u'Inception', u'Now You See Me', u'Sports Compilation', u'Football Commercial', u'Sport World Cup', u'Maxiple', u'Iron Sky', u'Gravity Scene', u'Avengers Age of Ultron']</a>
+                       <div class='full-err-msg'>Traceback (most recent call last):<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1456, in run<br />    match.run(runner.context)<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1903, in run<br />    self.func(context, *args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 38, in wrapper<br />    ret_control = function(*args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 223, in step_impl<br />    should_equal)<br />  File "E:\LimelightSDKAutomation\modules\exception_mod.py", line 36, in wrapper<br />    return function(*args, **kwargs)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 511, in check_contains<br />    raise exception_mod.NotEqualException(verify_data, data_got)<br />NotEqualException: Expected Value: ['IP MAN', 'Jack Reacher', 'Fast Furious 6', 'Iron Sky', 'Gravity Scene'], Got Value: [u'Jack Reacher', u'The Dark Knight', u'Fast Furious 6', u'The Lord of the Rings', u'Inception', u'Now You See Me', u'Sports Compilation', u'Football Commercial', u'Sport World Cup', u'Maxiple', u'Iron Sky', u'Gravity Scene', u'Avengers Age of Ultron']</div>
+                    </td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to fetch next set of channel after scrolling down in channel list.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:27</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:211</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:212</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>118.409</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select MY GROUP as value for channel-group in CHANNEL GROUPS tab</td><td>When</td><td>featureFiles\fetching-library.feature:218</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = MY GROUP<br />name = target_ele<br />value = channel-group<br />name = tab_name<br />value = CHANNEL GROUPS<br /></td><td>9.004</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I scroll-down the CHANNELS tab</td><td>And</td><td>featureFiles\fetching-library.feature:219</td>
+                         <td>name = opr<br />value = scroll-down<br />name = tab_name<br />value = CHANNELS<br /></td><td>14.249</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following channel(s) -</td><td>Then</td><td>featureFiles\fetching-library.feature:220</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = channel(s)<br /></td><td>4.952</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to see list of valid available encoding for a media.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:40</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\fetching-library.feature:225</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\fetching-library.feature:226</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.000</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I attempt-to-play the "Now You See Me" video from ALL MEDIA with "no-select" encoding</td><td>When</td><td>featureFiles\fetching-library.feature:232</td>
+                         <td>name = opr<br />value = attempt-to-play<br />name = media_type<br />value = Now You See Me<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = no-select<br /></td><td>32.324</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the POPUP should have following valid available encoding -</td><td>Then</td><td>featureFiles\fetching-library.feature:233</td>
+                         <td>name = check_ele<br />value = POPUP<br />name = op<br />value = have<br />name = table_header<br />value = valid available encoding<br /></td><td>3.110</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\fetching-library.feature:241</td>
+                         <td></td><td>4.137</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr></table></td>
+         </tr>
+         </table><table class="tab-failed feature-table" cellspacing="1"><tr><td class="key">Feature : </td>
+                       <td><h4>Check icon</h4></td></tr>
+              <tr><td class="key">Tag : </td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location : </td>
+                  <td>featureFiles\check-icon.feature:1</td></tr>
+            
+           <tr><td class="key">Duration (hh:mm:ss) : </td>
+             <td>00:02:49</td>
+           </tr>
+        
+           <tr class="failed">
+             <td class="key">Overall Status : </td>
+             <td>FAILED</td>
+           </tr>
+        <tr>
+            <td class="key">Scenario : </td><td><table cellspacing="1"><tr><td class="key">Scenario : </td>
+               <td>I should be able to see the icon.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:49</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\check-icon.feature:2</td></tr>
+                <tr class="failed">
+                   <td class="key">Status : </td>
+                   <td>
+                       FAILED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\check-icon.feature:3</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>113.268</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the CHANNEL GROUPS tab</td><td>When</td><td>featureFiles\check-icon.feature:9</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = CHANNEL GROUPS<br /></td><td>9.621</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following icon set -</td><td>Then</td><td>featureFiles\check-icon.feature:10</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = icon set<br /></td><td>5.131</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the ALL CHANNELS tab</td><td>When</td><td>featureFiles\check-icon.feature:15</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = ALL CHANNELS<br /></td><td>7.101</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="failed">
+                         <td>the CURRENT tab should have following icon set -</td><td>Then</td><td>featureFiles\check-icon.feature:16</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = icon set<br /></td><td>34.041</td><td>FAILED</td>
+                         <td>
+                       <a class='err-msg-link'>Exception: icon not matched: Sports - sports.png</a>
+                       <div class='full-err-msg'>Traceback (most recent call last):<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1456, in run<br />    match.run(runner.context)<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1903, in run<br />    self.func(context, *args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 38, in wrapper<br />    ret_control = function(*args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 219, in step_impl<br />    should_equal )<br />  File "E:\LimelightSDKAutomation\modules\exception_mod.py", line 36, in wrapper<br />    return function(*args, **kwargs)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 456, in check_icon<br />    raise Exception(last_excp)<br />Exception: icon not matched: Sports - sports.png</div>
+                    </td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr></table></td>
+         </tr>
+         </table><table class="tab-passed feature-table" cellspacing="1"><tr><td class="key">Feature : </td>
+                       <td><h4>Player Control Bar</h4></td></tr>
+              <tr><td class="key">Tag : </td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location : </td>
+                  <td>featureFiles\player-control-bar.feature:1</td></tr>
+            
+           <tr><td class="key">Duration (hh:mm:ss) : </td>
+             <td>00:18:51</td>
+           </tr>
+        
+           <tr class="passed">
+             <td class="key">Overall Status : </td>
+             <td>PASSED</td>
+           </tr>
+        <tr>
+            <td class="key">Scenario : </td><td><table cellspacing="1"><tr><td class="key">Scenario : </td>
+               <td>The player should display the elapsed time.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:50</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\player-control-bar.feature:3</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\player-control-bar.feature:4</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>123.823</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "Amazing Underwater" video from ALL MEDIA with "automatic" encoding</td><td>When</td><td>featureFiles\player-control-bar.feature:9</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = Amazing Underwater<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = automatic<br /></td><td>42.195</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the player should have following controls -</td><td>Then</td><td>featureFiles\player-control-bar.feature:10</td>
+                         <td>name = check_ele<br />value = player<br />name = op<br />value = have<br />name = table_header<br />value = controls<br /></td><td>0.079</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\player-control-bar.feature:13</td>
+                         <td></td><td>4.205</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>The player should display the video duration for VOD videos.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:41</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\player-control-bar.feature:15</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\player-control-bar.feature:16</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>113.569</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "Adobe" video from ALL MEDIA with "automatic" encoding</td><td>When</td><td>featureFiles\player-control-bar.feature:21</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = Adobe<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = automatic<br /></td><td>43.468</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the player should have following controls -</td><td>Then</td><td>featureFiles\player-control-bar.feature:22</td>
+                         <td>name = check_ele<br />value = player<br />name = op<br />value = have<br />name = table_header<br />value = controls<br /></td><td>0.121</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\player-control-bar.feature:25</td>
+                         <td></td><td>4.136</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>Player should display the basic controls like: play button, forward button, backward button, seek bar.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:59</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\player-control-bar.feature:27</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\player-control-bar.feature:28</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>124.083</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "Amazing Underwater" video from ALL MEDIA with "automatic" encoding</td><td>When</td><td>featureFiles\player-control-bar.feature:33</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = Amazing Underwater<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = automatic<br /></td><td>43.910</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the player should have following controls -</td><td>Then</td><td>featureFiles\player-control-bar.feature:34</td>
+                         <td>name = check_ele<br />value = player<br />name = op<br />value = have<br />name = table_header<br />value = controls<br /></td><td>7.107</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\player-control-bar.feature:42</td>
+                         <td></td><td>4.338</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>On relaunch the application, video playback should remain in play/pause state as it was when application moved to background.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:05:36</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\player-control-bar.feature:44</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\player-control-bar.feature:45</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>130.140</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\player-control-bar.feature:50</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>65.782</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I seek-2:00 the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>And</td><td>featureFiles\player-control-bar.feature:51</td>
+                         <td>name = opr<br />value = seek-2:00<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>13.606</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I apply home-button press on the application</td><td>And</td><td>featureFiles\player-control-bar.feature:52</td>
+                         <td>name = action_itm<br />value = home-button<br />name = perform<br />value = press<br />name = target<br />value = application<br /></td><td>4.246</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I apply app-icon press on the device</td><td>And</td><td>featureFiles\player-control-bar.feature:53</td>
+                         <td>name = action_itm<br />value = app-icon<br />name = perform<br />value = press<br />name = target<br />value = device<br /></td><td>20.392</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should continue-playing the playback from file to duration xx:xx in play state</td><td>Then</td><td>featureFiles\player-control-bar.feature:54</td>
+                         <td>name = opr<br />value = continue-playing<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = play<br /></td><td>36.923</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\player-control-bar.feature:55</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>2.784</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I apply home-button press on the application</td><td>And</td><td>featureFiles\player-control-bar.feature:56</td>
+                         <td>name = action_itm<br />value = home-button<br />name = perform<br />value = press<br />name = target<br />value = application<br /></td><td>0.125</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I apply app-icon press on the device</td><td>And</td><td>featureFiles\player-control-bar.feature:57</td>
+                         <td>name = action_itm<br />value = app-icon<br />name = perform<br />value = press<br />name = target<br />value = device<br /></td><td>24.556</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should remain-pause the playback from file to duration xx:xx in pause state</td><td>Then</td><td>featureFiles\player-control-bar.feature:58</td>
+                         <td>name = opr<br />value = remain-pause<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = pause<br /></td><td>37.480</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>The video player should display the entire video and as per the aspect ratio settings in all orientations.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:04:45</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\player-control-bar.feature:60</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\player-control-bar.feature:61</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\player-control-bar.feature:66</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>67.029</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I seek-2:00 the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>And</td><td>featureFiles\player-control-bar.feature:67</td>
+                         <td>name = opr<br />value = seek-2:00<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>38.953</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I apply screen orientation on the device</td><td>And</td><td>featureFiles\player-control-bar.feature:68</td>
+                         <td>name = action_itm<br />value = screen<br />name = perform<br />value = orientation<br />name = target<br />value = device<br /></td><td>0.117</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from file to duration 00:00 in play state</td><td>Then</td><td>featureFiles\player-control-bar.feature:69</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = file<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>42.030</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I apply screen orientation on the device</td><td>When</td><td>featureFiles\player-control-bar.feature:70</td>
+                         <td>name = action_itm<br />value = screen<br />name = perform<br />value = orientation<br />name = target<br />value = device<br /></td><td>0.086</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from file to duration 00:00 in play state</td><td>Then</td><td>featureFiles\player-control-bar.feature:71</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = file<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>41.784</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\player-control-bar.feature:72</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>2.197</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I seek-2:00 the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>And</td><td>featureFiles\player-control-bar.feature:73</td>
+                         <td>name = opr<br />value = seek-2:00<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>2.630</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I apply screen orientation on the device</td><td>And</td><td>featureFiles\player-control-bar.feature:74</td>
+                         <td>name = action_itm<br />value = screen<br />name = perform<br />value = orientation<br />name = target<br />value = device<br /></td><td>0.120</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from file to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\player-control-bar.feature:75</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = file<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>41.680</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I resume the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\player-control-bar.feature:76</td>
+                         <td>name = opr<br />value = resume<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>1.861</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I apply screen orientation on the device</td><td>And</td><td>featureFiles\player-control-bar.feature:77</td>
+                         <td>name = action_itm<br />value = screen<br />name = perform<br />value = orientation<br />name = target<br />value = device<br /></td><td>0.092</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from file to duration 00:00 in play state</td><td>Then</td><td>featureFiles\player-control-bar.feature:78</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = file<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>42.908</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\player-control-bar.feature:79</td>
+                         <td></td><td>3.841</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr></table></td>
+         </tr>
+         </table><table class="tab-passed feature-table" cellspacing="1"><tr><td class="key">Feature : </td>
+                       <td><h4>Play, Pause, Move Forward, Move Backward, Resume and Seek Media Content Using Player</h4></td></tr>
+              <tr><td class="key">Tag : </td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location : </td>
+                  <td>featureFiles\play-media-content-using-player.feature:1</td></tr>
+            
+           <tr><td class="key">Duration (hh:mm:ss) : </td>
+             <td>00:22:33</td>
+           </tr>
+        
+           <tr class="passed">
+             <td class="key">Overall Status : </td>
+             <td>PASSED</td>
+           </tr>
+        <tr>
+            <td class="key">Scenario : </td><td><table cellspacing="1"><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume flash encoded video</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:06:09</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player.feature:3</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\play-media-content-using-player.feature:4</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>118.204</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "The Cars" video from ALL MEDIA with "Flash 128 X472kbps 240X592" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:9</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = The Cars<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 240X592<br /></td><td>39.719</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:10</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>39.059</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "The Cars" video from ALL MEDIA with "Flash 128 X472kbps 240X592" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:11</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = The Cars<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 240X592<br /></td><td>2.037</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:12</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>40.389</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I forwarded the "The Cars" video from ALL MEDIA with "Flash 128 X472kbps 240X592" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:13</td>
+                         <td>name = opr<br />value = forwarded<br />name = media_type<br />value = The Cars<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 240X592<br /></td><td>1.071</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should forwarded the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:14</td>
+                         <td>name = opr<br />value = forwarded<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>42.723</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I reversed the "The Cars" video from ALL MEDIA with "Flash 128 X472kbps 240X592" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:15</td>
+                         <td>name = opr<br />value = reversed<br />name = media_type<br />value = The Cars<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 240X592<br /></td><td>1.098</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should reversed the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:16</td>
+                         <td>name = opr<br />value = reversed<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>42.664</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I resume the "The Cars" video from ALL MEDIA with "Flash 128 X472kbps 240X592" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:17</td>
+                         <td>name = opr<br />value = resume<br />name = media_type<br />value = The Cars<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 240X592<br /></td><td>1.309</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should resume the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:18</td>
+                         <td>name = opr<br />value = resume<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>41.070</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume and seek the HLS encoded video</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:05:38</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player.feature:20</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\play-media-content-using-player.feature:21</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "The Chipettes" video from ALL MEDIA with "HttpLiveStreaming 96 X200kbps 224X406" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:26</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = The Chipettes<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = HttpLiveStreaming 96 X200kbps 224X406<br /></td><td>51.368</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:27</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>42.714</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "The Chipettes" video from ALL MEDIA with "HttpLiveStreaming 96 X200kbps 224X406" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:28</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = The Chipettes<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = HttpLiveStreaming 96 X200kbps 224X406<br /></td><td>32.826</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:29</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>41.477</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I forwarded the "The Chipettes" video from ALL MEDIA with "HttpLiveStreaming 96 X200kbps 224X406" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:30</td>
+                         <td>name = opr<br />value = forwarded<br />name = media_type<br />value = The Chipettes<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = HttpLiveStreaming 96 X200kbps 224X406<br /></td><td>1.024</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should forwarded the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:31</td>
+                         <td>name = opr<br />value = forwarded<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>41.754</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I reversed the "The Chipettes" video from ALL MEDIA with "HttpLiveStreaming 96 X200kbps 224X406" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:32</td>
+                         <td>name = opr<br />value = reversed<br />name = media_type<br />value = The Chipettes<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = HttpLiveStreaming 96 X200kbps 224X406<br /></td><td>1.082</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should reversed the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:33</td>
+                         <td>name = opr<br />value = reversed<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>41.967</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I seek-1:00 the "The Chipettes" video from ALL MEDIA with "HttpLiveStreaming 96 X200kbps 224X406" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:34</td>
+                         <td>name = opr<br />value = seek-1:00<br />name = media_type<br />value = The Chipettes<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = HttpLiveStreaming 96 X200kbps 224X406<br /></td><td>1.349</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should seek the playback from file to duration 1:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:35</td>
+                         <td>name = opr<br />value = seek<br />name = source_type<br />value = file<br />name = duration<br />value = 1:00<br />name = state<br />value = pause<br /></td><td>41.470</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I resume the "The Chipettes" video from ALL MEDIA with "HttpLiveStreaming 96 X200kbps 224X406" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:36</td>
+                         <td>name = opr<br />value = resume<br />name = media_type<br />value = The Chipettes<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = HttpLiveStreaming 96 X200kbps 224X406<br /></td><td>1.450</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should resume the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:37</td>
+                         <td>name = opr<br />value = resume<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>39.896</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume and seek the local video content.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:05:30</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player.feature:39</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\play-media-content-using-player.feature:40</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.000</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:45</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>72.968</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from file to duration xx:xx in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:46</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = play<br /></td><td>41.896</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:47</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>1.037</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from file to duration xx:xx in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:48</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = pause<br /></td><td>42.810</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I forwarded the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:49</td>
+                         <td>name = opr<br />value = forwarded<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>1.038</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should forwarded the playback from file to duration xx:xx in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:50</td>
+                         <td>name = opr<br />value = forwarded<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = pause<br /></td><td>40.479</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I reversed the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:51</td>
+                         <td>name = opr<br />value = reversed<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>1.024</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should reversed the playback from file to duration xx:xx in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:52</td>
+                         <td>name = opr<br />value = reversed<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = pause<br /></td><td>40.915</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I seek-2:00 the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:53</td>
+                         <td>name = opr<br />value = seek-2:00<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>1.465</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should seek the playback from file to duration 2:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:54</td>
+                         <td>name = opr<br />value = seek<br />name = source_type<br />value = file<br />name = duration<br />value = 2:00<br />name = state<br />value = pause<br /></td><td>41.927</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I resume the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:55</td>
+                         <td>name = opr<br />value = resume<br />name = media_type<br />value = local<br />name = media_source<br />value = Downloads/tGsMo2013-1.mp4<br />name = encoding_type<br />value = local<br /></td><td>1.977</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should resume the playback from file to duration xx:xx in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:56</td>
+                         <td>name = opr<br />value = resume<br />name = source_type<br />value = file<br />name = duration<br />value = xx:xx<br />name = state<br />value = play<br /></td><td>42.088</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume and seek the remote video content using media id.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:05:16</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player.feature:58</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\play-media-content-using-player.feature:59</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.000</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "remote" video from 936288a1457b4bb2acbdb18ed5cd58c1 with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:64</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = remote<br />name = media_source<br />value = 936288a1457b4bb2acbdb18ed5cd58c1<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>104.211</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:65</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>37.931</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "remote" video from 936288a1457b4bb2acbdb18ed5cd58c1 with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:66</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = remote<br />name = media_source<br />value = 936288a1457b4bb2acbdb18ed5cd58c1<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>2.101</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:67</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>41.412</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I forwarded the "remote" video from 936288a1457b4bb2acbdb18ed5cd58c1 with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:68</td>
+                         <td>name = opr<br />value = forwarded<br />name = media_type<br />value = remote<br />name = media_source<br />value = 936288a1457b4bb2acbdb18ed5cd58c1<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>1.037</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should forwarded the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:69</td>
+                         <td>name = opr<br />value = forwarded<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>40.859</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I reversed the "remote" video from 936288a1457b4bb2acbdb18ed5cd58c1 with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:70</td>
+                         <td>name = opr<br />value = reversed<br />name = media_type<br />value = remote<br />name = media_source<br />value = 936288a1457b4bb2acbdb18ed5cd58c1<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>1.110</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should reversed the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:71</td>
+                         <td>name = opr<br />value = reversed<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>40.657</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I resume the "remote" video from 936288a1457b4bb2acbdb18ed5cd58c1 with "Flash 128 X472kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player.feature:72</td>
+                         <td>name = opr<br />value = resume<br />name = media_type<br />value = remote<br />name = media_source<br />value = 936288a1457b4bb2acbdb18ed5cd58c1<br />name = encoding_type<br />value = Flash 128 X472kbps 270X480<br /></td><td>1.530</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should resume the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:73</td>
+                         <td>name = opr<br />value = resume<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>41.079</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>Then</td><td>featureFiles\play-media-content-using-player.feature:74</td>
+                         <td></td><td>4.131</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr></table></td>
+         </tr>
+         </table><table class="tab-failed feature-table" cellspacing="1"><tr><td class="key">Feature : </td>
+                       <td><h4>Play, Pause, Move Forward, Move Backward, Resume and Seek Media Content Using Player</h4></td></tr>
+              <tr><td class="key">Tag : </td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location : </td>
+                  <td>featureFiles\play-media-content-using-player-1.feature:1</td></tr>
+            
+           <tr><td class="key">Duration (hh:mm:ss) : </td>
+             <td>00:15:03</td>
+           </tr>
+        
+           <tr class="failed">
+             <td class="key">Overall Status : </td>
+             <td>FAILED</td>
+           </tr>
+        <tr>
+            <td class="key">Scenario : </td><td><table cellspacing="1"><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume Widevine online encoded video</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:52</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player-1.feature:3</td></tr>
+                <tr class="failed">
+                   <td class="key">Status : </td>
+                   <td>
+                       FAILED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\play-media-content-using-player-1.feature:4</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>130.883</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="failed">
+                         <td>I play the "How To Film" video from ALL MEDIA with "Widevine 128 X2400kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:9</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = How To Film<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Widevine 128 X2400kbps 360X640<br /></td><td>41.522</td><td>FAILED</td>
+                         <td>
+                       <a class='err-msg-link'>Exception: Element - dropdown not found.</a>
+                       <div class='full-err-msg'>Traceback (most recent call last):<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1456, in run<br />    match.run(runner.context)<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1903, in run<br />    self.func(context, *args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 38, in wrapper<br />    ret_control = function(*args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 120, in step_impl<br />    encoding_type)<br />  File "E:\LimelightSDKAutomation\modules\exception_mod.py", line 36, in wrapper<br />    return function(*args, **kwargs)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 782, in perform_video_operations<br />    self.select_encoding(encoding_type, media_type)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 605, in select_encoding<br />    self.click_on("dropdown", generic_param=(encoding_name, ))<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 111, in click_on<br />    return self.__obj.click_on(element, generic_param=generic_param)<br />  File "E:\LimelightSDKAutomation\modulesppium_driver.py", line 408, in click_on<br />    ele_obj = self.get_element(ele, generic_param=generic_param)<br />  File "E:\LimelightSDKAutomation\modulesppium_driver.py", line 292, in get_element<br />    raise Exception("Element - %s not found."%ele)<br />Exception: Element - dropdown not found.</div>
+                    </td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:10</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I pause the "How To Film" video from ALL MEDIA with "Widevine 128 X2400kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:11</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:12</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I forwarded the "How To Film" video from ALL MEDIA with "Widevine 128 X2400kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:13</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should forwarded the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:14</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I reversed the "How To Film" video from ALL MEDIA with "Widevine 128 X2400kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:15</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should reversed the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:16</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I resume the "How To Film" video from ALL MEDIA with "Widevine 128 X2400kbps 360X640" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:17</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should resume the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:18</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume Widevine offline encoded video</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:49</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player-1.feature:20</td></tr>
+                <tr class="failed">
+                   <td class="key">Status : </td>
+                   <td>
+                       FAILED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\play-media-content-using-player-1.feature:21</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>128.091</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="failed">
+                         <td>I play the "Football Commercial" video from ALL MEDIA with "WidevineOffline 128 X520kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:26</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = Football Commercial<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = WidevineOffline 128 X520kbps 270X480<br /></td><td>41.252</td><td>FAILED</td>
+                         <td>
+                       <a class='err-msg-link'>Exception: Element - dropdown not found.</a>
+                       <div class='full-err-msg'>Traceback (most recent call last):<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1456, in run<br />    match.run(runner.context)<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1903, in run<br />    self.func(context, *args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 38, in wrapper<br />    ret_control = function(*args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 120, in step_impl<br />    encoding_type)<br />  File "E:\LimelightSDKAutomation\modules\exception_mod.py", line 36, in wrapper<br />    return function(*args, **kwargs)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 782, in perform_video_operations<br />    self.select_encoding(encoding_type, media_type)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 605, in select_encoding<br />    self.click_on("dropdown", generic_param=(encoding_name, ))<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 111, in click_on<br />    return self.__obj.click_on(element, generic_param=generic_param)<br />  File "E:\LimelightSDKAutomation\modulesppium_driver.py", line 408, in click_on<br />    ele_obj = self.get_element(ele, generic_param=generic_param)<br />  File "E:\LimelightSDKAutomation\modulesppium_driver.py", line 292, in get_element<br />    raise Exception("Element - %s not found."%ele)<br />Exception: Element - dropdown not found.</div>
+                    </td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:27</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I pause the "Football Commercial" video from ALL MEDIA with "WidevineOffline 128 X520kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:28</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:29</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I forwarded the "Football Commercial" video from ALL MEDIA with "WidevineOffline 128 X520kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:30</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should forwarded the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:31</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I reversed the "Football Commercial" video from ALL MEDIA with "WidevineOffline 128 X520kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:32</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should reversed the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:33</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I resume the "Football Commercial" video from ALL MEDIA with "WidevineOffline 128 X520kbps 270X480" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:34</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should resume the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:35</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume media by selecting media from the media list in media tab and with encoding automatically selected</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:03:38</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player-1.feature:37</td></tr>
+                <tr class="failed">
+                   <td class="key">Status : </td>
+                   <td>
+                       FAILED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\play-media-content-using-player-1.feature:38</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>114.378</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "Football Commercial" video from ALL MEDIA with "automatic" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:43</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = Football Commercial<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = automatic<br /></td><td>61.316</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:44</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>17.007</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "Football Commercial" video from ALL MEDIA with "automatic" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:45</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = Football Commercial<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = automatic<br /></td><td>1.753</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:46</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>18.101</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I forwarded the "Football Commercial" video from ALL MEDIA with "automatic" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:47</td>
+                         <td>name = opr<br />value = forwarded<br />name = media_type<br />value = Football Commercial<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = automatic<br /></td><td>1.012</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="failed">
+                         <td>player should forwarded the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:48</td>
+                         <td>name = opr<br />value = forwarded<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>4.183</td><td>FAILED</td>
+                         <td>
+                       <a class='err-msg-link'>Exception: on click forward btn elapse time don't change as expect. prev: 00:23, after: 00:00</a>
+                       <div class='full-err-msg'>Traceback (most recent call last):<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1456, in run<br />    match.run(runner.context)<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1903, in run<br />    self.func(context, *args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 38, in wrapper<br />    ret_control = function(*args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 237, in step_impl<br />    LIME_LIGHT_OBJ.check_player(opr, source_type, duration, state, ret_data)<br />  File "E:\LimelightSDKAutomation\modules\exception_mod.py", line 36, in wrapper<br />    return function(*args, **kwargs)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 1385, in check_player<br />    skip_step=skip_step)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 1228, in check_player_is_forwarded<br />    raise Exception(msg % (bfr_elapsed_time, aftr_elapsed_time))<br />Exception: on click forward btn elapse time don't change as expect. prev: 00:23, after: 00:00</div>
+                    </td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I reversed the "Football Commercial" video from ALL MEDIA with "automatic" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:49</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should reversed the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:50</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>I resume the "Football Commercial" video from ALL MEDIA with "automatic" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:51</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>player should resume the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:52</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\play-media-content-using-player-1.feature:53</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to play, pause, move forward, move backward, resume media by providing media id in player tab and with encoding automatically selected</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:05:44</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-media-content-using-player-1.feature:55</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\play-media-content-using-player-1.feature:56</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>116.047</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "remote" video from 663d65d7379847e680f8eb084ddd222b with "automatic" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:61</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = remote<br />name = media_source<br />value = 663d65d7379847e680f8eb084ddd222b<br />name = encoding_type<br />value = automatic<br /></td><td>103.971</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:62</td>
+                         <td>name = opr<br />value = play<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>18.900</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "remote" video from 663d65d7379847e680f8eb084ddd222b with "automatic" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:63</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = remote<br />name = media_source<br />value = 663d65d7379847e680f8eb084ddd222b<br />name = encoding_type<br />value = automatic<br /></td><td>2.112</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:64</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>18.805</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I forwarded the "remote" video from 663d65d7379847e680f8eb084ddd222b with "automatic" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:65</td>
+                         <td>name = opr<br />value = forwarded<br />name = media_type<br />value = remote<br />name = media_source<br />value = 663d65d7379847e680f8eb084ddd222b<br />name = encoding_type<br />value = automatic<br /></td><td>1.343</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should forwarded the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:66</td>
+                         <td>name = opr<br />value = forwarded<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>18.383</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I reversed the "remote" video from 663d65d7379847e680f8eb084ddd222b with "automatic" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:67</td>
+                         <td>name = opr<br />value = reversed<br />name = media_type<br />value = remote<br />name = media_source<br />value = 663d65d7379847e680f8eb084ddd222b<br />name = encoding_type<br />value = automatic<br /></td><td>1.045</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should reversed the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:68</td>
+                         <td>name = opr<br />value = reversed<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>18.790</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I resume the "remote" video from 663d65d7379847e680f8eb084ddd222b with "automatic" encoding</td><td>When</td><td>featureFiles\play-media-content-using-player-1.feature:69</td>
+                         <td>name = opr<br />value = resume<br />name = media_type<br />value = remote<br />name = media_source<br />value = 663d65d7379847e680f8eb084ddd222b<br />name = encoding_type<br />value = automatic<br /></td><td>1.641</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should resume the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:70</td>
+                         <td>name = opr<br />value = resume<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>38.808</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>Then</td><td>featureFiles\play-media-content-using-player-1.feature:71</td>
+                         <td></td><td>4.560</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr></table></td>
+         </tr>
+         </table><table class="tab-failed feature-table" cellspacing="1"><tr><td class="key">Feature : </td>
+                       <td><h4>checking the negative scenario</h4></td></tr>
+              <tr><td class="key">Tag : </td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location : </td>
+                  <td>featureFiles\negative-scenario.feature:1</td></tr>
+            
+           <tr><td class="key">Duration (hh:mm:ss) : </td>
+             <td>00:14:43</td>
+           </tr>
+        
+           <tr class="failed">
+             <td class="key">Overall Status : </td>
+             <td>FAILED</td>
+           </tr>
+        <tr>
+            <td class="key">Scenario : </td><td><table cellspacing="1"><tr><td class="key">Scenario : </td>
+               <td>After providing wrong organization id, error message should shown up on all tabs</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:04:40</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\negative-scenario.feature:3</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\negative-scenario.feature:4</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>118.954</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select ENTERTAINMENT as value for channel-group in CHANNEL GROUPS tab</td><td>When</td><td>featureFiles\negative-scenario.feature:10</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = ENTERTAINMENT<br />name = target_ele<br />value = channel-group<br />name = tab_name<br />value = CHANNEL GROUPS<br /></td><td>9.628</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select Cartoon as value for channel in CHANNELS tab</td><td>And</td><td>featureFiles\negative-scenario.feature:11</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = Cartoon<br />name = target_ele<br />value = channel<br />name = tab_name<br />value = CHANNELS<br /></td><td>12.285</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set xxxxxxxxxxxxxxxxxxx as value for Organization ID in SETTINGS tab</td><td>When</td><td>featureFiles\negative-scenario.feature:13</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = xxxxxxxxxxxxxxxxxxx<br />name = target_ele<br />value = Organization ID<br />name = tab_name<br />value = SETTINGS<br /></td><td>30.240</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the CHANNEL GROUPS tab</td><td>And</td><td>featureFiles\negative-scenario.feature:14</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = CHANNEL GROUPS<br /></td><td>10.983</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following error message -</td><td>Then</td><td>featureFiles\negative-scenario.feature:15</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = error message<br /></td><td>4.719</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the ALL CHANNELS tab</td><td>When</td><td>featureFiles\negative-scenario.feature:19</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = ALL CHANNELS<br /></td><td>14.121</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following error message -</td><td>Then</td><td>featureFiles\negative-scenario.feature:20</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = error message<br /></td><td>5.061</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the CHANNELS tab</td><td>When</td><td>featureFiles\negative-scenario.feature:24</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = CHANNELS<br /></td><td>11.174</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following error message -</td><td>Then</td><td>featureFiles\negative-scenario.feature:25</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = error message<br /></td><td>3.331</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the ALL MEDIA tab</td><td>When</td><td>featureFiles\negative-scenario.feature:29</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = ALL MEDIA<br /></td><td>16.004</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following error message -</td><td>Then</td><td>featureFiles\negative-scenario.feature:30</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = error message<br /></td><td>9.565</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the MEDIA tab</td><td>When</td><td>featureFiles\negative-scenario.feature:34</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = MEDIA<br /></td><td>21.249</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following error message -</td><td>Then</td><td>featureFiles\negative-scenario.feature:35</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = error message<br /></td><td>8.091</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\negative-scenario.feature:38</td>
+                         <td></td><td>4.142</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>After providing wrong organization id, I should not be able to play a media from media tab</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:03:20</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\negative-scenario.feature:40</td></tr>
+                <tr class="failed">
+                   <td class="key">Status : </td>
+                   <td>
+                       FAILED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\negative-scenario.feature:41</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>114.251</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I set xxxxxxxxxxxxxxxxxxx as value for Organization ID in SETTINGS tab</td><td>When</td><td>featureFiles\negative-scenario.feature:47</td>
+                         <td>name = opr<br />value = set<br />name = val<br />value = xxxxxxxxxxxxxxxxxxx<br />name = target_ele<br />value = Organization ID<br />name = tab_name<br />value = SETTINGS<br /></td><td>26.177</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "Now You See Me" video from ALL MEDIA with "Flash 128 X472kbps 268X640" encoding</td><td>And</td><td>featureFiles\negative-scenario.feature:48</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = Now You See Me<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X472kbps 268X640<br /></td><td>53.104</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="failed">
+                         <td>player should not play the playback from remote to duration 00:00 in play state</td><td>Then</td><td>featureFiles\negative-scenario.feature:49</td>
+                         <td>name = opr<br />value = not play<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = play<br /></td><td>6.741</td><td>FAILED</td>
+                         <td>
+                       <a class='err-msg-link'>Exception: Player is loaded</a>
+                       <div class='full-err-msg'>Traceback (most recent call last):<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1456, in run<br />    match.run(runner.context)<br />  File "E:\LimelightSDKAutomation\libehave\model.py", line 1903, in run<br />    self.func(context, *args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 38, in wrapper<br />    ret_control = function(*args, **kwargs)<br />  File "steps\limelight_glue_code.py", line 237, in step_impl<br />    LIME_LIGHT_OBJ.check_player(opr, source_type, duration, state, ret_data)<br />  File "E:\LimelightSDKAutomation\modules\exception_mod.py", line 36, in wrapper<br />    return function(*args, **kwargs)<br />  File "E:\LimelightSDKAutomation\modules\limelight_mod.py", line 1446, in check_player<br />    raise Exception("Player is loaded")<br />Exception: Player is loaded</div>
+                    </td></tr>
+                    
+                       <tr class="Not Executed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\negative-scenario.feature:50</td>
+                         <td></td><td>0.000</td><td>NOT EXECUTED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>If we not select any channel group then the channel tab should show the message</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:02:33</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\negative-scenario.feature:52</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\negative-scenario.feature:53</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>118.322</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the CHANNELS tab</td><td>When</td><td>featureFiles\negative-scenario.feature:59</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = CHANNELS<br /></td><td>10.085</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following error message -</td><td>Then</td><td>featureFiles\negative-scenario.feature:60</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = error message<br /></td><td>4.256</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the CHANNELS tab</td><td>When</td><td>featureFiles\negative-scenario.feature:63</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = CHANNELS<br /></td><td>16.384</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following error message -</td><td>Then</td><td>featureFiles\negative-scenario.feature:64</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = error message<br /></td><td>4.293</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>If we not select any channel then the media tab should show the message</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:00:48</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\negative-scenario.feature:68</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\negative-scenario.feature:69</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.001</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the MEDIA tab</td><td>When</td><td>featureFiles\negative-scenario.feature:75</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = MEDIA<br /></td><td>14.953</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following error message -</td><td>Then</td><td>featureFiles\negative-scenario.feature:76</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = error message<br /></td><td>4.209</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I refresh the MEDIA tab</td><td>When</td><td>featureFiles\negative-scenario.feature:79</td>
+                         <td>name = opr<br />value = refresh<br />name = tab_name<br />value = MEDIA<br /></td><td>24.671</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>the CURRENT tab should have following error message -</td><td>Then</td><td>featureFiles\negative-scenario.feature:80</td>
+                         <td>name = check_ele<br />value = CURRENT tab<br />name = op<br />value = have<br />name = table_header<br />value = error message<br /></td><td>4.266</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>The video playback should get paused when we move to another tab.</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:03:22</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\negative-scenario.feature:84</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\negative-scenario.feature:85</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>0.000</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I play the "Underwater Marine Life" video from ALL MEDIA with "Flash 128 X322kbps 240X426" encoding</td><td>When</td><td>featureFiles\negative-scenario.feature:91</td>
+                         <td>name = opr<br />value = play<br />name = media_type<br />value = Underwater Marine Life<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X322kbps 240X426<br /></td><td>36.302</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the MEDIA tab</td><td>And</td><td>featureFiles\negative-scenario.feature:92</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = MEDIA<br /></td><td>21.188</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the PLAYER tab</td><td>And</td><td>featureFiles\negative-scenario.feature:93</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = PLAYER<br /></td><td>16.662</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\negative-scenario.feature:94</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>45.750</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I resume the "Underwater Marine Life" video from ALL MEDIA with "Flash 128 X322kbps 240X426" encoding</td><td>When</td><td>featureFiles\negative-scenario.feature:95</td>
+                         <td>name = opr<br />value = resume<br />name = media_type<br />value = Underwater Marine Life<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X322kbps 240X426<br /></td><td>1.340</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I pause the "Underwater Marine Life" video from ALL MEDIA with "Flash 128 X322kbps 240X426" encoding</td><td>And</td><td>featureFiles\negative-scenario.feature:96</td>
+                         <td>name = opr<br />value = pause<br />name = media_type<br />value = Underwater Marine Life<br />name = media_source<br />value = ALL MEDIA<br />name = encoding_type<br />value = Flash 128 X322kbps 240X426<br /></td><td>1.175</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the MEDIA tab</td><td>And</td><td>featureFiles\negative-scenario.feature:97</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = MEDIA<br /></td><td>20.832</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select the PLAYER tab</td><td>And</td><td>featureFiles\negative-scenario.feature:98</td>
+                         <td>name = opr<br />value = select<br />name = tab_name<br />value = PLAYER<br /></td><td>16.889</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>player should pause the playback from remote to duration 00:00 in pause state</td><td>Then</td><td>featureFiles\negative-scenario.feature:99</td>
+                         <td>name = opr<br />value = pause<br />name = source_type<br />value = remote<br />name = duration<br />value = 00:00<br />name = state<br />value = pause<br /></td><td>38.034</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\negative-scenario.feature:100</td>
+                         <td></td><td>4.129</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr></table></td>
+         </tr>
+         </table><table class="tab-passed feature-table" cellspacing="1"><tr><td class="key">Feature : </td>
+                       <td><h4>Play list feature test</h4></td></tr>
+              <tr><td class="key">Tag : </td>
+                  <td></td></tr>
+            
+              <tr><td class="key">Location : </td>
+                  <td>featureFiles\play-list.feature:1</td></tr>
+            
+           <tr><td class="key">Duration (hh:mm:ss) : </td>
+             <td>00:12:19</td>
+           </tr>
+        
+           <tr class="passed">
+             <td class="key">Overall Status : </td>
+             <td>PASSED</td>
+           </tr>
+        <tr>
+            <td class="key">Scenario : </td><td><table cellspacing="1"><tr><td class="key">Scenario : </td>
+               <td>I should be able to add and remove selected media in play-list</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:04:45</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-list.feature:2</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\play-list.feature:3</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>115.644</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I add following media in play list from ALL MEDIA tab -</td><td>When</td><td>featureFiles\play-list.feature:9</td>
+                         <td>name = operation<br />value = add<br />name = target<br />value = following<br />name = tab_name<br />value = ALL MEDIA<br />name = is_table<br />value = -<br />original =  -<br /></td><td>22.075</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>following media from ALL MEDIA tab gets added in play list of PLAYER tab -</td><td>Then</td><td>featureFiles\play-list.feature:15</td>
+                         <td>name = target<br />value = following<br />name = source_tab_name<br />value = ALL MEDIA<br />name = operation<br />value = added<br />name = playlist_tab_name<br />value = PLAYER<br />name = is_table<br />value = -<br />original =  -<br /></td><td>54.958</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I remove following media in play list from PLAYER tab -</td><td>When</td><td>featureFiles\play-list.feature:21</td>
+                         <td>name = operation<br />value = remove<br />name = target<br />value = following<br />name = tab_name<br />value = PLAYER<br />name = is_table<br />value = -<br />original =  -<br /></td><td>38.475</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>following media from ALL MEDIA tab gets removed in play list of PLAYER tab -</td><td>Then</td><td>featureFiles\play-list.feature:25</td>
+                         <td>name = target<br />value = following<br />name = source_tab_name<br />value = ALL MEDIA<br />name = operation<br />value = removed<br />name = playlist_tab_name<br />value = PLAYER<br />name = is_table<br />value = -<br />original =  -<br /></td><td>49.448</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\play-list.feature:29</td>
+                         <td></td><td>4.144</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr><tr><td class="key">Scenario : </td>
+               <td>I should be able to add and remove all media in play-list</td></tr><tr><td class="key">Tags : </td>
+               <td></td></tr>
+               <tr>
+                  <td class="key">Duration (hh:mm:ss) : </td>
+                  <td>00:07:34</td>
+               </tr>
+            <tr><td class="key">Location : </td>
+               <td>featureFiles\play-list.feature:31</td></tr>
+                <tr class="passed">
+                   <td class="key">Status : </td>
+                   <td>
+                       PASSED
+                       <button class="togBtn">Show Steps</button>
+                   </td>
+                </tr>
+            <tr>
+                  <td class="key">Steps :</td>
+                  <td><table class="stepsTable" cellspacing="1"><tr>
+                           <th>Name</th><th>Keyword</th><th>Location</th>
+                           <th>Arguments</th><th>Duration<br />(in seconds)</th>
+                           <th>Status</th><th>Error Message</th>
+                           </tr>
+                       <tr class="passed">
+                         <td>the application has launched with following configuration in SETTINGS tab -</td><td>Given</td><td>featureFiles\play-list.feature:32</td>
+                         <td>name = tab_name<br />value = SETTINGS<br /></td><td>126.588</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I select News as value for channel in ALL CHANNELS tab</td><td>When</td><td>featureFiles\play-list.feature:38</td>
+                         <td>name = opr<br />value = select<br />name = val<br />value = News<br />name = target_ele<br />value = channel<br />name = tab_name<br />value = ALL CHANNELS<br /></td><td>11.043</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I add all media in play list from CURRENT tab</td><td>And</td><td>featureFiles\play-list.feature:39</td>
+                         <td>name = operation<br />value = add<br />name = target<br />value = all<br />name = tab_name<br />value = CURRENT<br />name = is_table<br />value = <br /></td><td>4.872</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>all media from MEDIA tab gets added in play list of PLAYER tab</td><td>Then</td><td>featureFiles\play-list.feature:40</td>
+                         <td>name = target<br />value = all<br />name = source_tab_name<br />value = MEDIA<br />name = operation<br />value = added<br />name = playlist_tab_name<br />value = PLAYER<br />name = is_table<br />value = <br /></td><td>131.939</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>I remove all media in play list from PLAYER tab</td><td>When</td><td>featureFiles\play-list.feature:41</td>
+                         <td>name = operation<br />value = remove<br />name = target<br />value = all<br />name = tab_name<br />value = PLAYER<br />name = is_table<br />value = <br /></td><td>149.970</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>all media from MEDIA tab gets removed in play list of PLAYER tab</td><td>Then</td><td>featureFiles\play-list.feature:42</td>
+                         <td>name = target<br />value = all<br />name = source_tab_name<br />value = MEDIA<br />name = operation<br />value = removed<br />name = playlist_tab_name<br />value = PLAYER<br />name = is_table<br />value = <br /></td><td>25.888</td><td>PASSED</td>
+                         <td></td></tr>
+                    
+                       <tr class="passed">
+                         <td>exit from the application</td><td>And</td><td>featureFiles\play-list.feature:43</td>
+                         <td></td><td>4.195</td><td>PASSED</td>
+                         <td></td></tr>
+                    </table></td></tr><tr>
+                 <td colspan="2" class="line-brk"></td>
+            </tr></table></td>
+         </tr>
+         </table></body></html>
