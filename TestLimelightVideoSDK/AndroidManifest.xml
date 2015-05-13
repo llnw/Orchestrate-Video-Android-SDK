@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
        <activity
-            android:name=".PlayerActivity1"
+            android:name=".PlayerActivity"
             android:configChanges="keyboard|keyboardHidden|screenSize|orientation|screenLayout|touchscreen|uiMode"
             android:label="@string/app_name" >
             <intent-filter>
