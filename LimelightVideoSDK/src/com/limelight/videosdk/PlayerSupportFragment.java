@@ -721,7 +721,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 @Override
                 public void onSuccess(ArrayList<Media> list) {
                     if(list!= null && !list.isEmpty()){
-                        callback.getChannelPlaylist(list);
+                        if(callback != null)
+                            callback.getChannelPlaylist(list);
                         //may be this is for fetching next page.
                         //Already playlist is playing.No need to start play
                         if(!isPlaylistPlaying){

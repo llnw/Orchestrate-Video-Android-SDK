@@ -248,6 +248,16 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+        //Always checking whether there is any change in settings, there could be situation where settings changed and fragment page not refreshed.
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String orgId = preferences.getString(getActivity().getResources().getString(R.string.OrgIDEditPrefKey), null);
+        String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
+        String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
+        if((mContentService.getOrgId().equalsIgnoreCase(orgId) == false) ||
+                (mContentService.getAccessKey().equalsIgnoreCase(accessKey) == false) ||
+                (mContentService.getSecret().equalsIgnoreCase(secret) == false)){
+            mContentService = new ContentService(getActivity(),orgId,accessKey,secret);
+        }
         mCallback.callback(mMedias.get(position).mMediaID, mContentService);
     }
 

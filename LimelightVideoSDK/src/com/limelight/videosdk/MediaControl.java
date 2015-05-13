@@ -43,10 +43,12 @@ class MediaControl extends MediaController{
             @Override
             public void onClick(final View view) {
                 if(mIsFullScreen){
-                    mFullScreenCallback.fullScreen();
+                    if(mFullScreenCallback!=null)
+                        mFullScreenCallback.fullScreen();
                 }
                else{
-                   mFullScreenCallback.closeFullScreen();
+                   if(mFullScreenCallback !=null)
+                       mFullScreenCallback.closeFullScreen();
                }
             }
         });

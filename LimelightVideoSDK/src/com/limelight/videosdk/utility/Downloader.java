@@ -133,13 +133,15 @@ public class Downloader {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mCallback.onProgress(0);
+            if(mCallback !=null)
+                mCallback.onProgress(0);
         }
 
         @Override
         protected void onProgressUpdate(final Integer... progress) {
             super.onProgressUpdate(progress);
-            mCallback.onProgress(progress[0]);
+            if(mCallback !=null)
+                mCallback.onProgress(progress[0]);
         }
 
         @Override
@@ -216,19 +218,24 @@ public class Downloader {
         protected void onPostExecute(final String pathToFile) {
             mDownloadTasks.remove(this);
             if (mError == null) {
-                mCallback.onProgress(100);
+                if(mCallback !=null)
+                    mCallback.onProgress(100);
                 if(mTempFile!= null && mTempFile.exists()){
                     if(mTempFile.renameTo(mFile)){
-                        mCallback.onSuccess(pathToFile);
+                        if(mCallback !=null)
+                            mCallback.onSuccess(pathToFile);
                     }
                     else{
-                        mCallback.onError(new Throwable("Failed To Write !"));
+                        if(mCallback !=null)
+                            mCallback.onError(new Throwable("Failed To Write !"));
                     }
                 }else{
-                    mCallback.onSuccess(pathToFile);
+                    if(mCallback !=null)
+                        mCallback.onSuccess(pathToFile);
                 }
             } else {
-                mCallback.onError(mError);
+                if(mCallback !=null)
+                    mCallback.onError(mError);
                 if(mTempFile!= null && mTempFile.exists()){
                     mTempFile.delete();
                 }

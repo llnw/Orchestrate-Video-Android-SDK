@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.PreferenceManager;
+
 import com.limelight.videosdk.LoggerUtil;
 import com.limelight.videosdk.utility.Setting;
 
@@ -30,6 +31,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 orgIDEditnPref.setSummary(strOrgIDPrefText);
             } else {
                 orgIDEditnPref.setText(getResources().getString(R.string.OrgIDEditPrefDefValue));
+                orgIDEditnPref.setSummary(R.string.OrgIDEditPrefDefValue);
             }
         } else {
             // TODO: Log error information?
@@ -43,6 +45,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 accessKeyEditnPref.setSummary(strAccessKeyPrefText);
             } else {
                 accessKeyEditnPref.setText(getResources().getString(R.string.AccKeyEditPrefDefValue));
+                accessKeyEditnPref.setSummary(getResources().getString(R.string.AccKeyEditPrefDefValue));
             }
         }
 
@@ -54,6 +57,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 secretKeyEditnPref.setSummary(strSecretKeyPrefText);
             } else {
                 secretKeyEditnPref.setText(getResources().getString(R.string.SecKeyEditPrefDefValue));
+                secretKeyEditnPref.setSummary(getResources().getString(R.string.SecKeyEditPrefDefValue));
             }
         }
 
@@ -65,6 +69,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 licProxyEditnPref.setSummary(strLicProxyPrefText);
             } else {
                 licProxyEditnPref.setText(getResources().getString(R.string.licProxyEditPrefDefValue));
+                licProxyEditnPref.setSummary(getResources().getString(R.string.licProxyEditPrefDefValue));
             }
         }
 
@@ -76,6 +81,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 portalKeyEditnPref.setSummary(strPortalKeyPrefText);
             } else {
                 portalKeyEditnPref.setText(getResources().getString(R.string.portalKeyEditPrefDefValue));
+                portalKeyEditnPref.setSummary(getResources().getString(R.string.portalKeyEditPrefDefValue));
             }
         }
 
@@ -87,6 +93,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 urlEditnPref.setSummary(strurlPrefText);
             } else {
                 urlEditnPref.setText(getResources().getString(R.string.urlEditPrefDefValue));
+                urlEditnPref.setSummary(getResources().getString(R.string.urlEditPrefDefValue));
             }
         }
 
@@ -127,34 +134,36 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,String key) {
-
-        if (key.equals(getResources().getString(R.string.OrgIDEditPrefKey))) {
-            EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
-            connectionPref.setSummary(sharedPreferences.getString(key,getResources().getString(R.string.OrgIDEditPrefDefValue)));
-        } else if (key.equals(getResources().getString( R.string.AccKeyEditPrefKey))) {
-            EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
-            connectionPref.setSummary(sharedPreferences.getString(key,getResources().getString(R.string.AccKeyEditPrefDefValue)));
-        } else if (key.equals(getResources().getString(R.string.SecKeyEditPrefKey))) {
-            EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
-            connectionPref.setSummary(sharedPreferences.getString(key,getResources().getString(R.string.SecKeyEditPrefDefValue)));
-        } else if (key.equals(getResources().getString(R.string.urlEditPrefKey))) {
-            EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
-            connectionPref.setSummary(sharedPreferences.getString(key, getResources().getString(R.string.urlEditPrefDefValue)));
-        }else if (key.equals(getResources().getString(R.string.licProxyEditPrefKey))) {
-            EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
-            connectionPref.setSummary(sharedPreferences.getString(key, getResources().getString(R.string.licProxyEditPrefDefValue)));
-        }else if (key.equals(getResources().getString(R.string.portalKeyEditPrefKey))) {
-            EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
-            connectionPref.setSummary(sharedPreferences.getString(key, getResources().getString(R.string.portalKeyEditPrefDefValue)));
-        }else if (key.equals(getResources().getString( R.string.logLevelListPrefKey))) {
-            ListPreference logListPref1 = (ListPreference) findPreference(key);
-            int logLevelNum = 0;
-            String strLogListPrefText = sharedPreferences.getString(key,getResources().getString(R.string.logLevelListPrefDefValue));
-            logLevelNum = Integer.parseInt(strLogListPrefText);
-            logListPref1.setSummary(mLogEntries[logLevelNum]);
+        //Verifying if the fragment is currently added to its activity or not, getResources crashes when control reaches here and isAdded is false.
+        if(isAdded()){
+            if (key.equals(getResources().getString(R.string.OrgIDEditPrefKey))) {
+                EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
+                connectionPref.setSummary(sharedPreferences.getString(key,getResources().getString(R.string.OrgIDEditPrefDefValue)));
+            } else if (key.equals(getResources().getString( R.string.AccKeyEditPrefKey))) {
+                EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
+                connectionPref.setSummary(sharedPreferences.getString(key,getResources().getString(R.string.AccKeyEditPrefDefValue)));
+            } else if (key.equals(getResources().getString(R.string.SecKeyEditPrefKey))) {
+                EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
+                connectionPref.setSummary(sharedPreferences.getString(key,getResources().getString(R.string.SecKeyEditPrefDefValue)));
+            } else if (key.equals(getResources().getString(R.string.urlEditPrefKey))) {
+                EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
+                connectionPref.setSummary(sharedPreferences.getString(key, getResources().getString(R.string.urlEditPrefDefValue)));
+            }else if (key.equals(getResources().getString(R.string.licProxyEditPrefKey))) {
+                EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
+                connectionPref.setSummary(sharedPreferences.getString(key, getResources().getString(R.string.licProxyEditPrefDefValue)));
+            }else if (key.equals(getResources().getString(R.string.portalKeyEditPrefKey))) {
+                EditTextPreference connectionPref = (EditTextPreference) findPreference(key);
+                connectionPref.setSummary(sharedPreferences.getString(key, getResources().getString(R.string.portalKeyEditPrefDefValue)));
+            }else if (key.equals(getResources().getString( R.string.logLevelListPrefKey))) {
+                ListPreference logListPref1 = (ListPreference) findPreference(key);
+                int logLevelNum = 0;
+                String strLogListPrefText = sharedPreferences.getString(key,getResources().getString(R.string.logLevelListPrefDefValue));
+                logLevelNum = Integer.parseInt(strLogListPrefText);
+                logListPref1.setSummary(mLogEntries[logLevelNum]);
+            }
+            //update the values in SDK
+            updateValues();
         }
-        //update the values in SDK
-        updateValues();
     }
     @Override
     public void onResume() {

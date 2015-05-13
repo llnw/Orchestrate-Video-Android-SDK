@@ -369,7 +369,8 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        mControl.stop();
+                        if(mControl != null)
+                            mControl.stop();
                     }
                 })
                 .setSingleChoiceItems(primaryUseAdapter, -1, new DialogInterface.OnClickListener() {
@@ -378,7 +379,8 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                             mProgress.setMessage(getResources().getString(R.string.progressDlgMediaMessage));
                             mProgress.show();
                             Encoding enc = encodings.get(which);
-                            mControl.play(enc.mEncodingUrl.toString(), svc);
+                            if(mControl != null)
+                                mControl.play(enc.mEncodingUrl.toString(), svc);
                             dialog.dismiss();
                     }
                 });

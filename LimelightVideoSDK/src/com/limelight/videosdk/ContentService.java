@@ -251,10 +251,12 @@ public class ContentService {
     public void getAllChannelGroupAsync(boolean isLoadMore,final ChannelGroupCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
+            if(callback != null)
+                callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                if(callback != null)
+                    callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 try {
                     final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_GROUP_PATH, mOrgId);
@@ -264,7 +266,8 @@ public class ContentService {
                         if(mHasNext){
                             mPageId++;
                         }else {
-                            callback.onSuccess(mChannelGroupList);
+                            if(callback != null)
+                                callback.onSuccess(mChannelGroupList);
                             return;
                         }
                     }else{
@@ -289,7 +292,8 @@ public class ContentService {
                                 urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                                 parseChannelGroups(reader);
-                                callback.onSuccess(mChannelGroupList);
+                                if(callback != null)
+                                    callback.onSuccess(mChannelGroupList);
                             }
                             catch (MalformedURLException e) {
                                 throwable = new Throwable(Constants.THUMB_URL_ERROR);
@@ -310,7 +314,8 @@ public class ContentService {
                                     if(mPageId != 0){
                                         mPageId--;
                                     }
-                                    callback.onError(throwable);
+                                    if(callback != null)
+                                        callback.onError(throwable);
                                 }
                             }
                         }
@@ -319,7 +324,8 @@ public class ContentService {
                     thread.start();
                 }
                 catch (Exception e) {
-                    callback.onError(new Throwable(Constants.AUTH_ERROR));
+                    if(callback != null)
+                        callback.onError(new Throwable(Constants.AUTH_ERROR));
                 }
             }
         }
@@ -412,9 +418,11 @@ public class ContentService {
     public void getAllChannelOfGroupAsync(final String channelGroupId, final boolean isLoadMore,final ChannelCallback callback) {
 
         if (mOrgId == null || mOrgId.trim().length() == 0) {
-            callback.onError(new Throwable(Constants.ORG_ERROR));
+            if(callback != null)
+                callback.onError(new Throwable(Constants.ORG_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
+                if(callback != null)
                 callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 Runnable runnable = new Runnable() {
@@ -430,7 +438,8 @@ public class ContentService {
                                 if(mHasNext){
                                     mPageId++;
                                 }else {
-                                    callback.onSuccess(mChannelList);
+                                    if(callback != null)
+                                        callback.onSuccess(mChannelList);
                                     return;
                                 }
                             }else{
@@ -449,7 +458,8 @@ public class ContentService {
                             urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                             JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                             parseChannels(reader);
-                            callback.onSuccess(mChannelList);
+                            if(callback != null)
+                                callback.onSuccess(mChannelList);
                         }
                         catch (UnsupportedEncodingException e) {
                             throwable = new Throwable(Constants.ENCODING_ERROR);
@@ -473,7 +483,8 @@ public class ContentService {
                                 if(mPageId != 0){
                                     mPageId--;
                                 }
-                                callback.onError(throwable);
+                                if(callback != null)
+                                    callback.onError(throwable);
                             }
                         }
                     }
@@ -573,10 +584,12 @@ public class ContentService {
     public void getAllChannelAsync(boolean isLoadMore,final ChannelCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
+            if(callback != null)
+                callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                if(callback != null)
+                    callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 try {
                     String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_PATH, mOrgId);
@@ -586,7 +599,8 @@ public class ContentService {
                         if(mHasNext){
                             mPageId++;
                         }else {
-                            callback.onSuccess(mChannelList);
+                            if(callback != null)
+                                callback.onSuccess(mChannelList);
                             return;
                         }
                     }else{
@@ -611,7 +625,8 @@ public class ContentService {
                                 urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                                 parseChannels(reader);
-                                callback.onSuccess(mChannelList);
+                                if(callback != null)
+                                    callback.onSuccess(mChannelList);
                             }
                             catch (MalformedURLException e) {
                                 throwable = new Throwable(Constants.THUMB_URL_ERROR);
@@ -632,7 +647,8 @@ public class ContentService {
                                     if(mPageId != 0){
                                         mPageId--;
                                     }
-                                    callback.onError(throwable);
+                                    if(callback != null)
+                                        callback.onError(throwable);
                                 }
                             }
                         }
@@ -641,7 +657,8 @@ public class ContentService {
                     thread.start();
                 }
                 catch (Exception e) {
-                    callback.onError(new Throwable(Constants.AUTH_ERROR));
+                    if(callback != null)
+                        callback.onError(new Throwable(Constants.AUTH_ERROR));
                 }
             }
         }
@@ -734,10 +751,12 @@ public class ContentService {
     public void getAllMediaOfChannelAsync(final String channelId,final boolean isLoadMore,final MediaCallback callback) {
 
         if (mOrgId == null || mOrgId.trim().length() == 0) {
-            callback.onError(new Throwable(Constants.ORG_ERROR));
+            if(callback != null)
+                callback.onError(new Throwable(Constants.ORG_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                if(callback != null)
+                    callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 Runnable runnable = new Runnable() {
                     @Override
@@ -752,7 +771,8 @@ public class ContentService {
                                 if(mHasNext){
                                     mPageId++;
                                 }else {
-                                    callback.onSuccess(mMediaList);
+                                    if(callback != null)
+                                        callback.onSuccess(mMediaList);
                                     return;
                                 }
                             }else{
@@ -771,7 +791,8 @@ public class ContentService {
                             urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                             JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                             parseMedias(reader);
-                            callback.onSuccess(mMediaList);
+                            if(callback != null)
+                                callback.onSuccess(mMediaList);
                         }
                         catch (UnsupportedEncodingException e) {
                             throwable = new Throwable(Constants.ENCODING_ERROR);
@@ -795,7 +816,8 @@ public class ContentService {
                                 if(mPageId != 0){
                                     mPageId--;
                                 }
-                                callback.onError(throwable);
+                                if(callback != null)
+                                    callback.onError(throwable);
                             }
                         }
                     }
@@ -894,10 +916,12 @@ public class ContentService {
     public void getAllMediaAsync(boolean isLoadMore,final MediaCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
+            if(callback != null)
+                callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                if(callback != null)
+                    callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 try {
                     String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
@@ -907,7 +931,8 @@ public class ContentService {
                         if(mHasNext){
                             mPageId++;
                         }else {
-                            callback.onSuccess(mMediaList);
+                            if(callback != null)
+                                callback.onSuccess(mMediaList);
                             return;
                         }
                     }else{
@@ -932,7 +957,8 @@ public class ContentService {
                                 urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                                 parseMedias(reader);
-                                callback.onSuccess(mMediaList);
+                                if(callback != null)
+                                    callback.onSuccess(mMediaList);
                             }
                             catch (MalformedURLException e1) {
                                 throwable = new Throwable(Constants.THUMB_URL_ERROR);
@@ -953,7 +979,8 @@ public class ContentService {
                                     if(mPageId != 0){
                                         mPageId--;
                                     }
-                                    callback.onError(throwable);
+                                    if(callback != null)
+                                        callback.onError(throwable);
                                 }
                             }
                         }
@@ -962,7 +989,8 @@ public class ContentService {
                     thread.start();
                 } 
                 catch (Exception e) {
-                    callback.onError(new Throwable(Constants.AUTH_ERROR));
+                    if(callback != null)
+                        callback.onError(new Throwable(Constants.AUTH_ERROR));
                 }
             }
         }
@@ -1115,17 +1143,20 @@ public class ContentService {
             String tag,String state,String mediaType,String channelId,String createdAfter, String updatedAfter, String publishedAfter,final MediaCallback callback) throws Exception{
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
+            if(callback != null)
+                callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                if(callback != null)
+                    callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 mLogger.debug(TAG + " searchMediaAsync "+ " mHasNextSearchMedia: " + mHasNext +" mPageIdSearchMedia: " + mPageId);
                 if(isLoadMore){
                     if(mHasNext){
                         mPageId++;
                     }else {
-                        callback.onSuccess(mMediaList);
+                        if(callback != null)
+                            callback.onSuccess(mMediaList);
                         return;
                     }
                 }else{
@@ -1189,7 +1220,8 @@ public class ContentService {
                                 urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                                 parseMedias(reader);
-                                callback.onSuccess(mMediaList);
+                                if(callback != null)
+                                    callback.onSuccess(mMediaList);
                             }
                             catch (MalformedURLException e1) {
                                 throwable = new Throwable("Invalid Request URL !");
@@ -1210,7 +1242,8 @@ public class ContentService {
                                     if(mPageId != 0){
                                         mPageId--;
                                     }
-                                    callback.onError(throwable);
+                                    if(callback != null)
+                                        callback.onError(throwable);
                                 }
                             }
                         }
@@ -1219,7 +1252,8 @@ public class ContentService {
                     thread.start();
                 }
                 catch (Exception e) {
-                    callback.onError(new Throwable(Constants.AUTH_ERROR));
+                    if(callback != null)
+                        callback.onError(new Throwable(Constants.AUTH_ERROR));
                 }
             }
         }
@@ -1233,10 +1267,12 @@ public class ContentService {
      */
     public void getChannelAsync(final String channelId,final ChannelCallback callback) {
         if (mOrgId == null || mOrgId.trim().length() == 0) {
-            callback.onError(new Throwable(Constants.ORG_ERROR));
+            if(callback != null)
+                callback.onError(new Throwable(Constants.ORG_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                if(callback != null)
+                    callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 Runnable runnable = new Runnable() {
                     @Override
@@ -1250,10 +1286,12 @@ public class ContentService {
                             JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                             ArrayList<Channel> channelList = new ArrayList<Channel>();
                             channelList.add(parseChannelProperty(reader));
-                            callback.onSuccess(channelList);
+                            if(callback != null)
+                                callback.onSuccess(channelList);
                         }
                         catch (MalformedURLException e) {
-                            callback.onError(new Throwable("Invalid Request URL !"));
+                            if(callback != null)
+                                callback.onError(new Throwable("Invalid Request URL !"));
                         } 
                         catch (IOException e) {
                             String error = null;
@@ -1261,7 +1299,8 @@ public class ContentService {
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                 error = parseError(reader);
                             }
-                            callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
+                            if(callback != null)
+                                callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
                         }
                         finally {
                             if (urlConnection != null) {
@@ -1286,10 +1325,12 @@ public class ContentService {
     public void getMediaAsync(final String mediaId,final MediaCallback callback) {
 
         if (mOrgId == null || mOrgId.trim().length() == 0) {
-            callback.onError(new Throwable(Constants.ORG_ERROR));
+            if(callback != null)
+                callback.onError(new Throwable(Constants.ORG_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                if(callback != null)
+                    callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else{
                 Runnable runnable = new Runnable() {
                     @Override
@@ -1303,10 +1344,12 @@ public class ContentService {
                             JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                             ArrayList<Media> mediaList = new ArrayList<Media>();
                             mediaList.add(parseMediaProperty(reader));
-                            callback.onSuccess(mediaList);
+                            if(callback != null)
+                                callback.onSuccess(mediaList);
                         }
                         catch (MalformedURLException e1) {
-                            callback.onError(new Throwable(Constants.THUMB_URL_ERROR));
+                            if(callback != null)
+                                callback.onError(new Throwable(Constants.THUMB_URL_ERROR));
                         }
                         catch (IOException e) {
                             String error = null;
@@ -1314,7 +1357,8 @@ public class ContentService {
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                 error = parseError(reader);
                             }
-                            callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
+                            if(callback != null)
+                                callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
                         }
                         finally {
                             if (urlConnection != null) {
@@ -1338,14 +1382,17 @@ public class ContentService {
         final HashMap<String, String> params = new HashMap<String, String>();
         params.put(Constants.PRIMARY_USE, "all");
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
+            if(callback != null)
+                callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
         } else {
             if(!Connection.isConnected(mContext)){
-                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                if(callback != null)
+                    callback.onError(new Throwable(Constants.CONNECTION_ERROR));
             }else {
                 try {
                     if(mediaId != null && mediaId.trim().length() == 0){
-                        callback.onError(new Throwable("Invalid Media Id"));
+                        if(callback != null)
+                            callback.onError(new Throwable("Invalid Media Id"));
                         return;
                     }
                     final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.ENCODING_PATH, mOrgId, mediaId);
@@ -1361,16 +1408,20 @@ public class ContentService {
                                 InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                                 JsonReader reader = new JsonReader(new InputStreamReader(inputStream));
                                 parseEncodings(reader,mediaId);
-                                callback.onSuccess(mEncodingList);
+                                if(callback != null)
+                                    callback.onSuccess(mEncodingList);
                             }
                             catch(JSONException e){
-                                callback.onError(new Throwable("JSON Error !"));
+                                if(callback != null)
+                                    callback.onError(new Throwable("JSON Error !"));
                             }
                             catch (MalformedURLException e) {
-                                callback.onError(new Throwable("MalformedURLException Error !"));
+                                if(callback != null)
+                                    callback.onError(new Throwable("MalformedURLException Error !"));
                             }
                             catch(FileNotFoundException e){
-                                callback.onError(new Throwable("Invalid Media Id !"));
+                                if(callback != null)
+                                    callback.onError(new Throwable("Invalid Media Id !"));
                             }
                             catch (IOException e) {
                                 String error = null;
@@ -1378,7 +1429,8 @@ public class ContentService {
                                     JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                     error = parseError(reader);
                                 }
-                                callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
+                                if(callback != null)
+                                    callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
                             }
                             finally {
                                 if (urlConnection != null) {
@@ -1391,7 +1443,8 @@ public class ContentService {
                     thread.start();
 
                 }catch (Exception e) {
-                    callback.onError(new Throwable(Constants.AUTH_ERROR));
+                    if(callback != null)
+                        callback.onError(new Throwable(Constants.AUTH_ERROR));
                 }
             }
         }
