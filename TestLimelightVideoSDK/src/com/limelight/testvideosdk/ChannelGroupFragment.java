@@ -158,7 +158,7 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
                         (mContentService.getSecret().equalsIgnoreCase(secret) == false)){
                     mContentService = new ContentService(mContext,orgId,accessKey,secret);
                 }
-                mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
+                mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_DESC);
                 mGroups = mContentService.getAllChannelGroup(refresh);
             } catch (Exception e) {
                 mGroups = null;
@@ -243,7 +243,7 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
             return;
         if (mPreviousTotalCount == totalItemCount)
             return;
-        boolean loadMore = firstVisibleItem + visibleItemCount > totalItemCount;
+        boolean loadMore = (firstVisibleItem + visibleItemCount >= totalItemCount);
         if (loadMore){
             mPreviousTotalCount  = totalItemCount;
             loadMore();

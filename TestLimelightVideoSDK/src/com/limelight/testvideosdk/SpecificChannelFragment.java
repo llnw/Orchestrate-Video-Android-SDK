@@ -210,7 +210,7 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
                             (mContentService.getSecret().equalsIgnoreCase(secret) == false)){
                         mContentService = new ContentService(mContext,orgId,accessKey,secret);
                     }
-                    mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_ASC);
+                    mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_DESC);
                     mMedias = mContentService.getAllMediaOfChannel(mChannelId,refresh);
                 }
             } catch (Exception e) {
@@ -311,7 +311,7 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
             return;
         if (mPreviousTotalCount == totalItemCount)
             return;
-        boolean loadMore = firstVisibleItem + visibleItemCount > totalItemCount;
+        boolean loadMore = (firstVisibleItem + visibleItemCount >= totalItemCount);
         if (loadMore){
             mPreviousTotalCount  = totalItemCount;
             loadMore();
