@@ -218,7 +218,6 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                 showKeyboard(false);
             }
             else{
-                showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
                 String scheme = Uri.parse(mMediaInfo).getScheme();
                 if("RTSP".equalsIgnoreCase(scheme)){
                     mControl.play(mMediaInfo, null);//used with delivery
