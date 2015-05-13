@@ -58,7 +58,12 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         },false);
         mediaController.setAnchorView(mPlayerView);
         mPlayerView.setMediaController(mediaController);
-        playerLayout.addView(mPlayerView);
+        //This is to stretch the video to full screen
+        final RelativeLayout.LayoutParams videoParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        videoParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        playerLayout.addView(mPlayerView,videoParams);
+        //old way of adding view
+        //playerLayout.addView(mPlayerView);
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         mProgress = new ProgressBar(this);
