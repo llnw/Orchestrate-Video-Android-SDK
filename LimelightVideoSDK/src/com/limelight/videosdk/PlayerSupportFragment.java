@@ -146,7 +146,12 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             public void closeFullScreen() {
             }
         },true);
-        mPlayerLayout.addView(mPlayerView);
+        //This is to stretch the video to full screen
+        final RelativeLayout.LayoutParams videoParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        videoParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        mPlayerLayout.addView(mPlayerView,videoParams);
+        //old way of adding view
+        //mPlayerLayout.addView(mPlayerView);
         mPlayerView.setOnErrorListener(this);
         mPlayerView.setOnCompletionListener(this);
         mLogger = LoggerUtil.getLogger(getActivity());
