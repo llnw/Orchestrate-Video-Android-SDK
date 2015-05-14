@@ -259,7 +259,9 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
                 (mContentService.getSecret().equalsIgnoreCase(secret) == false)){
             mContentService = new ContentService(getActivity(),orgId,accessKey,secret);
         }
-        mCallback.callback(mMedias.get(position).mMediaID, mContentService);
+        if(mMedias!= null && !mMedias.isEmpty()){
+            mCallback.callback(mMedias.get(position).mMediaID, mContentService);
+        }
     }
 
     @Override

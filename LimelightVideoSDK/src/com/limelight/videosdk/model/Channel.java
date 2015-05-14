@@ -5,8 +5,14 @@ import com.google.gson.annotations.SerializedName;
 import android.net.Uri;
 
 /**
- * Represents a channel item.Channel contains a list of media.
- * It is logical representation of medias.
+ * This class holds information related to a single channel.
+ * Channels are used to organize media into logical groupings.
+ * The Meta data properties associated with channels are stored in this class.
+ * LimelightVideoSDK will perform API query request using Content Service class to fetch the channel,
+ * the response received will have the channel properties information.
+ * The response received will be processed and properties information will be stored in this class.
+ * The list of channels will be stored in channel list in ContentService.
+ * Channel contains attributes like channel id, title, description, media id and thumbnail Uri etc.
  * @author Nagaraju
  */
 public class Channel {

@@ -225,7 +225,9 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-        mCallback.callback(mChannels.get(position).mChannelId);
+        if(mChannels!= null && !mChannels.isEmpty()){
+            mCallback.callback(mChannels.get(position).mChannelId);
+        }
     }
 
     @Override

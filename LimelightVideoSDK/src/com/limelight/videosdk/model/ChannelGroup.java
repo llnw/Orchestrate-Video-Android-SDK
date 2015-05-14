@@ -5,8 +5,14 @@ import com.google.gson.annotations.SerializedName;
 import android.net.Uri;
 
 /**
- * Represent a channel Group item. Channel group contains a list of channels.
- * It is logical representation of channels.
+ * This class holds information related to a single channel group.
+ * Channel groups are used to organize channels into logical groupings.
+ * The Meta data properties associated with channel groups are stored in this class.
+ * LimelightVideoSDK will perform API query request using Content Service class,
+ * the response received will have the channel group properties information.
+ * The response received will be processed and properties information will be stored in this class.
+ * The list of channel groups will be stored in channel group list in ContentService.
+ * Channel group contains attributes like channel group id, title, date created and date updated etc.
  * @author Nagaraju
  */
 public class ChannelGroup {

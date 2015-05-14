@@ -703,6 +703,9 @@ public class ContentService {
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
+                    StringBuilder searchStr = new StringBuilder();
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,"published"));
+                    params.put("and", searchStr.toString());
                     mLogger.debug(TAG + " getAllMediaOfChannel "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                     resourceUrl = appendPagingParameters(resourceUrl, params);
                     urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
@@ -785,6 +788,9 @@ public class ContentService {
                             params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                             params.put(Constants.SORT_BY, mSortBy);
                             params.put(Constants.SORT_ORDER, mSortOrder);
+                            StringBuilder searchStr = new StringBuilder();
+                            searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,"published"));
+                            params.put("and", searchStr.toString());
                             mLogger.debug(TAG + " getAllMediaOfChannelAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                             resourceUrl = appendPagingParameters(resourceUrl, params);
                             urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
@@ -865,6 +871,9 @@ public class ContentService {
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
+                    StringBuilder searchStr = new StringBuilder();
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,"published"));
+                    params.put("and", searchStr.toString());
                     mLogger.debug(TAG + " getAllMedia "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     urlConnection = (HttpURLConnection) new URL(url).openConnection();
@@ -945,6 +954,9 @@ public class ContentService {
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
+                    StringBuilder searchStr = new StringBuilder();
+                    searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,"published"));
+                    params.put("and", searchStr.toString());
                     mLogger.debug(TAG + " getAllMediaAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     Runnable runnable = new Runnable() {
@@ -1261,6 +1273,7 @@ public class ContentService {
 
     /**
      * This method fetches the properties of a specific channel.
+     * It does not require authentication.
      * This is as asynchronous call and channel list with a single channel is returned in callback.
      * @param channelId ChannelId
      * @param callback ChannelCallback

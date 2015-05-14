@@ -130,11 +130,11 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 i.putExtra("STATE",mPlayerView.mPlayerState.name());
                 i.putExtra("MEDIAID",mMediaId);
                 try{
+                    getActivity().startActivity(i);
                     if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
                         mPlayerView.stopPlayback();
                         mPlayerView.mPlayerState = PlayerState.stopped;
                     }
-                    getActivity().startActivity(i);
                 }catch(Exception ex){
                     if(ex != null){
                         mLogger.error(ex.getMessage());
@@ -721,7 +721,6 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
          * @param callback
          */
         private void fetchPlaylist(final String channelId,final IPlaylistCallback callback){
-            mPlaylistContentSvc.setPagingParameters(50, Constants.SORT_BY_CREATE_DATE, Constants.SORT_ORDER_ASC);
             mPlaylistContentSvc.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
                 @Override
                 public void onSuccess(ArrayList<Media> list) {

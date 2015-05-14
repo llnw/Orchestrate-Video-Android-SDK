@@ -29,6 +29,11 @@ class VideoPlayerView extends VideoView{
         super(context, attrs, defStyle);
     }
 
+    /**
+     * This method sets the IMediaControllerCallback implementation in VideoPlayerView.
+     * This callback will be used to send play, pause and seek events information to Player.
+     * @param listener
+     */
     void setMediaControllerCallback(final IMediaControllerCallback listener) {
         mListener = listener;
     }

@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
+import com.limelight.testvideosdk.MediaFragment.PlaylistCallback;
 import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.Channel;
@@ -50,6 +51,7 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
 
     public interface SpecificChannelGroupCallback{
         void callback(String id);
+        void playChannel(String channelId);
     }
 
     @Override
@@ -73,7 +75,18 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setEmptyText("No Channel Group Selected");
-        mAdapter =  new ModelAdapter(getActivity());
+        mAdapter =  new ModelAdapter(getActivity(),Constants.TYPE_CHANNEL,new PlaylistCallback() {
+
+            @Override
+            public void removeFromPlaylist(int position) {
+                //do nothing. cant remove
+            }
+
+            @Override
+            public void addToPlaylist(int position) {
+                mCallback.playChannel(mChannelList.get(position).mChannelId);
+            }
+        });
         setListAdapter(mAdapter);
         setListShown(false);
         if(mGroupId == null){
@@ -245,7 +258,9 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-        mCallback.callback(mChannelList.get(position).mChannelId);
+        if(mChannelList!= null && !mChannelList.isEmpty()){
+            mCallback.callback(mChannelList.get(position).mChannelId);
+        }
     }
 
     @Override

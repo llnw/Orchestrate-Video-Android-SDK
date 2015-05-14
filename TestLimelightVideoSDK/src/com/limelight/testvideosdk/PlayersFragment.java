@@ -25,6 +25,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -152,6 +154,15 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         mDeliveryCheck = (CheckBox)rootView.findViewById(R.id.deliveryCheck);
         mAutoPlayCheck = (CheckBox)rootView.findViewById(R.id.is_autoPlay);
         mAutoPlayCheck.setChecked(true);
+        mAutoPlayCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChannelPlaylist){
+                    mControl.setAutoPlay(mAutoPlayCheck.isChecked());
+                }
+            }
+        });
         mDeliveryCheck.setChecked(true);
         mEdit.setFocusable(false);
         showKeyboard(false);
@@ -528,6 +539,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
             String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
             ContentService contentService = new ContentService(getActivity(),orgId,accessKey,secret);
+            contentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_DESC);
             mControl.setAutoPlay(mAutoPlayCheck.isChecked());
             mControl.playChannel(channelId, contentService,mCallback);
         }

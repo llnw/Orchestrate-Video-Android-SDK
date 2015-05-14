@@ -6,7 +6,15 @@ import com.google.gson.annotations.SerializedName;
 import android.net.Uri;
 
 /**
- * Represents a media item.
+ * This class holds information related to a single Media.
+ * Media is used to organize different encoding formats into logical groupings.
+ * The Meta data properties associated with Media are stored in this class.
+ * LimelightVideoSDK will perform API query request using Content Service class to fetch the Media,
+ * the response received will have the Media properties information.
+ * The response received will be processed and properties information will be stored in this class.
+ * The list of Media's will be stored in media list in ContentService.
+ * Media contains attributes like media id, title, summary, media type, duration, date created, 
+ * date updated, closed captions Uri, thumbnail Uri, and poster Uri etc.
  * @author Nagaraju
  */
 public class Media {

@@ -1,17 +1,14 @@
 package com.limelight.videosdk.utility;
 
 import java.util.UUID;
-
 import com.limelight.videosdk.Constants;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 /**
- * This class manages the developer details like organization id, 
- * access key and secret. This class initializes and stores device id.
- * This class also manages widevine specific settings.
+ * This class initializes and stores device id.
+ * This class also manages widevine specific settings and Limelight API end points.
  * Developer can access the APIs exposed to set the values.
  * @author kanchan
  *
@@ -23,7 +20,6 @@ public class Setting{
     private static String sPortalkey;
     private static String sDeviceId;
     private static String sAnalyticsEndPoint;
-
 
     /**
      * To set widevine specific details like, Limelight API endpoint,
@@ -83,9 +79,9 @@ public class Setting{
     public static String getApiEndPoint(){
         if(sApiEndPoint== null|| sApiEndPoint.trim().isEmpty()){
             if(IS_RELEASE){
-                  return Constants.API_ENDPOINT_PROD;
+                return Constants.API_ENDPOINT_PROD;
             }else{
-                  return Constants.API_ENDPOINT_STAGING;
+                return Constants.API_ENDPOINT_STAGING;
             }
         }else{
             return sApiEndPoint;
@@ -101,9 +97,9 @@ public class Setting{
     public static String getLicenseProxyURL(){
         if(sLicenseProxy== null|| sLicenseProxy.trim().isEmpty()){
             if(IS_RELEASE){
-                  return Constants.LICENSE_PROXY_PROD;
+                return Constants.LICENSE_PROXY_PROD;
             }else{
-                  return Constants.LICENSE_PROXY_STAGING;
+                return Constants.LICENSE_PROXY_STAGING;
             }
         }else{
             return sLicenseProxy;
@@ -118,7 +114,7 @@ public class Setting{
      */
     public static String getPortalKey(){
         if(sPortalkey== null|| sPortalkey.trim().isEmpty()){
-          return "Limelight";
+            return "Limelight";
         }else{
             return sPortalkey;
         }
@@ -133,9 +129,9 @@ public class Setting{
     public static String getAnalyticsEndPoint(){
         if(sAnalyticsEndPoint== null){
             if(IS_RELEASE){
-                  return Constants.ANALYTICS_ENDPOINT_PROD;
+                return Constants.ANALYTICS_ENDPOINT_PROD;
             }else{
-                  return Constants.ANALYTICS_ENDPOINT_STAGING;
+                return Constants.ANALYTICS_ENDPOINT_STAGING;
             }
         }else{
             return sAnalyticsEndPoint;

@@ -213,7 +213,9 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-        mCallback.callback(mGroups.get(position).mChannelGroupId);
+        if(mGroups!= null && !mGroups.isEmpty()){
+            mCallback.callback(mGroups.get(position).mChannelGroupId);
+        }
     }
 
     @Override

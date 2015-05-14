@@ -104,6 +104,14 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
                 mSpecificChannelFragment.restartLoader(id);
             mViewPager.setCurrentItem(5);
         }
+
+        @Override
+        public void playChannel(String channelId) {
+            if(mPlayerFragment != null){
+                mPlayerFragment.playChannel(channelId);
+            }
+            mViewPager.setCurrentItem(6);
+        }
     };
     
     MediaCallback mediaCallback = new MediaCallback() {

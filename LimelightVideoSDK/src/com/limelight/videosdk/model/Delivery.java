@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import android.net.Uri;
 
 /**
- * A Delivery represents a single, playable resource.
- * The most basic element of media is the encoding, but some delivery 
- * mechanisms can package multiple encodings into one URL. As such, the 
- * delivery represents a collection of one-to-n encodings that are packaged together.
- * As an example, Widevine streaming does automatic bit-rate switching 
- * (as does Apple’s HLS), while Widevine offline only has a single bit 
- * rate (and, as such, a single encoding).
+ * Delivery represents a single playable resource.
+ * This class holds information related to a single playable resource.
+ * Delivery is used to choose an encoding format for playback.
+ * Delivery has some Meta data properties from encodings.
+ * For a media there will be different encodings,
+ * the delivery represents a collection of one-to-n encodings that are packaged together.
+ * Delivery contains attributes like delivery id, delivery type, media id, remote URL and group etc.
  * @author Nagaraju
  */
 public class Delivery {

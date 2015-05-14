@@ -4,7 +4,15 @@ import com.google.gson.annotations.SerializedName;
 import android.net.Uri;
 
 /**
- * Encoding is the basic element of media. this class represents the details of single encoding.
+ * This class holds information related to a single Encoding.
+ * Media is organized as different encoding formats.
+ * The Meta data properties associated with Encoding are stored in this class.
+ * LimelightVideoSDK will perform API query request using Content Service class to fetch the Encodings,
+ * the response received will have the Encoding properties information.
+ * The response received will be processed and properties information will be stored in this class.
+ * The list of Encodings will be stored in encoding list in ContentService.
+ * Encoding contains attributes like media id, audio bit rate, video bit rate, size in bytes,
+ * primary use, play list Uri and encoding Uri etc.
  * @author Nagaraju
  */
 public class Encoding {
