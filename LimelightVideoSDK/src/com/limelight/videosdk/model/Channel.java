@@ -7,7 +7,7 @@ import android.net.Uri;
 /**
  * Represents a channel item.Channel contains a list of media.
  * It is logical representation of medias.
- * @author kanchan
+ * @author Nagaraju
  */
 public class Channel {
 

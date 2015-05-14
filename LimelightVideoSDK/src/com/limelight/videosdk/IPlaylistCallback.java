@@ -10,5 +10,9 @@ import com.limelight.videosdk.model.Media;
  *
  */
 public interface IPlaylistCallback {
-void getChannelPlaylist(ArrayList<Media> playlist);
+    /**
+     * This callback return the media in the selected channel to the caller.
+     * @param playlist
+     */
+    void getChannelPlaylist(ArrayList<Media> playlist);
 }

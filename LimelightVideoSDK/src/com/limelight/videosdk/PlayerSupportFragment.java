@@ -39,14 +39,13 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 /**
- * This class is the customized fragment which also contains native android
- * player.
+ * This class is the player and is the customized fragment which also contains customized android
+ * player VideoPlayerview.
  * <p>
  * It also includes media controller object which is the UI controller for the
  * player. Media Controller has UI controls like seek bar, play button, pause
- * button,next button, previous button.Currently it is using default media
- * controller, if needed we will extend the media controller class for
- * customizing the UI control.
+ * button,forward button and rewind button. We are using extended media controller class for
+ * customizing the UI control like adding full screen button.
  * <p>
  * It also has PlayerControl as an inner final class. This is the implementation
  * of IPlayerControl. This is the control to the Player. It is supplied to the
@@ -58,12 +57,16 @@ import android.widget.Toast;
  * Player will be available as an embed-able component in customer application
  * container view. It is made embed-able by extending the fragment.
  * <p>
- * PlayerSupportFragment gets the list of channels groups, channels,media and 
- * encodings by calling ContentService methods.
+ * PlayerSupportFragment gets the list of media, encodings and delivery by calling ContentService methods.
  * <P>
  * PlayerSupportFragment also has a countdown timer.When player crosses a certain 
- * time in fetching the media data, this timer kicks its callback methods to terminate the player preparation and send message to developer application.
-
+ * time in fetching the media data, this timer kicks its callback methods to terminate 
+ * the player preparation and send message to developer application.<p>
+ * Player implements IMediaControllerCallback which is the listener for MediaController 
+ * controls like play, pause and seek.
+ * Player uses AnalyticsReporter to send the analytics data on player prepared and playing complete using 
+ * VideoPlayerview callbacks on completion and on prepare. It uses IMediaControllerCallback implementation 
+ * to send the analytics data for user operation on MediaController controls.<p>
  * Since the Player has to be an embed-able component, Player can not be an
  * activity.It has to be either fragment or a layout so that it can embed in an
  * activity inside the customer application. Here fragment has been chosen
@@ -74,7 +77,6 @@ import android.widget.Toast;
  * getFragmentManager().beginTransaction().add(R.id.container,
  * player).commit();// Embeds the player into container layout.<br>
  * player.setPlayerCallback(IPlayerCallback);<br>
- * 
  * @author kanchan
  * 
  */
@@ -464,7 +466,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         /**
          * This method is to play the given RTSP url this is for 3GP.
          * @param rtspURL The rtsp UTL of the content to play.
-         * @param contentService The ContentService object.
          */
         private void playRTSP(final String rtspURL) {
             if (mPlayerCallback != null)
@@ -572,7 +573,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     }
                 }
             });
-
         }
 
         /**
@@ -714,6 +714,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID,mPlaylistContentSvc);
             }
         }
+
         /**
          * Method to fetch the media list belonging to specified channel.
          * @param channelId
@@ -722,7 +723,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         private void fetchPlaylist(final String channelId,final IPlaylistCallback callback){
             mPlaylistContentSvc.setPagingParameters(50, Constants.SORT_BY_CREATE_DATE, Constants.SORT_ORDER_ASC);
             mPlaylistContentSvc.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
-
                 @Override
                 public void onSuccess(ArrayList<Media> list) {
                     if(list!= null && !list.isEmpty()){
@@ -754,6 +754,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             });
         }
 
+        /**
+         * This method resets the player on error in playback.
+         */
         private void playerError() {
             if (mLogger != null) {
                 mLogger.debug(TAG+" PlayerState: play"+mPlayerView.mPlayerState.name());
@@ -765,6 +768,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 
         }
 
+        /**
+         * This method actually starts playing media content by player.
+         */
         private void play() {
             if (mUri == null) {
                 if (mLogger != null) {
@@ -826,6 +832,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
 
+        /**
+         * This method sets the media content uri in player.
+         * @param uri
+         */
         private void setVideoUri(Uri uri) {
             mPosition = 0;
             if (uri == null) {
@@ -859,12 +869,15 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
 
-
+        /**
+         * This method sets the media content path in player.
+         * @param path
+         */
         private void setVideoPath(String path) {
             mPosition = 0;
             if (path == null) {
                 if (mLogger != null) {
-                    mLogger.info("Please Check The URI");
+                    mLogger.info("Please Check The Path");
                 }
             }else {
                 mUri = Uri.parse(path);
@@ -957,6 +970,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             if (mMediaId != null) {
                 mReporter.sendMediaComplete(mMediaId, null);
             }
+
             if(mIsAutoPlay){
                 if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
                     if(mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){

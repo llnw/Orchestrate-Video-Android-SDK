@@ -2,7 +2,7 @@ package com.limelight.videosdk.model;
 
 /**
  * The types of deliveries.
- * @author kanchan
+ * @author Nagaraju
  *
  */
 public enum DeliveryType {

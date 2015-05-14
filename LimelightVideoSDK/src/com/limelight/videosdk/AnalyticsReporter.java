@@ -27,7 +27,7 @@ import com.limelight.videosdk.utility.Setting;
  * AnalyticsReporter is used to send the captured analytics data to Limelight analytics server.
  * When video is played, paused or seek is triggered, 
  * the event is captured and AnalyticsReporter will be invoked to send this information to Limelight analytics server.
- * Reports contain video play, pause or seek events. Reports include information about application name, version, device name etc.
+ * Reports contain video play, pause, seek  or play completed events. Reports include information about application name, version, device name etc.
  * AnalyticsReporter contains attributes like app name which holds the application name, 
  * app version which holds the application version, device make which holds the device manufacturer,
  * device model which holds the device model, OS version which holds the operating system version,
@@ -213,7 +213,7 @@ class AnalyticsReporter {
      * @param mediaId Media ID for media which is being played
      * @param channelId Channel ID for the media being played.
      */
-    void addAnalyticsData(String eventType,JsonObject data){
+    private void addAnalyticsData(String eventType,JsonObject data){
 //        System.out.println(TAG +" Event type: "+eventType);
         mAnalyticsData = new JsonObject();
         mAnalyticsData.addProperty("eventType", eventType);
@@ -223,14 +223,28 @@ class AnalyticsReporter {
         mAnalyticsData.addProperty("sourceVersion", 1);
     }
 
+    /**
+     * This method pauses the execution of sending analytics reports to server.
+     * It is required in case when device loses connection to Internet.
+     */
     private void pause(){
         mRequestExecutor.pause();
     }
 
+    /**
+     * This method resumes the execution of sending analytics reports to server.
+     * It is required in case when device gets back the connection to Internet.
+     */
     private void resume(){
         mRequestExecutor.resume();
     }
 
+    /**
+     * This method posts the analytics data to server after checking the Internet availability.
+     * It queues the request to be sent in request executor.
+     * If Internet is not there, it pauses sending of data.
+     * @param obj
+     */
     private void post(final JsonObject obj){
         if(!Connection.isConnected(mContext)){
             pause();
@@ -319,6 +333,10 @@ class AnalyticsReporter {
         mContext.registerReceiver(mConnectionReceiver, filter);
     }
 
+    /**
+     * This method unregisters the receiver for Internet connectivity change.
+     * It also shuts down the request executor when receiver is unregistered.
+     */
     void unregisterReceiver(){
         mContext.unregisterReceiver(mConnectionReceiver);
 

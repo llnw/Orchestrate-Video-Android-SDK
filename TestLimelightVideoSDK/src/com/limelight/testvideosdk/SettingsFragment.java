@@ -33,8 +33,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 orgIDEditnPref.setText(getResources().getString(R.string.OrgIDEditPrefDefValue));
                 orgIDEditnPref.setSummary(R.string.OrgIDEditPrefDefValue);
             }
-        } else {
-            // TODO: Log error information?
         }
 
         EditTextPreference accessKeyEditnPref = (EditTextPreference) findPreference(getResources()

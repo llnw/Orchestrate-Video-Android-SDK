@@ -30,7 +30,7 @@ import com.limelight.videosdk.utility.Downloader.DownLoadCallback;
 import com.limelight.videosdk.utility.Setting;
 
 /**
- * This class manages all the widevine related functionality. It checks for the widevine drm engine presence in device and 
+ * This class manages all the widevine related functionality. It checks for the widevine DRM engine presence in device and 
  * requests drm engine to fetch license from Limelight server for rights 
  * associated with the media.It then requests DRM engine to validate the rights.
  * It also allows toregister and deregister the DRM engine with organization details.
@@ -50,7 +50,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
     private FileInputStream mFileStream;
     private final ContentService mContentService;
 
-    public interface WVCallback{
+    interface WVCallback{
         void onSuccess(String uri);
         void onError(Throwable throwable);
         void onProgress(int percentFinished);
@@ -71,7 +71,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * it downloads the content and then it initiates the rights 
      * request and on success it plays the encoding media.
      * @param encoding Encoding
-     * @param cb WVCallback
+     * @param callback WVCallback
      */
     void playWidewineEncodedContent(final Encoding encoding,final WVCallback callback){
         mCallback = callback;
@@ -107,7 +107,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * it downloads the content and then it initiates the rights 
      * request and on success it plays the encoding media.
      * @param delivery Delivery
-     * @param cb WVCallback
+     * @param callback WVCallback
      */
     void playWidewineDeliveryContent(final Delivery delivery,final WVCallback callback){
         mCallback = callback;
@@ -219,7 +219,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param uri
      * @return WidevineStatus
      */
-    WidevineStatus registerAsset(final String userData,final String uri){
+    private WidevineStatus registerAsset(final String userData,final String uri){
 
         final String deviceId = Setting.getDeviceID(mContext);
         mDrmInfoRequest.put("WVCAUserDataKey", userData);
@@ -282,7 +282,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param mediaID
      * @throws JSONException
      */
-    void setMediaCredentials(final String mediaID) throws JSONException{
+    private void setMediaCredentials(final String mediaID) throws JSONException{
         final long clientTime = System.currentTimeMillis() / 1000L;
         final String toSign = String.format("%s|%s|%s|get_license|%s",mContentService.getAccessKey(), clientTime, mediaID, mContentService.getOrgId());
         final String signature = URLAuthenticator.signWithKey(mContentService.getSecret(), toSign);
@@ -304,7 +304,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
     /**
      * This method sets the organization values into drm info request.
      */
-    void setOrganizationCredentials(){
+    private void setOrganizationCredentials(){
         mDrmInfoRequest = new DrmInfoRequest(DrmInfoRequest.TYPE_RIGHTS_ACQUISITION_INFO, "video/wvm");
         mDrmInfoRequest.put("WVDRMServerKey", Setting.getLicenseProxyURL());
         mDrmInfoRequest.put("WVPortalKey", Setting.getPortalKey());
@@ -341,6 +341,9 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         return WidevineStatus.NotRegistered;
     }
 
+    /**
+     * This method removes organization credentials and unregisters the media informations also.
+     */
     private void unRegister(){
         if(mCredentials != null){
             mCredentials.remove("access_key");
@@ -353,6 +356,9 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         unRegisterAsset();
     }
 
+    /**
+     * This method unregisters the media informations. 
+     */
     private void unRegisterAsset() {
         mDrmInfoRequest.put("WVCAUserDataKey", "");
         mDrmInfoRequest.put("WVAssetURIKey", "");

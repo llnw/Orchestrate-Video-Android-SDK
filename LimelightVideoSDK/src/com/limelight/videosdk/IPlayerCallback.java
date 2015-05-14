@@ -33,6 +33,7 @@ public interface IPlayerCallback {
     /**
      * Method will be implemented in activity.
      * This callback method is called when player is prepared to play.
+     * @param control {@link IPlayerControl}
      */
     public void playerPrepared(IPlayerControl control);
 }

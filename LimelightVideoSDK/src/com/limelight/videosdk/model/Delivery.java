@@ -14,7 +14,7 @@ import android.net.Uri;
  * As an example, Widevine streaming does automatic bit-rate switching 
  * (as does Apple’s HLS), while Widevine offline only has a single bit 
  * rate (and, as such, a single encoding).
- * @author kanchan
+ * @author Nagaraju
  */
 public class Delivery {
 

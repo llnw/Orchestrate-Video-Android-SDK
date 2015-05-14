@@ -46,7 +46,6 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
     private IPlayerControl mControl;
     private SearchView mEdit;
     private TextView mLocalfileText = null;
-    //localFileName mLocalfileText
     private String mMediaInfo;
     private PlayerSupportFragment mPlayer;
     private ProgressDialog mProgress = null;
@@ -64,7 +63,6 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
     private boolean isChannelPlaylist;
     private PlaylistAdapter mChannelPlayListAdapter;
     private ListView mChannelPlayListView;
-    private String mChannelId;
     private IPlaylistCallback mCallback;
 
     @Override
@@ -154,6 +152,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         mDeliveryCheck = (CheckBox)rootView.findViewById(R.id.deliveryCheck);
         mAutoPlayCheck = (CheckBox)rootView.findViewById(R.id.is_autoPlay);
         mAutoPlayCheck.setChecked(true);
+        mDeliveryCheck.setChecked(true);
         mEdit.setFocusable(false);
         showKeyboard(false);
         mPlayer = new PlayerSupportFragment();
@@ -163,8 +162,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
 
     private void getAllEncodings(String mediaId, final ContentService contentService) {
         if(contentService != null){
-        	contentService.getAllEncodingsForMediaId(mediaId, new EncodingsCallback() {
-
+            contentService.getAllEncodingsForMediaId(mediaId, new EncodingsCallback() {
                 @Override
                 public void onError(Throwable throwable) {
                     hide();
@@ -193,7 +191,6 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             for(int i = 0 ; i < mPlayList.size() ;){
                 mPlayList.remove(i);
             }
-            mChannelId = null;
             mPlayListNameLayout.setVisibility(View.GONE);
             mChannelPlayListView.setVisibility(View.GONE);
             mPlayListView.setVisibility(View.GONE);
@@ -396,7 +393,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                 mPlayList.remove(i);
             }
             mCurrentPlayPosition = -1;
-            mChannelId = null;
+            mChannelPlayListView.setVisibility(View.GONE);
         }
         mPlayListNameLayout.setVisibility(View.VISIBLE);
         mPlayListView.setVisibility(View.VISIBLE);
@@ -496,7 +493,6 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
         mIsPlaylistPlaying = true;
         isChannelPlaylist = true;
         mCurrentPlayPosition = 0;
-        mChannelId = channelId;
         for(int i = 0 ; i < mPlayList.size() ;){
             mPlayList.remove(i);
         }
@@ -534,7 +530,6 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             ContentService contentService = new ContentService(getActivity(),orgId,accessKey,secret);
             mControl.setAutoPlay(mAutoPlayCheck.isChecked());
             mControl.playChannel(channelId, contentService,mCallback);
-//            showProgress(true, getResources().getString(R.string.progressDlgEncodingMessage));
         }
     }
 }

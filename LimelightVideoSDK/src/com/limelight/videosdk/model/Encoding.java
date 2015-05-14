@@ -5,6 +5,7 @@ import android.net.Uri;
 
 /**
  * Encoding is the basic element of media. this class represents the details of single encoding.
+ * @author Nagaraju
  */
 public class Encoding {
 

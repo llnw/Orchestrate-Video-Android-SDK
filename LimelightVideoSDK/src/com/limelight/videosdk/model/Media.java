@@ -7,7 +7,7 @@ import android.net.Uri;
 
 /**
  * Represents a media item.
- * @author kanchan
+ * @author Nagaraju
  */
 public class Media {
 

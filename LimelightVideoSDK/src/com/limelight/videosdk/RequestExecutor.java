@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**This class executes the analytics reporting requests serially 
  * and it also caches the request when network is disconnected. 
  * It resumes sending the cached requests once network is connected.
+ * @author Nagaraju
  */
 class RequestExecutor extends ScheduledThreadPoolExecutor {
     
@@ -18,7 +19,7 @@ class RequestExecutor extends ScheduledThreadPoolExecutor {
      * Default constructor
      * @return 
      */
-    public RequestExecutor(final int corePoolSize) {
+    RequestExecutor(final int corePoolSize) {
         super(corePoolSize);
     }
 
@@ -26,7 +27,7 @@ class RequestExecutor extends ScheduledThreadPoolExecutor {
      * This method pauses the thread-pool. New requests
      * will not start until the thread-pool is resumed.
      */
-    public void pause() {
+    void pause() {
         mExecutorLock.lock();
         try {
             mIsExecutorPaused = true;
@@ -38,7 +39,7 @@ class RequestExecutor extends ScheduledThreadPoolExecutor {
     /**
      * This method resumes the thread-pool.
      */
-    public void resume() {
+    void resume() {
         mExecutorLock.lock();
         try {
             mIsExecutorPaused = false;

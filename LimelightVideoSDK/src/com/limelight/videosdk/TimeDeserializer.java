@@ -11,7 +11,7 @@ import com.google.gson.JsonSerializer;
 
 /**
  * This class is the Deserializer for time data received in Json response.
- * @author kanchan
+ * @author Nagaraju
  *
  */
 class TimeDeserializer implements JsonDeserializer<Time>,JsonSerializer<Time> {

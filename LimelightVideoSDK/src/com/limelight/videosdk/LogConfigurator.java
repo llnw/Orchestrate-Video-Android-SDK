@@ -16,13 +16,13 @@
 package com.limelight.videosdk;
 
 import org.apache.log4j.Layout;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.helpers.LogLog;
+import android.util.Log;
 
 /**
  * This class configures the logger like resetting  the configuration, 
@@ -45,9 +45,15 @@ class LogConfigurator {
         //empty constructor.
     }
 
+    /**
+     * This method return the current logging level.
+     * @param loggerName
+     * @return Level
+     */
     Level getLevel(final String loggerName){
         return Logger.getLogger(loggerName).getLevel();
     }
+
     /**
      * @param fileName Name of the log file
      */
@@ -121,9 +127,7 @@ class LogConfigurator {
     }
 
     /**
-     * Sets the level of logger with name <code>loggerName</code>. Corresponds
-     * to log4j.properties <code>log4j.logger.org.apache.what.ever=ERROR</code>
-     * 
+     * Sets the level of logger with name <code>loggerName</code>.
      * @param loggerName
      * @param level
      */
@@ -144,7 +148,8 @@ class LogConfigurator {
             rollingFileAppender = new RollingFileAppender(fileLayout,
                     getFileName());
         } catch (Exception e) {
-            throw new RuntimeException("Exception configuring log system", e);
+            Log.e("LogConfigurator", "Exception configuring log system", e);
+            return;
         }
 
         rollingFileAppender.setMaxBackupIndex(getMaxBackupSize());
@@ -174,10 +179,18 @@ class LogConfigurator {
         this.rootLevel = level;
     }
 
+    /**
+     * This method returns the Log pattern for the file appender.
+     * @return filePattern
+     */
     private String getFilePattern() {
         return filePattern;
     }
 
+    /**
+     * This method sets the Log pattern for the file appender.
+     * @param filePattern
+     */
     void setFilePattern(final String filePattern) {
         this.filePattern = filePattern;
     }
@@ -239,10 +252,18 @@ class LogConfigurator {
         this.maxFileSize = maxFileSize;
     }
 
+    /**
+     * This method returns the value of immediate flush.
+     * @return immediateFlush
+     */
     private boolean isImmediateFlush() {
         return immediateFlush;
     }
 
+    /**
+     * This method sets the value for immediate flush of log file.
+     * @param immediateFlush
+     */
     void setImmediateFlush(final boolean immediateFlush) {
         this.immediateFlush = immediateFlush;
     }
@@ -264,25 +285,35 @@ class LogConfigurator {
         this.useFileAppender = useFileAppender;
     }
 
+    /**
+     * This method resets the log4j configuration before applying this configuration.
+     * Default is true.
+     * @param resetConfiguration
+     */
     void setResetConfiguration(final boolean resetConfiguration) {
         this.resetConfiguration = resetConfiguration;
     }
 
     /**
-     * Resets the log4j configuration before applying this configuration.
-     * Default is true.
-     * 
-     * @return True, if the log4j configuration should be reset before applying
-     *         this configuration.
+     * This method returns true if the log4j configuration should be reset before applying this configuration. 
+     * @return resetConfiguration
      */
     private boolean isResetConfiguration() {
         return resetConfiguration;
     }
 
+    /**
+     * This method sets the internal debugging.
+     * @param internalDebugging
+     */
     void setInternalDebugging(final boolean internalDebugging) {
         this.internalDebugging = internalDebugging;
     }
 
+    /**
+     * This method returns true if internal debugging is set.
+     * @return
+     */
     private boolean isInternalDebugging() {
         return internalDebugging;
     }

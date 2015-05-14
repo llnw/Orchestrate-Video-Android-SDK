@@ -1630,7 +1630,7 @@ public class ContentService {
      * @param reader
      * @return Error message
      */
-    String parseError(final JsonReader reader){
+    private String parseError(final JsonReader reader){
         JsonParser parser = new JsonParser();
         JsonObject object = parser.parse(reader).getAsJsonObject();
         if(!object.get("errors").isJsonNull()){
@@ -1657,7 +1657,7 @@ public class ContentService {
 
     /**
      * Method to set the paging parameters.
-     * @param pageSize The number of results to return per page. The default and maximum page size is 500.
+     * @param pageSize The number of results to return per page. The default and maximum page size is 500.Min is 50.
      * Example: page_size=100<br>
      * @param sortBy The field by which the results should be sorted. It has values like publish_date, create_date, update_date<br>
      * @param sortOrder The order in which the results should display. It has values like asc or  desc<br>

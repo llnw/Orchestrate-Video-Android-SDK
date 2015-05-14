@@ -23,5 +23,4 @@ interface IMediaControllerCallback {
      * @param aftrerPosition
      */
     void onMediaControllerSeek(long beforePosition,long afterPosition);
-
 }

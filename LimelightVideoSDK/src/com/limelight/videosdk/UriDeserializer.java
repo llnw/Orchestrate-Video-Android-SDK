@@ -11,7 +11,7 @@ import com.google.gson.JsonSerializer;
 
 /**
  * This class is the Deserializer for URI data received in Json response.
- * @author kanchan
+ * @author Nagaraju
  *
  */
 class UriDeserializer implements JsonDeserializer<Uri>,JsonSerializer<Uri> {

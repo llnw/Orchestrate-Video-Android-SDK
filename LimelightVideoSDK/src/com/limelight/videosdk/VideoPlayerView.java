@@ -15,7 +15,7 @@ import com.limelight.videosdk.Constants.PlayerState;
 class VideoPlayerView extends VideoView{
 
     private IMediaControllerCallback mListener;
-    public PlayerState mPlayerState = PlayerState.stopped;
+    PlayerState mPlayerState = PlayerState.stopped;
 
     VideoPlayerView(final Context context) {
         super(context);

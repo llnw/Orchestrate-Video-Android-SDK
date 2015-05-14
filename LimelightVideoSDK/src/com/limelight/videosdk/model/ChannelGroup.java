@@ -7,7 +7,7 @@ import android.net.Uri;
 /**
  * Represent a channel Group item. Channel group contains a list of channels.
  * It is logical representation of channels.
- * @author kanchan
+ * @author Nagaraju
  */
 public class ChannelGroup {
 
