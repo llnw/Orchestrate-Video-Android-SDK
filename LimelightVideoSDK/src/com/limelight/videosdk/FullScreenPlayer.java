@@ -114,14 +114,14 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         if(mMediaId!= null){
             mReporter.sendMediaComplete(mMediaId, null);
         }
+        mPlayerView.mPlayerState = PlayerState.completed;
         mediaPlayer.stop();
         close(duration);
     }
 
     @Override
     public void onPrepared(final MediaPlayer mediaPlayer) {
-        if(mPlayerView.mPlayerState==PlayerState.stopped || mPlayerView.mPlayerState== PlayerState.completed){
-            mPlayerView.mPlayerState=PlayerState.stopped;
+        if(mPlayerView.mPlayerState==PlayerState.stopped){
             mediaPlayer.stop();
             close(mPosition);
         }
