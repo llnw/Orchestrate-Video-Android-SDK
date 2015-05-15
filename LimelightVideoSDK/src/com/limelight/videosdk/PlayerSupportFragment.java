@@ -96,7 +96,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private AnalyticsReporter mReporter;
     private String mMediaId = null;
     private boolean mIsMediacontrollerRemoved = true;
-    private String mPlaylistId;
     private ContentService mPlaylistContentSvc;
     private boolean mIsAutoPlay = true;
     private int mCurrentPlayPos;
@@ -253,8 +252,17 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             mLogger.error("Error in media player" + what + ":"+ extra);
         }
         reset();
-        if (mPlayerCallback != null)
+        if (mPlayerCallback != null){
             mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), what,"Error In Media Player");
+        }
+        if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
+                && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+            mCurrentPlayPos++;
+            if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
+                mPlayerView.mPlayerState = PlayerState.stopped;
+            }
+            mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+        }
         return true;
     }
 
@@ -308,8 +316,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          */
         private void playRemoteURL(final String remoteURL, final ContentService contentService) {
 
-            if (mPlayerCallback != null)
+            if (mPlayerCallback != null){
                 mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+            }
             if(contentService != null){
                 Encoding encoding = contentService.getEncodingFromUrl(remoteURL);
                 if(encoding != null){
@@ -337,20 +346,23 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             @Override
                             public void onError(final Throwable throwable) {
                                 reset();
-                                if (mPlayerCallback != null)
+                                if (mPlayerCallback != null){
                                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                                }
                             }
 
                             @Override
                             public void onProgress(final int percentFinished) {
-                                if (mPlayerCallback != null)
+                                if (mPlayerCallback != null){
                                     mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
+                                }
                             }
 
                             @Override
                             public void onSendMessage(final String message) {
-                                if(mPlayerCallback != null)
+                                if(mPlayerCallback != null){
                                     mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
+                                }
                             }
                         });
                     } else {
@@ -358,8 +370,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             if (mLogger != null) {
                                 mLogger.debug(TAG+" Encoding Remote url is null");
                             }
-                            if (mPlayerCallback != null)
+                            if (mPlayerCallback != null){
                                 mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Invalid Media !");
+                            }
                         }else {
                             final String url = encoding.mEncodingUrl.toString();
                             if (mLogger != null) {
@@ -413,20 +426,23 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             @Override
                             public void onError(final Throwable throwable) {
                                 reset();
-                                if (mPlayerCallback != null)
+                                if (mPlayerCallback != null){
                                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                                }
                             }
 
                             @Override
                             public void onProgress(final int percentFinished) {
-                                if (mPlayerCallback != null)
+                                if (mPlayerCallback != null){
                                     mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
+                                }
                             }
 
                             @Override
                             public void onSendMessage(final String message) {
-                                if(mPlayerCallback != null)
+                                if(mPlayerCallback != null){
                                     mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
+                                }
                             }
                         });
                     }
@@ -468,8 +484,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          * @param rtspURL The rtsp UTL of the content to play.
          */
         private void playRTSP(final String rtspURL) {
-            if (mPlayerCallback != null)
+            if (mPlayerCallback != null){
                 mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+            }
             if (mLogger != null) {
                 mLogger.debug(TAG+" 3gp media : " + rtspURL);
             }
@@ -483,8 +500,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          */
         private void playMediaID(final String mediaID, final ContentService contentService) {
             mPlayerView.setMediaControllerCallback(PlayerSupportFragment.this);
-            if (mPlayerCallback != null)
+            if (mPlayerCallback != null){
                 mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+            }
             if (mLogger != null) {
                 mLogger.debug(TAG+" delivery media : " + mediaID);
             }
@@ -495,16 +513,24 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 if (mLogger != null) {
                     mLogger.debug(TAG+" media URL : "+mediaID);
                 }
-                if (mPlayerCallback != null)
+                if (mPlayerCallback != null){
                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Media Library !");
+                }
                 return;
             }
             contentService.getAllEncodingsForMediaId(mediaID, new EncodingsCallback() {
 
                 @Override
                 public void onError(final Throwable throwable) {
-                    if (mPlayerCallback != null)
+                    if (mPlayerCallback != null){
                         mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                    }
+                    if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
+                            && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                        mCurrentPlayPos++;
+                        reset();
+                        mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                    }
                 }
 
                 @Override
@@ -538,20 +564,28 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                 @Override
                                 public void onError(final Throwable throwable) {
                                     reset();
-                                    if (mPlayerCallback != null)
+                                    if (mPlayerCallback != null){
                                         mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                                    }
+                                    if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
+                                            && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                                        mCurrentPlayPos++;
+                                        mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                                    }
                                 }
 
                                 @Override
                                 public void onProgress(final int percentFinished) {
-                                    if (mPlayerCallback != null)
+                                    if (mPlayerCallback != null){
                                         mPlayerCallback.playerMessage(Constants.Message.progress.ordinal(), percentFinished,null);
+                                    }
                                 }
 
                                 @Override
                                 public void onSendMessage(final String message) {
-                                    if(mPlayerCallback != null)
+                                    if(mPlayerCallback != null){
                                         mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0, message);
+                                    }
                                 }
                             });
                         }
@@ -568,8 +602,15 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             }
                         }
                     }else{
-                        if (mPlayerCallback != null)
+                        if (mPlayerCallback != null){
                             mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Proper Delivery Found");
+                        }
+                        if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
+                                && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                            mCurrentPlayPos++;
+                            reset();
+                            mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                        }
                     }
                 }
             });
@@ -631,7 +672,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             isPlaylistPlaying = false;
             mCurrentPlayPos = 0;
             mPlaylistContentSvc = null;
-            mPlaylistId = null;
             //clearing out playlist informations end
         }
 
@@ -678,38 +718,19 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mLogger.debug(TAG+" Channel Id For Playlist : "+channelId);
             }
 
-            if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
-                mPlayerView.stopPlayback();
-                mPlayerView.mPlayerState = PlayerState.stopped;
-            }
+            reset();
 
             mCurrentPlayPos = 0;
-
-            if(channelId.equals(mPlaylistId)){
-                if(mPlaylistContentSvc!= null &&  !mPlaylistContentSvc.getMediaList().isEmpty()
-                        && mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos)!= null){
-                    playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID,mPlaylistContentSvc);
-                    callback.getChannelPlaylist(mPlaylistContentSvc.getMediaList());
-                }
-                else{
-                    fetchPlaylist(channelId, callback);
-                }
-            }else{
-                mPlaylistId = channelId;
-                mPlaylistContentSvc = contentService;
-                isPlaylistPlaying = false;//reset to initial
-                fetchPlaylist(channelId, callback);
-            }
+            mPlaylistContentSvc = contentService;
+            isPlaylistPlaying = false;//reset to initial
+            fetchPlaylist(channelId, callback);
         }
 
         @Override
         public void playInPlaylist(int position){
             if(mPlaylistContentSvc!= null &&  !mPlaylistContentSvc.getMediaList().isEmpty()
                     && mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos)!= null){
-                if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
-                    mPlayerView.stopPlayback();
-                    mPlayerView.mPlayerState = PlayerState.stopped;
-                }
+                reset();
                 mCurrentPlayPos = position;
                 playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID,mPlaylistContentSvc);
             }
@@ -725,8 +746,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 @Override
                 public void onSuccess(ArrayList<Media> list) {
                     if(list!= null && !list.isEmpty()){
-                        if(callback != null)
+                        if(callback != null){
                             callback.getChannelPlaylist(list);
+                        }
                         //may be this is for fetching next page.
                         //Already playlist is playing.No need to start play
                         if(!isPlaylistPlaying){
@@ -762,9 +784,14 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mLogger.debug(TAG+" Error during playback");
             }
             reset();
-            if (mPlayerCallback != null)
+            if (mPlayerCallback != null){
                 mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
-
+            }
+            if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
+                    && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                mCurrentPlayPos++;
+                mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+            }
         }
 
         /**
@@ -908,8 +935,14 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         if(mPlayerView.mPlayerState == PlayerState.paused){
             mPlayerView.pause();
         }else if(mPlayerView.mPlayerState == PlayerState.completed){
-            if(mPlayerView.getDuration() == -1)
+            if(mPlayerView.getDuration() == -1){
                 mPlayerView.stopPlayback();
+            }
+            if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
+                    && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                mCurrentPlayPos++;
+                mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+            }
         }
         else{
             final String str3gp = "3gp";
@@ -974,10 +1007,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
                     if(mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
                         mCurrentPlayPos++;
-                        if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
-                            mPlayerView.stopPlayback();
-                            mPlayerView.mPlayerState = PlayerState.stopped;
-                        }
+                        reset();
                         mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
                     }
                 }
@@ -997,10 +1027,22 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         if (mLogger != null) {
             mLogger.debug(TAG+" Reset Called");
         }
-        if(mPlayerView !=null){
-            mPlayerView.stopPlayback();
-            mPlayerView.setVideoURI(null);
+        try {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(mPlayerView !=null){
+                        mPlayerView.stopPlayback();
+                        mPlayerView.setVideoURI(null);
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            if (mPlayerCallback != null){
+                mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
+            }
         }
+        
         mUri = null;
         if(mPlayerView !=null){
             mPlayerView.mPlayerState = PlayerState.stopped;
