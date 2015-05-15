@@ -260,7 +260,12 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
         if(mPlayerFragment != null){
             if(what == Constants.Message.status.ordinal()){
                 if(extra == Constants.PlayerState.completed.ordinal()){
-                    mPlayerFragment.playCompleted();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPlayerFragment.playCompleted();
+                        }
+                    });
                 }else{
                     mPlayerFragment.showProgress(true,msg);
                 }
@@ -269,7 +274,6 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
                 mPlayerFragment.hide();
                 mPlayerFragment.showProgress(false,null);
                 mPlayerFragment.showMessage(msg);
-                
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

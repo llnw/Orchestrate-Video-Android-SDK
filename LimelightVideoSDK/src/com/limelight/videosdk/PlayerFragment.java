@@ -942,6 +942,9 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                     && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
                 mCurrentPlayPos++;
                 mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                if(mPlayerCallback!= null){
+                    mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                }
             }
         }
         else{
