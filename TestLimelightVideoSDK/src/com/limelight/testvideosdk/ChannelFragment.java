@@ -267,4 +267,13 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(mChannels != null){
+            mChannels.clear();
+            mChannels = null;
+        }
+    }
 }

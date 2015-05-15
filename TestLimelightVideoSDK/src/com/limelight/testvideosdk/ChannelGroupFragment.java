@@ -255,4 +255,13 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(mGroups != null){
+            mGroups.clear();
+            mGroups = null;
+        }
+    }
 }

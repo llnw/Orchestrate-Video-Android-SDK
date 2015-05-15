@@ -303,4 +303,13 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(mMedias != null){
+            mMedias.clear();
+            mMedias = null;
+        }
+    }
 }

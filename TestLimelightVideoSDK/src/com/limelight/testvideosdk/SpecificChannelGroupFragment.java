@@ -297,4 +297,13 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(mChannelList != null){
+            mChannelList.clear();
+            mChannelList = null;
+        }
+    }
 }
