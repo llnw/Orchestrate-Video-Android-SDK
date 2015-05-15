@@ -406,6 +406,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             mCurrentPlayPosition = -1;
             mChannelPlayListView.setVisibility(View.GONE);
         }
+        mIsPlaylistPlaying = true;
         mPlayListNameLayout.setVisibility(View.VISIBLE);
         mPlayListView.setVisibility(View.VISIBLE);
         mPlayLayout.setVisibility(View.GONE);
@@ -438,7 +439,6 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View item, int position, long arg3) {
-        mIsPlaylistPlaying = true;
         switch(arg0.getId()){
         case R.id.playlist:
         mCurrentPlayPosition = position;
