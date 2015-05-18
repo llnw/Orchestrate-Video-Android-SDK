@@ -282,6 +282,7 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
                 });
             }
             else if(what == Constants.Message.progress.ordinal()){
+                mPlayerFragment.hide();
                 mPlayerFragment.showProgress(false,null);
                 mPlayerFragment.showProgressDialog(extra);
             }

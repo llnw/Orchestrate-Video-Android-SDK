@@ -100,6 +100,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private boolean mIsAutoPlay = true;
     private int mCurrentPlayPos;
     private boolean isPlaylistPlaying;
+    private boolean isReporting = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -134,6 +135,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         mPlayerView.stopPlayback();
                         mPlayerView.mPlayerState = PlayerState.stopped;
                     }
+                    isReporting = false;
                 }catch(Exception ex){
                     if(ex != null){
                         mLogger.error(ex.getMessage());
@@ -812,7 +814,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 }
             } else{
                 mPlayerView.start();
-
                 if (mLogger != null) {
                     mLogger.info("Player started");
                     mLogger.error("Player started");
@@ -993,6 +994,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             mLogger.debug(TAG+Constants.PLAYER_STATE_STRING+mPlayerView.mPlayerState.name());
         }
         hideMediaController();
+        isReporting = true;
     }
 
     @Override
@@ -1134,17 +1136,23 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 
     @Override
     public void onMediaControllerPlay(final long position) {
-        mReporter.sendPlayWithPosition(position,mMediaId,null);
+        if(isReporting){
+            mReporter.sendPlayWithPosition(position,mMediaId,null);
+        }
     }
 
     @Override
     public void onMediaControllerPause(final long position) {
-        mReporter.sendPauseWithPosition(position,mMediaId,null);
+        if(isReporting){
+            mReporter.sendPauseWithPosition(position,mMediaId,null);
+        }
     }
 
     @Override
     public void onMediaControllerSeek(long positionBefore,long positionAfter) {
-        mReporter.sendSeekWithPositionBefore(positionBefore, positionAfter,mMediaId,null);
+        if(isReporting){
+            mReporter.sendSeekWithPositionBefore(positionBefore, positionAfter,mMediaId,null);
+        }
     }
 
     @Override

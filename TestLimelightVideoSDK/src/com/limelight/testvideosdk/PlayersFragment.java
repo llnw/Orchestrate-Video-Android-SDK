@@ -183,6 +183,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
 
                 @Override
                 public void onSuccess(ArrayList<Encoding> encodingList) {
+                    showProgress(false,null);
                     showEncodingDialog(encodingList, contentService);
                 }
             });
@@ -234,6 +235,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                         //This content service object is passed from Media or ALL media tab.
                         mControl.play(mMediaInfo, svc);//used with delivery
                     else{
+                        showProgress(true, "Fetching Media From Server");
                         getAllEncodings(mMediaInfo, svc);
                     }
                 }

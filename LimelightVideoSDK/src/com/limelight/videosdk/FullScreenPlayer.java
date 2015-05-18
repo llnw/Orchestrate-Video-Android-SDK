@@ -33,6 +33,7 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
     private AnalyticsReporter mReporter;
     private String mMediaId;
     private ProgressBar mProgress;
+    private boolean isReporting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,22 +89,28 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
 
     @Override
     public void onMediaControllerPlay(final long position) {
-        if(mMediaId!= null){
-            mReporter.sendPlayWithPosition(position,mMediaId,null);
+        if(isReporting){
+            if(mMediaId!= null){
+                mReporter.sendPlayWithPosition(position,mMediaId,null);
+            }
         }
     }
 
     @Override
     public void onMediaControllerPause(final long position) {
-        if(mMediaId!= null){
-            mReporter.sendPauseWithPosition(position,mMediaId,null);
+        if(isReporting){
+            if(mMediaId!= null){
+                mReporter.sendPauseWithPosition(position,mMediaId,null);
+            }
         }
     }
 
     @Override
     public void onMediaControllerSeek(final long beforePosition, final long afterPosition) {
-        if(mMediaId!= null){
-            mReporter.sendSeekWithPositionBefore(beforePosition, afterPosition,mMediaId,null);
+        if(isReporting){
+            if(mMediaId!= null){
+                mReporter.sendSeekWithPositionBefore(beforePosition, afterPosition,mMediaId,null);
+            }
         }
     }
 
@@ -126,10 +133,14 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
             close(mPosition);
         }
         else{
-            mPlayerView.seekTo(mPosition);
+            isReporting = false;
+            if(mPlayerView.canSeekBackward() || mPlayerView.canSeekForward()){
+                mPlayerView.seekTo(mPosition);
+            }
             if(mPlayerView.mPlayerState == PlayerState.playing){
                 mPlayerView.start();
             }
+            isReporting = true;
             mProgress.setVisibility(View.GONE);
         }
     }
@@ -162,5 +173,15 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         mPlayerView = null;
         mLogger = null;
         mReporter = null;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mPlayerView != null && mPlayerView.mPlayerState != PlayerState.stopped){
+            mPosition = mPlayerView.getCurrentPosition();
+        }else{
+            mPosition = 0;
+        }
+        close(mPosition);
     }
 }

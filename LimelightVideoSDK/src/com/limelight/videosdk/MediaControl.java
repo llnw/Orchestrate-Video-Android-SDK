@@ -38,20 +38,29 @@ class MediaControl extends MediaController{
     @Override 
     public void setAnchorView(final View view) {
         super.setAnchorView(view);
-        final Button searchButton = new Button(mContext);
-        searchButton.setOnClickListener(new OnClickListener() {
+        OnClickListener listener = new OnClickListener() {
             @Override
             public void onClick(final View view) {
                 if(mIsFullScreen){
-                    if(mFullScreenCallback!=null)
+                    if(mFullScreenCallback!=null){
                         mFullScreenCallback.fullScreen();
+                    }
                 }
                else{
-                   if(mFullScreenCallback !=null)
+                   if(mFullScreenCallback !=null){
                        mFullScreenCallback.closeFullScreen();
+                   }
                }
             }
-        });
+        };
+        final Button searchButton = new Button(mContext);
+        searchButton.setOnClickListener(listener);
+        FrameLayout container = new FrameLayout(mContext);
+        container.setOnClickListener(listener);
+        final FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(60, 50);
+        containerParams.gravity = Gravity.RIGHT;
+        containerParams.rightMargin = 30;
+        containerParams.topMargin = 2;
         final ShapeDrawable drawable = new ShapeDrawable(new RectShape());
         drawable.getPaint().setColor(Color.WHITE);
         searchButton.setBackgroundDrawable(drawable);
@@ -59,7 +68,7 @@ class MediaControl extends MediaController{
         params.gravity = Gravity.RIGHT;
         params.rightMargin = 30;
         params.topMargin = 20;
-        addView(searchButton, params);
+        container.addView(searchButton, params);
         //add a vertical bar to view
         final View rightVerticalBar = new View(mContext);
         rightVerticalBar.setBackgroundColor(Color.BLACK);
@@ -67,7 +76,7 @@ class MediaControl extends MediaController{
         rightVerticalBarParams.gravity = Gravity.RIGHT;
         rightVerticalBarParams.rightMargin = 33;
         rightVerticalBarParams.topMargin = 22;
-        addView(rightVerticalBar, rightVerticalBarParams);
+        container.addView(rightVerticalBar, rightVerticalBarParams);
         //add a vertical bar to view
         final View leftVerticalBar = new View(mContext);
         leftVerticalBar.setBackgroundColor(Color.BLACK);
@@ -75,7 +84,8 @@ class MediaControl extends MediaController{
         leftVerticalBarParams.gravity = Gravity.RIGHT;
         leftVerticalBarParams.rightMargin = 55;
         leftVerticalBarParams.topMargin = 22;
-        addView(leftVerticalBar,leftVerticalBarParams);
+        container.addView(leftVerticalBar,leftVerticalBarParams);
+        addView(container,containerParams);
     }
 
     /**
