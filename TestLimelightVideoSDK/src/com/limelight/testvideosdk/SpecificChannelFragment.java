@@ -164,7 +164,7 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
         Bundle b = new Bundle();
         b.putBoolean("Refresh", true);
         if(mChannelId != null){
-            getActivity().getSupportLoaderManager().restartLoader(13, null, this);
+            getActivity().getSupportLoaderManager().restartLoader(13, b, this);
         }
     }
 

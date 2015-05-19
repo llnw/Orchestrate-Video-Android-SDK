@@ -72,7 +72,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_player, container,false);
         mEdit = (SearchView) rootView.findViewById(R.id.edit);
-        mLocalfileText = (TextView) rootView.findViewById(R.id.localFileName);////findViewById
+        mLocalfileText = (TextView) rootView.findViewById(R.id.localFileName);
         Button choose = (Button) rootView.findViewById(R.id.choose);
         choose.setOnClickListener(new OnClickListener() {
             @Override
