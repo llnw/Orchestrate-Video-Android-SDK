@@ -6,7 +6,7 @@ Feature: Player Control Bar
          | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
          | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
          | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
-        When I play the "Amazing Underwater" video from ALL MEDIA with "automatic" encoding
+        When I play the "Flash_HLS" video from ALL MEDIA with "automatic" encoding
         Then  the player should have following controls -
             | controls             |
             | player-elapsed-time  |
@@ -18,7 +18,7 @@ Feature: Player Control Bar
          | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
          | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
          | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
-        When I play the "Adobe" video from ALL MEDIA with "automatic" encoding
+        When I play the "Flash_HLS" video from ALL MEDIA with "automatic" encoding
         Then  the player should have following controls -
             | controls              |
             | player-video-duration |
@@ -30,7 +30,7 @@ Feature: Player Control Bar
          | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
          | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
          | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
-        When I play the "Amazing Underwater" video from ALL MEDIA with "automatic" encoding
+        When I play the "Flash_HLS" video from ALL MEDIA with "automatic" encoding
         Then  the player should have following controls -
             | controls              |
             | player-pause-button   |
@@ -47,12 +47,12 @@ Feature: Player Control Bar
      | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
      | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
-      When I play the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding
-       And I seek-2:00 the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding
+      When I play the "local" video from Downloads/testLocalMedia.mp4 with "local" encoding
+       And I seek-2:00 the "local" video from Downloads/testLocalMedia.mp4 with "local" encoding
        And I apply home-button press on the application
        And I apply app-icon press on the device
       Then player should continue-playing the playback from file to duration xx:xx in play state
-      When I pause the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding
+      When I pause the "local" video from Downloads/testLocalMedia.mp4 with "local" encoding
        And I apply home-button press on the application
        And I apply app-icon press on the device
       Then player should remain-pause the playback from file to duration xx:xx in pause state
@@ -63,17 +63,17 @@ Feature: Player Control Bar
      | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
      | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
-      When I play the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding
-       And I seek-2:00 the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding
+      When I play the "local" video from Downloads/testLocalMedia.mp4 with "local" encoding
+       And I seek-2:00 the "local" video from Downloads/testLocalMedia.mp4 with "local" encoding
        And I apply screen orientation on the device
       Then player should play the playback from file to duration 00:00 in play state
       When I apply screen orientation on the device
       Then player should play the playback from file to duration 00:00 in play state
-      When I pause the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding
-       And I seek-2:00 the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding
+      When I pause the "local" video from Downloads/testLocalMedia.mp4 with "local" encoding
+       And I seek-2:00 the "local" video from Downloads/testLocalMedia.mp4 with "local" encoding
        And I apply screen orientation on the device
       Then player should pause the playback from file to duration 00:00 in pause state
-      When I resume the "local" video from Downloads/tGsMo2013-1.mp4 with "local" encoding
+      When I resume the "local" video from Downloads/testLocalMedia.mp4 with "local" encoding
        And I apply screen orientation on the device
       Then player should play the playback from file to duration 00:00 in play state
        And exit from the application

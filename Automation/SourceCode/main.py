@@ -21,7 +21,7 @@ JSON_OUT_FILE_NAME= "%s_json_out.json" % FILE_NAME_EXTN
 HTML_REPORT_FILE_NAME = "report-%s.html" % FILE_NAME_EXTN
 
 # comment below line if you want to see the output in terminal
-#sys.stdout = open(CMD_OUT_FILE_NAME, 'w')
+sys.stdout = open(CMD_OUT_FILE_NAME, 'w')
 
 
 

@@ -1,3 +1,4 @@
+# pylint: disable=W0703,W0612,W0614,W0142,C0103,R0912,R0915
 """
 #-------------------------------------------------------------------------------
 # Name       :  limelight_mod
@@ -11,7 +12,7 @@ import re
 import os
 import datetime
 from modules.appium_driver import Driver
-from modules.logger import info, error, warning, exception, success, fail
+from modules.logger import info, error, warning, success
 from modules.constant import *
 from modules import exception_mod
 from modules.OpenCvLib import OpenCvLibrary
@@ -28,6 +29,21 @@ class Limelight(object):
     """
     def __init__(self):
         self.__obj = None
+
+    @exception_mod.handle_exception
+    def uncheck_delivery(self):
+        """
+        Uncheck the delivery option if it is check
+        """
+        self.select_tab("PLAYER")
+        ele_obj = self.__obj.get_element( "check-box",
+                                          generic_param=("Delivery",))
+        if ele_obj.get_attribute('checked') == 'true':
+            ele_obj.click()
+        self.select_tab("SETTINGS")
+
+
+
 
     @exception_mod.handle_exception
     def launch_app(self):
@@ -90,7 +106,7 @@ class Limelight(object):
 
         info("SELECTED TAB => %s" % (tab_name))
         try:
-            self.__obj.scrol_bottom_to_top(retry=1)
+            self.__obj.scrol_bottom_to_top(retry=3)
         except Exception as exc:
             warning("While reset the scroll to top :%s"%str(exc))
 
@@ -289,7 +305,7 @@ class Limelight(object):
         info("rotating the device")
         change_from, change_to, out_put = self.__obj.rorate_device()
         info(str(out_put))
-        success("orientation changed from %s to %s"%(change_from, change_to))
+        info("orientation changed from %s to %s"%(change_from, change_to))
 
     def wait_for_app_to_launch(self):
         """
@@ -410,12 +426,24 @@ class Limelight(object):
         return reduce( lambda v1, v2: v1 and v2,
                        map(lambda ei: ei in list1, list2))
 
+    @staticmethod
+    def compare_two_list_find_diff(search_into_list, search_from_list):
+        """ List comparison helper function"""
+        tmp_search_into_list = search_into_list[:]
+        difference = []
+        for ech_elm in search_from_list:
+            if ech_elm in tmp_search_into_list:
+                tmp_search_into_list.remove(ech_elm)
+            else: difference.append(ech_elm)
+        return difference == [], difference
+
+
+
     @exception_mod.handle_exception
     def check_icon(self, check_ele, verify_data, should_equal):
-        """
-        """
+        """ To check the icon of any data """
         if check_ele.lower().strip().endswith(" tab"):
-            tab_name = re.search( "(\S+)\s+TAB", check_ele,
+            tab_name = re.search( r"(\S+)\s+TAB", check_ele,
                                   flags=re.IGNORECASE).group(1)
             self.select_tab(tab_name)
 
@@ -432,10 +460,10 @@ class Limelight(object):
                                       scrn_sht_file,
                                       os.path.join(ICON_DIR, icon_name))
                         if stat and should_equal:
-                            success("icon matched: %s - %s" % \
+                            info("icon matched: %s - %s" % \
                                  (element_text, icon_name))
                         elif not stat and not should_equal:
-                            success("icon not matched: %s - %s" % \
+                            info("icon not matched: %s - %s" % \
                                  (element_text, icon_name))
                         elif should_equal:
                             raise Exception("icon not matched: %s - %s" % \
@@ -464,7 +492,7 @@ class Limelight(object):
         """
         # If we checking the data of a tab
         if check_ele.lower().strip().endswith(" tab"):
-            tab_name = re.search( "(\S+)\s+TAB", check_ele,
+            tab_name = re.search( r"(\S+)\s+TAB", check_ele,
                                   flags=re.IGNORECASE).group(1)
 
             self.select_tab(tab_name)
@@ -480,11 +508,11 @@ class Limelight(object):
 
             if error_msg.lower().strip() == verify_data[0].lower().strip() \
               and should_equal:
-                success(exception_mod.equal_success_msg % error_msg)
+                info(exception_mod.equal_success_msg % error_msg)
 
             elif error_msg.lower().strip() != verify_data[0].lower().strip() \
               and not should_equal:
-                success(exception_mod.not_equal_success_msg % ( verify_data,
+                info(exception_mod.not_equal_success_msg % ( verify_data,
                                                               error_msg))
             elif should_equal :
                 raise exception_mod.NotEqualException(verify_data, error_msg)
@@ -499,22 +527,31 @@ class Limelight(object):
         """ match the data from device with the data from feature file"""
         # If we checking the data of a tab
         if check_ele.lower().strip().endswith(" tab"):
-            tab_name = re.search( "(\S+)\s+TAB", check_ele,
+            tab_name = re.search( r"(\S+)\s+TAB", check_ele,
                                   flags=re.IGNORECASE).group(1)
 
             self.select_tab(tab_name)
+            for ech_try in range(4):
+                try:
+                    data_got = self.scrol_top_to_bottom(ret_all_data=True)
+                    break
+                except Exception as exc:
+                    info(str(exc))
+                    self.__obj.wait_for(LONG_WAIT)
+            else:
+                raise Exception("failed to collect data from %s tab"% tab_name)
 
-            data_got = self.scrol_top_to_bottom(ret_all_data=True)
             data_got = [] if data_got == None else data_got
-            stat = self.compare_two_list(data_got, verify_data)
+            stat, diff = self.compare_two_list_find_diff(data_got, verify_data)
             if should_equal and not stat:
-                raise exception_mod.NotEqualException(verify_data, data_got)
+                raise exception_mod.NotEqualException(verify_data, data_got,
+                                                      diff)
             elif not should_equal and stat:
                 raise exception_mod.EqualException(data_got)
             elif should_equal and stat:
-                success(exception_mod.equal_success_msg%data_got)
+                info(exception_mod.equal_success_msg%data_got)
             elif not should_equal and not stat:
-                success(exception_mod.not_equal_success_msg%( verify_data,
+                info(exception_mod.not_equal_success_msg%( verify_data,
                                                               data_got))
             else:
                 raise exception_mod.GlueCodeNotImplemented
@@ -545,15 +582,16 @@ class Limelight(object):
             data_got = self.scrol_top_to_bottom( ret_all_data=True,
                                                  scroll_ele_typ="popup")
             data_got = [] if data_got == None else data_got
-            stat = self.compare_two_list(data_got, verify_data)
+            stat, diff = self.compare_two_list_find_diff(data_got, verify_data)
             if should_equal and not stat:
-                raise exception_mod.NotEqualException(verify_data, data_got)
+                raise exception_mod.NotEqualException(verify_data, data_got,
+                                                      diff)
             elif not should_equal and stat:
                 raise exception_mod.EqualException(data_got)
             elif should_equal and stat:
-                success(exception_mod.equal_success_msg%data_got)
+                info(exception_mod.equal_success_msg%data_got)
             elif not should_equal and not stat:
-                success(exception_mod.not_equal_success_msg%(verify_data,
+                info(exception_mod.not_equal_success_msg%(verify_data,
                                                              data_got))
             else:
                 raise exception_mod.GlueCodeNotImplemented
@@ -604,7 +642,7 @@ class Limelight(object):
                 # Click on the encoding element
                 self.click_on("dropdown", generic_param=(encoding_name, ))
 
-    def wait_for_any_alert_popup_get_close(self):
+    def wait_for_alert_popup_close(self):
         """
         Wait for the alert popup get close
         """
@@ -623,12 +661,11 @@ class Limelight(object):
         else:
             raise Exception("alert popup still visible")
 
-    def wait_for_media_fetch_from_server(self):
+    def wait_for_media_fetch(self):
         """
         Wait for the media fetched from the limelight server,
         Here we are checking if the progress bar has disabled or not
         """
-
         for i in xrange(30):
             try:
                 if self.is_item_visible("alert-msg") and \
@@ -701,6 +738,8 @@ class Limelight(object):
             media_source : "menulink/file-name"/url/media-id/media-tab
             encoding_type : encoding-name/automatic/no-select
         """
+        global SCENARIO_DATA
+
         ret_data = {'bfr_elapsed_time': None,
                     'aftr_elapsed_time': None,
                     'encoding_type': encoding_type}
@@ -776,34 +815,38 @@ class Limelight(object):
                 self.go_to_tab_and_select_media(media_source, media_type)
 
             # wait for any alert popup like settings is fetched from server
-            self.wait_for_any_alert_popup_get_close()
+            self.wait_for_alert_popup_close()
 
             # Select the encoding from drop down
             self.select_encoding(encoding_type, media_type)
 
             # Check if the fetching media from server msg disappear
-            self.wait_for_media_fetch_from_server()
+            self.wait_for_media_fetch()
 
             # Check if the widevine download msg is displayer
             self.wait_for_offline_download(encoding_type, media_type)
 
             # wait for any alert popup like widevine rights
-            self.wait_for_any_alert_popup_get_close()
-
-            for ech_try in range(4):
+            self.wait_for_alert_popup_close()
+            last_msg = ""
+            for ech_try in range(10):
                 if self.is_item_visible('player-elapsed-time'):
                     try:
                         ret_data['aftr_elapsed_time'] = \
                           self.get_value('player-elapsed-time')
                         break
                     except Exception as ex:
-                        info(str(ex))
+                        last_msg = str(ex)
+                        info(last_msg)
                 try:
                     self.click_on("player")
                 except Exception as ex:
-                    info(str(ex))
+                    last_msg = str(ex)
+                    info(last_msg)
                     self.__obj.wait_for(2)
                 info("player elapsed time not found, retrying again")
+            else:
+                raise Exception(last_msg)
 
         elif opr.strip().lower() == "pause":
             for ech_try in range(3):
@@ -881,7 +924,7 @@ class Limelight(object):
                     warning("rewind button get invisible so quick")
                     continue
 
-        elif re.search("^seek-\d+:\d+$", opr.strip().lower()):
+        elif re.search(r"^seek-\d+:\d+$", opr.strip().lower()):
             seek_to_dur = opr.split("-")[1].split(':')
             seek_to_sec = int(seek_to_dur[0]) * 60 + int(seek_to_dur[1])
 
@@ -914,6 +957,73 @@ class Limelight(object):
                     warning("seek bar get invisible so quick")
                     continue
 
+        elif opr.strip().lower() == "completed":
+            num_of_retry = 10
+            while num_of_retry > 0:
+                try:
+                    if not self.is_item_visible("player-video-duration"):
+                        self.click_on("player")
+                except Exception as ex:
+                    info(str(ex))
+                    num_of_retry -= 1
+                    continue
+
+                for ech_try in range(4):
+                    try:
+                        tot_vdo_dur = self.get_value("player-video-duration")\
+                                      .split(':')
+                        elp_vdo_dur = self.get_value('player-elapsed-time')\
+                                      .split(':')
+                        break
+                    except Exception as ex :
+                        info(str(ex))
+                        self.click_on("player")
+                else:
+                    info("not able to get elapse time and total duration")
+                    info("retrying")
+                    continue
+
+                tot_vdo_sec = int(tot_vdo_dur[0]) * 60 + int(tot_vdo_dur[1])
+                elp_vdo_sec = int(elp_vdo_dur[0]) * 60 + int(elp_vdo_dur[1])
+                num_of_forward = (tot_vdo_sec - elp_vdo_sec)/15
+
+
+                try:
+                    if not self.is_item_visible("player-forward-button"):
+                        self.click_on("player")
+                except Exception as ex:
+                    info(str(ex))
+                    num_of_retry -= 1
+                    continue
+
+                for ech_forward in range(num_of_forward):
+                    for etry in range(3):
+                        try:
+                            self.click_on("player-forward-button")
+                            break
+                        except:
+                            self.click_on("player")
+                self.__obj.wait_for(LONG_WAIT)
+
+                try:
+                    if not self.is_item_visible("player-video-duration"):
+                        self.click_on("player")
+                except Exception as ex:
+                    info(str(ex))
+                    num_of_retry -= 1
+                    continue
+
+                if self.get_value("player-video-duration") == \
+                   self.get_value('player-elapsed-time'):
+                    info("video playback completed")
+                    break
+
+                # Retry again
+                num_of_retry -= 1
+            else:
+                raise Exception("not able to complete the video playback")
+
+
         elif opr.strip().lower() == "attempt-to-play":
             # If attempt-to-play has passed then
             # encoding_type should be "no-select"
@@ -941,6 +1051,39 @@ class Limelight(object):
 
         else:
             raise exception_mod.InvalidKeyWordUsed(operation=opr)
+
+        # For not selecting any element there should not be event save
+        if encoding_type.strip().lower() != "no-select":
+            # Register the event for the action
+            if media_type.lower().strip() != 'local':
+                # get the media id
+                media = self.get_value("media-id-text-box")
+            else:
+                media = media_source.split("/")[-1]
+            ky = (media, encoding_type)
+            op_key_list = []
+            opr = opr.lower().strip()
+            if opr == "play" :
+                op_key_list = ['player_loaded', 'play']
+            elif opr == "pause" :
+                op_key_list = ['pause']
+            elif opr == "resume" :
+                op_key_list = ['resume']
+            elif 'seek-' in opr:
+                op_key_list = ['seek']
+            elif opr == "completed" :
+                op_key_list = ['completed']
+
+            if SCENARIO_EVENT_KY not in SCENARIO_DATA:
+                SCENARIO_DATA[SCENARIO_EVENT_KY] = {}
+
+            if ky not in SCENARIO_DATA["SCENARIO_WISE_PLAYER_EVENT"]:
+                SCENARIO_DATA["SCENARIO_WISE_PLAYER_EVENT"][ky] = {
+                   'player_loaded' : 0, 'play' : 0, 'pause': 0, 'seek': 0,
+                   'resume': 0, 'completed': 0
+                }
+            for ech_op in op_key_list:
+                SCENARIO_DATA["SCENARIO_WISE_PLAYER_EVENT"][ky][ech_op] += 1
 
         return ret_data
 
@@ -983,8 +1126,8 @@ class Limelight(object):
                 info("got elapse time=%s, passed %s" % (elapse_time,
                                                         duration))
             else:
-                raise Exception("got elapse time=%s; expected=%s" % (elapse_time,
-                                                                     duration))
+                raise Exception("got elapse time=%s; expected=%s" % \
+                                (elapse_time, duration))
 
         return elapse_time
 
@@ -995,7 +1138,7 @@ class Limelight(object):
         screen_shot = self.tk_screen_shot_of_player(wth_plyr_cntrl=True)
         try:
             if OpenCvLibrary.search_picture_in_picture(screen_shot, img_btn):
-                success("%s icon present in screen"%btn)
+                info("%s icon present in screen"%btn)
         except Exception as ex:
             error(str(ex))
             raise Exception("%s btn icon chk failed in screen." % btn)
@@ -1047,7 +1190,7 @@ class Limelight(object):
                                     *orientation_map[str(current_orientation)])
         return screen_shot
 
-    def check_player_is_playing(self, data, skip_step=[]):
+    def check_player_is_playing(self, data, skip_step=None):
         """
         @args :
               data    : data from previous grammar
@@ -1060,6 +1203,7 @@ class Limelight(object):
         5. Verify the screen shots are different
         6. Check elapsed time has changed
         """
+        skip_step = [] if skip_step == None else skip_step
         bfr_elapsed_time = data['bfr_elapsed_time']
         aftr_elapsed_time = data['aftr_elapsed_time']
         if not aftr_elapsed_time:
@@ -1091,13 +1235,13 @@ class Limelight(object):
                 raise Exception(msg %(sc_sht, sc_sht1))
             else:
                 msg = "screen-shots are diff:: %s :: %s"
-                success(msg %(sc_sht, sc_sht1))
+                info(msg %(sc_sht, sc_sht1))
 
         if '6' not in skip_step:
             # Check elapsed time has changed
             self.verify_elapsed_time(aftr_elapsed_time, shud_diff=True)
 
-    def check_player_is_paused(self, data, skip_step=[]):
+    def check_player_is_paused(self, data, skip_step=None):
         """
         @args :
               data    : data from previous grammar
@@ -1112,6 +1256,7 @@ class Limelight(object):
         7. Check elapsed time has not changed
 
         """
+        skip_step = [] if skip_step == None else skip_step
         bfr_elapsed_time = data['bfr_elapsed_time']
         aftr_elapsed_time = data['aftr_elapsed_time']
 
@@ -1144,7 +1289,7 @@ class Limelight(object):
             else:
                 msg = "on click pause btn elapse time stop." + \
                       " prev: %s, after: %s"
-                success(msg % (bfr_elapsed_time, aftr_elapsed_time))
+                info(msg % (bfr_elapsed_time, aftr_elapsed_time))
 
         # Check play button icon
         if '2' not in skip_step:
@@ -1167,7 +1312,7 @@ class Limelight(object):
         if '6' not in skip_step:
             info("verify screen shots are same")
             if OpenCvLibrary.search_picture_in_picture(sc_sht1, sc_sht):
-                success("screen shots are same: %s :: %s" % (sc_sht, sc_sht1))
+                info("screen shots are same: %s :: %s" % (sc_sht, sc_sht1))
             else:
                 raise Exception("screen shots are not same: %s :: %s" % (sc_sht,
                                                                        sc_sht1))
@@ -1176,7 +1321,7 @@ class Limelight(object):
         if '7' not in skip_step:
             self.verify_elapsed_time(aftr_elapsed_time, shud_diff=False)
 
-    def check_player_is_resumed(self, data, skip_step=[]):
+    def check_player_is_resumed(self, data, skip_step=None):
         """
         @args :
               data : data from previous grammar
@@ -1188,11 +1333,12 @@ class Limelight(object):
         5. Verify the screen shots are different
         6. Check elapsed time has changed
         """
+        skip_step = [] if skip_step == None else skip_step
         #bfr_elapsed_time = data['bfr_elapsed_time']
         #aftr_elapsed_time = data['aftr_elapsed_time']
         self.check_player_is_playing(data, skip_step=skip_step)
 
-    def check_player_is_forwarded(self, data, state, skip_step=[]):
+    def check_player_is_forwarded(self, data, state, skip_step=None):
         """
         @args :
               data    : data from previous grammar
@@ -1206,6 +1352,7 @@ class Limelight(object):
         6. verify the screen shot are different/same according to player state
         7. Check elapsed time has changed/remain same according to play/pause
         """
+        skip_step = [] if skip_step == None else skip_step
         bfr_elapsed_time = data['bfr_elapsed_time']
         aftr_elapsed_time = data['aftr_elapsed_time']
 
@@ -1221,7 +1368,7 @@ class Limelight(object):
            < FORWARD_SEC + 7:
             msg = "on click forward btn elapse time change as expect." + \
                   " prev: %s, after: %s"
-            success(msg % (bfr_elapsed_time, aftr_elapsed_time))
+            info(msg % (bfr_elapsed_time, aftr_elapsed_time))
         else:
             msg = "on click forward btn elapse time don't change as expect." + \
                   " prev: %s, after: %s"
@@ -1234,7 +1381,7 @@ class Limelight(object):
             skip_step.append('1')
             self.check_player_is_paused( data, skip_step=skip_step)
 
-    def check_player_is_reversed(self, data, state, skip_step=[]):
+    def check_player_is_reversed(self, data, state, skip_step=None):
         """
         @args :
               data    : data from previous grammar
@@ -1248,6 +1395,7 @@ class Limelight(object):
         6. verify the screen shot are different/same according to player state
         7. Check elapsed time has changed/remain same according to play/pause
         """
+        skip_step = [] if skip_step == None else skip_step
         bfr_elapsed_time = data['bfr_elapsed_time']
         aftr_elapsed_time = data['aftr_elapsed_time']
 
@@ -1264,7 +1412,7 @@ class Limelight(object):
            -REVERSE_SEC + 5:
             msg = "on click forward btn elapse time change as expect." + \
                   " prev: %s, after: %s"
-            success(msg % (bfr_elapsed_time, aftr_elapsed_time))
+            info(msg % (bfr_elapsed_time, aftr_elapsed_time))
         else:
             msg = "on click forward btn elapse time don't change as expect." + \
                   " prev: %s, after: %s"
@@ -1277,7 +1425,7 @@ class Limelight(object):
             skip_step.append('1')
             self.check_player_is_paused(data, skip_step=skip_step)
 
-    def check_player_is_seeking(self, duration, data, state, skip_step=[]):
+    def check_player_is_seeking(self, duration, data, state, skip_step=None):
         """
         @args :
               duration: duration that passed from front end
@@ -1292,6 +1440,7 @@ class Limelight(object):
         6. verify the screen shot are different/same according to player state
         7. Check elapsed time has changed/remain same according to play/pause
         """
+        skip_step = [] if skip_step == None else skip_step
         aftr_elapsed_time = data['aftr_elapsed_time']
 
         # Verify elapsed time, aftr_elapsed_time ~= duration
@@ -1305,7 +1454,7 @@ class Limelight(object):
         if abs(aftr_elapsed_time_sec - duration_sec) < 6:
             msg = "verify elapsed time is seek to time." + \
                   " elapsed time: %s, duration: %s"
-            success(msg % (aftr_elapsed_time, duration))
+            info(msg % (aftr_elapsed_time, duration))
         else:
             msg = "verify failed elapsed time is seek time." + \
                   " elapsed time: %s, duration: %s"
@@ -1446,7 +1595,7 @@ class Limelight(object):
                     raise Exception("Player is loaded")
                 else:
                     self.__obj.wait_for(SORT_WAIT)
-            success("Player does not load")
+            info("Player does not load")
 
     @exception_mod.handle_exception
     def perform_device_operations(self, action_itm, perform, target):
@@ -1495,6 +1644,10 @@ class Limelight(object):
         elif target == "following" and media_names:
             for ech_media_name in media_names:
                 self.click_on("add-to-playlist-btn", (ech_media_name, ))
+                try:
+                    self.__obj.scrol_bottom_to_top(retry=3)
+                except Exception as exc:
+                    warning("While reset the scroll to top :%s"%str(exc))
         else:
             raise exception_mod.InvalidCombination(target=target,
                                                    media_names=media_names)
@@ -1530,7 +1683,8 @@ class Limelight(object):
                 except Exception as ex :
                     info(str(ex))
                     break
-                if not data: break
+                if not data:
+                    break
                 info("resetting the scroll")
                 self.__obj.scrol_bottom_to_top(retry=8)
                 info("resetting the scroll done")
@@ -1539,7 +1693,8 @@ class Limelight(object):
                     if ech_media_name in remove_item:
                         continue
                     remove_item.append(ech_media_name)
-                    self.click_on("remove-from-playlist-btn", (ech_media_name, ))
+                    self.click_on("remove-from-playlist-btn",
+                                  (ech_media_name, ))
                     try:
                         self.__obj.scrol_bottom_to_top(retry=8)
                     except:
@@ -1628,7 +1783,7 @@ class Limelight(object):
                     info("media %s -- present" % ech_media_name)
                 else:
                     raise Exception("media %s -- not present" % ech_media_name)
-            success("All media from %s tab is present in playlist" % \
+            info("All media from %s tab is present in playlist" % \
                     source_tab_name)
 
         elif operation == "added" and target == "following" :
@@ -1653,7 +1808,7 @@ class Limelight(object):
                 else:
                     raise Exception("media %s -- not present" % ech_media_name)
 
-            success("All media from feature file is present in playlist")
+            info("All media from feature file is present in playlist")
 
         elif operation == "removed" and target == "all" :
             # Steps :
@@ -1671,7 +1826,7 @@ class Limelight(object):
             if playlist_data:
                 raise Exception("all media has not removed from play list")
             else:
-                success("all media has removed from play list")
+                info("all media has removed from play list")
 
         elif operation == "removed" and target == "following" :
             # Steps :
@@ -1692,7 +1847,7 @@ class Limelight(object):
                 else:
                     raise Exception("media %s :: present" % ech_media_name)
 
-            success("All media from feature file doesn't present in playlist")
+            info("All media from feature file doesn't present in playlist")
 
         else:
             raise exception_mod.InvalidCombination( target=target,
@@ -1700,3 +1855,21 @@ class Limelight(object):
                                             operation=operation,
                                             playlist_tab_name=playlist_tab_name,
                                             media_name=media_name)
+
+    @exception_mod.handle_exception
+    def check_notification(self, notification_type):
+        """
+        This will check the expected notification
+        @args :
+        notification_type : StartSession/Play/Pause/Seek/MediaComplete/expected
+         (expected : it will search the number of play pause seek etc operation
+          in this scenario and try to match with those)
+          :: currently implementation has been done only for "expected" keyword
+        """
+        if notification_type.lower().strip() == "expected":
+            msg = ""
+            for ech_ky, ech_val in SCENARIO_DATA.get(SCENARIO_EVENT_KY,
+                                                     {}).iteritems():
+                msg += "For %s expected value = %s ; " % \
+                       (str(ech_ky), str(ech_val))
+            raise exception_mod.NotEqualException(msg, "")

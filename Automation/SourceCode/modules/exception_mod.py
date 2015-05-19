@@ -1,4 +1,4 @@
-# pylint: disable=C0103,W0231
+# pylint: disable=C0103,W0231,W0703
 """
 #-------------------------------------------------------------------------------
 # Name       :  exception_mod
@@ -12,7 +12,7 @@
 """
 import traceback
 import sys
-from modules.logger import error
+from modules.logger import error, info
 
 # User defined messages
 glue_not_implmnt_static_msg = "Glue code not implemented."
@@ -40,8 +40,16 @@ def handle_exception(function):
              .join(traceback.format_exception(exc_type, exc_value,
                                               exc_traceback)))
             error ("Exception Occurred: %s" %str(ex))
-            args[0].exit_app()
-            raise
+            try:
+                img = args[0].take_screenshot()
+                info("check screen shot %s" % img)
+            except Exception as exc:
+                info("not able to take screen shot : %s" % str(exc))
+            try:
+                args[0].exit_app()
+            except Exception as exc :
+                info("not able to exit the app : %s" % str(exc))
+            raise Exception(str(ex))
     return wrapper
 
 class GlueCodeNotImplemented(Exception):
@@ -69,12 +77,16 @@ class InvalidKeyWordUsed(Exception):
 
 class NotEqualException(Exception):
     """Custom Exception Class"""
-    def __init__(self, expected, actual):
+    def __init__(self, expected, actual, diff=None):
         self.expected = expected
         self.actual = actual
+        self.diff = diff
 
     def __str__(self):
-        return not_equal_excp_msg % (self.expected, self.actual)
+        msg = not_equal_excp_msg % (self.expected, self.actual)
+        if self.diff:
+            msg += "::> DIFFERENCE = %s" % self.diff
+        return msg
 
 class EqualException(Exception):
     """Custom Exception Class"""

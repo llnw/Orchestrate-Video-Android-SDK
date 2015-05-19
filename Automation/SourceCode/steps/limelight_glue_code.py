@@ -23,30 +23,20 @@ register_type(optional=parse_optional)
 
 ret_data = {}
 
-def test_step(grammar_type, grammar):
-    """
-    The parametrized decorator function,
-    This should be placed on each grammar implementation
-    """
-    def the_function(function):
-        """This is inner decorator function"""
-        def wrapper(*args, **kwargs):
-            """ The wrapper function """
-            step = grammar_type.upper() +" "+ grammar % kwargs
-            try:
-                info("GRAMMAR STARTS : %s" % (step))
-                ret_control = function(*args, **kwargs)
-                success("GRAMMAR : %s \n\n" % step)
-                return ret_control
-            except Exception as ex:
-                fail("GRAMMAR: %s \n\n" % step)
-                raise
-        return wrapper
-    return the_function
+def test_step(function):
+    """This is inner decorator function"""
+    def wrapper(*args, **kwargs):
+        """ The wrapper function """
+        try:
+            ret_control = function(*args, **kwargs)
+            return ret_control
+        except Exception as ex:
+            raise
+    return wrapper
 
 
 @given('the application has launched')
-@test_step('given', 'the application has launched')
+@test_step
 def step_impl(context):
     """This will launch the application"""
     global LIME_LIGHT_OBJ
@@ -54,13 +44,13 @@ def step_impl(context):
         info("NO APP RUNNING, LAUNCHING THE APP.")
         LIME_LIGHT_OBJ = Limelight()
         LIME_LIGHT_OBJ.launch_app()
+        LIME_LIGHT_OBJ.uncheck_delivery()
     else:
         info("APP IS RUNNING FROM PREVIOUS SCENARIO, SO RE-USING IT.")
 
 @given('the application has launched with following ' + \
        'configuration in {tab_name} tab -')
-@test_step('given', 'the application has launched with following ' + \
-                    'configuration in %(tab_name)s tab')
+@test_step
 def step_impl(context, tab_name):
     """This will launch the application"""
     global LIME_LIGHT_OBJ
@@ -74,12 +64,14 @@ def step_impl(context, tab_name):
                                              'set', str(row['value']))
         for ech_tab in ['CHANNEL GROUPS', 'ALL CHANNELS', 'ALL MEDIA']:
             LIME_LIGHT_OBJ.perform_oper_on_tab(ech_tab, "refresh")
+
+        LIME_LIGHT_OBJ.uncheck_delivery()
     else:
         info("APP IS RUNNING FROM PREVIOUS SCENARIO, SO RE-USING IT.")
 
 
 @when('I {opr} {val} as value for {target_ele} in {tab_name} tab')
-@test_step('when', 'I %(opr)s %(val)s as value for %(target_ele)s in %(tab_name)s tab')
+@test_step
 def step_impl(context, opr, val, target_ele, tab_name):
     """
     @args :
@@ -93,7 +85,7 @@ def step_impl(context, opr, val, target_ele, tab_name):
     LIME_LIGHT_OBJ.set_select_value(tab_name, target_ele, opr, val)
 
 @when('I {opr} the {tab_name} tab')
-@test_step('when', 'I %(opr)s the %(tab_name)s tab')
+@test_step
 def step_impl(context, opr, tab_name):
     """
     @args :
@@ -104,7 +96,7 @@ def step_impl(context, opr, tab_name):
     LIME_LIGHT_OBJ.perform_oper_on_tab(tab_name, opr)
 
 @when('I {opr} the "{media_type}" video from {media_source} with "{encoding_type}" encoding')
-@test_step('when', 'I %(opr)s the "%(media_type)s" video from %(media_source)s with "%(encoding_type)s" encoding')
+@test_step
 def step_impl(context, opr, media_type, media_source, encoding_type):
     """
     @args :
@@ -121,7 +113,7 @@ def step_impl(context, opr, media_type, media_source, encoding_type):
     ret_data.update(tmp_dic)
 
 @when('I apply {action_itm} {perform} on the {target}')
-@test_step('when', 'I apply %(action_itm)s %(perform)s on the %(target)s')
+@test_step
 def step_impl(context, action_itm, perform, target):
     """
     @args :
@@ -134,9 +126,8 @@ def step_impl(context, action_itm, perform, target):
                                              perform.strip(),
                                              target.strip())
 
-
 @when('I {operation} {target} media in play list from {tab_name} tab{is_table:optional}')
-@test_step('when', 'I %(operation)s %(target)s media in play list from %(tab_name)s tab%(is_table)s')
+@test_step
 def step_impl(context, operation, target, tab_name, is_table):
     """
     @args :
@@ -156,9 +147,7 @@ def step_impl(context, operation, target, tab_name, is_table):
 
 @then('{target} media from {source_tab_name} tab gets {operation} in ' + \
       'play list of {playlist_tab_name} tab{is_table:optional}')
-@test_step('then', '%(target)s media from %(source_tab_name)s ' + \
-                   'tab gets %(operation)s in play list of ' + \
-                   '%(playlist_tab_name)s tab%(is_table)s')
+@test_step
 def step_impl( context, target, source_tab_name, operation,
                playlist_tab_name, is_table):
     """
@@ -181,9 +170,8 @@ def step_impl( context, target, source_tab_name, operation,
                                                   playlist_tab_name,
                                                   media_name)
 
-
 @then('value of {target_ele} in {page_name} tab should be {val}')
-@test_step('then', 'value of %(target_ele)s in %(page_name)s tab should be %(val)s')
+@test_step
 def step_impl(context, target_ele, page_name, val):
     """
     @args :
@@ -196,7 +184,7 @@ def step_impl(context, target_ele, page_name, val):
     LIME_LIGHT_OBJ.verify_value(page_name, target_ele, val)
 
 @then('the {check_ele} should {op} following {table_header} -')
-@test_step('then', 'the %(check_ele)s should %(op)s following %(table_header)s -')
+@test_step
 def step_impl(context, check_ele, op, table_header):
     """
     @args :
@@ -221,7 +209,7 @@ def step_impl(context, check_ele, op, table_header):
              should_equal)
 
 @then('player should {opr} the playback from {source_type} to duration {duration} in {state} state')
-@test_step('then', 'player should %(opr)s the playback from %(source_type)s to duration %(duration)s in %(state)s state')
+@test_step
 def step_impl(context, opr, source_type, duration, state):
     """
     @args :
@@ -234,8 +222,22 @@ def step_impl(context, opr, source_type, duration, state):
     global LIME_LIGHT_OBJ
     LIME_LIGHT_OBJ.check_player(opr, source_type, duration, state, ret_data)
 
+@then('the player should send {notification_type} notification')
+@test_step
+def step_impl(context, notification_type):
+    """
+    This will check the expected notification
+    @args :
+        notification_type : StartSession/Play/Pause/Seek/MediaComplete/expected
+        (expected : it will search the number of play pause seek etc operation
+        in this scenario and try to match with those)
+        :: currently implementation has been done only for "expected" keyword
+    """
+    global LIME_LIGHT_OBJ
+    LIME_LIGHT_OBJ.check_notification(notification_type)
+
 @then('exit from the application')
-@test_step('then', 'exit from the application')
+@test_step
 def step_impl(context):
     """ This will exit the application """
     global LIME_LIGHT_OBJ

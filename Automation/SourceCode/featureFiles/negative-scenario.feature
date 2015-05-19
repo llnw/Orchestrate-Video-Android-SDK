@@ -45,7 +45,7 @@ Feature: checking the negative scenario
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      
     When I set xxxxxxxxxxxxxxxxxxx as value for Organization ID in SETTINGS tab
-    And I play the "Now You See Me" video from ALL MEDIA with "Flash 128 X472kbps 268X640" encoding
+    And I play the "Flash_Only" video from ALL MEDIA with "Flash 96 X128kbps 264X640" encoding
     Then player should not play the playback from remote to duration 00:00 in play state
     And exit from the application
     
@@ -88,12 +88,12 @@ Feature: checking the negative scenario
      | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      
-    When I play the "Underwater Marine Life" video from ALL MEDIA with "Flash 128 X322kbps 240X426" encoding
+    When I play the "Flash_Only" video from ALL MEDIA with "Flash 10 X40kbps 240X580" encoding
     And I select the MEDIA tab
     And I select the PLAYER tab
     Then player should pause the playback from remote to duration 00:00 in pause state
-    When I resume the "Underwater Marine Life" video from ALL MEDIA with "Flash 128 X322kbps 240X426" encoding
-    And I pause the "Underwater Marine Life" video from ALL MEDIA with "Flash 128 X322kbps 240X426" encoding
+    When I resume the "Flash_Only" video from ALL MEDIA with "Flash 10 X40kbps 240X580" encoding
+    And I pause the "Flash_Only" video from ALL MEDIA with "Flash 10 X40kbps 240X580" encoding
     And I select the MEDIA tab
     And I select the PLAYER tab
     Then player should pause the playback from remote to duration 00:00 in pause state

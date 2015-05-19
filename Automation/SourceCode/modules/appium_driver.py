@@ -1,4 +1,4 @@
-# pylint: disable=W0703, W0612, C0301, C0103
+# pylint: disable=W0703,W0612,W0621,W0614,C0301,C0103,R0914,R0912
 """
 #-------------------------------------------------------------------------------
 # Name      :  appium_driver.py
@@ -289,7 +289,8 @@ class Driver(object):
             if ele_obj_list:
                 return ele_obj_list[int(ele_data['position']) - 1]
             else:
-                raise Exception("Element - %s not found."%ele)
+                raise Exception("Element - %s::%s not found." % \
+                                (ele, str(generic_param)))
         else:
             raise Exception("Element %s not found in config file"%ele)
 
@@ -793,6 +794,8 @@ class Driver(object):
             except Exception as excp:
                 warning(str(excp))
                 self.wait_for(1)
+        else:
+            raise Exception("not able to access the horizontal scroll element")
 
         list_text = list_text_old = [ech_ele.text for ech_ele in ele_obj]
         indx = len(ele_obj)/2 if indx == None else indx
@@ -911,11 +914,21 @@ class Driver(object):
             to_up : True, if travel to up
             scroll_ele_typ : popup/ normal
         """
+
         if not scroll_ele_typ :
             ele = "//android.widget.ListView[1]//android.widget.TextView[1]"
         else:
             ele = "//android.widget.CheckedTextView"
-        obj_list = self.get_element_by_xpath(ele)
+
+        try:
+            obj_list = self.get_element_by_xpath(ele)
+        except Exception as exc :
+            info(str(exc))
+            if not scroll_ele_typ :
+                raise Exception("not able to get list of data from GUI")
+            else:
+                raise Exception("not able to get list of checkbox from GUI")
+
         obj_list = [obj_list[0], obj_list[-1]]
         top_pt = (int(obj_list[0].location['x']) + \
                   (int(obj_list[0].size['width']) / 2),
@@ -943,8 +956,12 @@ class Driver(object):
         """
         ele = "//android.widget.HorizontalScrollView[1]/" + \
               "android.widget.LinearLayout[1]//android.widget.TextView[1]"
+        try:
+            obj_list = self.get_element_by_xpath(ele)
+        except Exception as exc :
+            info(str(exc))
+            raise Exception("not able to get horizontal tabs data from GUI")
 
-        obj_list = self.get_element_by_xpath(ele)
         obj_list = [obj_list[0], obj_list[-1]]
 
         left_pt = (int(obj_list[0].location['x']) + 5,
@@ -958,46 +975,3 @@ class Driver(object):
             self.scroll('H', frm_pt=left_pt, to_pt=right_pt)
         else:
             self.scroll('H', frm_pt=right_pt, to_pt=left_pt)
-
-if __name__ == "__main__":
-    from modules.constant import *
-    obj = Driver( APPIUM_SERVER, TEST_TARGET_CFG['os'],
-                 TEST_TARGET_CFG['os-version'],
-                 TEST_TARGET_CFG['device-name'])
-    obj.set_up()
-    ele = obj.get_element("tab-item-left-half", ('CHANNEL GROUPS'))
-    ele.click()
-    obj.wait_for(20)
-    obj.take_screenshot_of_element( "icon-of-item",
-                                    ("Rebaca Channel Group", ),
-                                    file_name="Rebaca-Channel-Group.png"
-                                   )
-    obj.take_screenshot_of_element( "icon-of-item",
-                                    ("Limelight", ),
-                                    file_name="Limelight.png"
-                                   )
-
-
-    ele = obj.get_element("tab-item-left-half", ('ALL CHANNELS'))
-    ele.click()
-    obj.wait_for(20)
-    obj.take_screenshot_of_element( "icon-of-item",
-                                    ("Some Sample Videos1", ),
-                                    file_name="Some-Sample-Videos1.png"
-                                   )
-    obj.take_screenshot_of_element( "icon-of-item",
-                                    ("Maru Madnes", ),
-                                    file_name="Maru-Madnes.png"
-                                   )
-
-    ele = obj.get_element("tab-item-left-half", ('ALL MEDIA'))
-    ele.click()
-    obj.wait_for(20)
-    obj.take_screenshot_of_element( "icon-of-item",
-                                    ("Late For Work", ),
-                                    file_name="Late-For-Work.png"
-                                   )
-    obj.take_screenshot_of_element( "icon-of-item",
-                                    ("Code Rush", ),
-                                    file_name="Code-Rush.png"
-                                   )
