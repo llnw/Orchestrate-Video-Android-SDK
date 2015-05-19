@@ -45,7 +45,7 @@ Feature: checking the negative scenario
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      
     When I set xxxxxxxxxxxxxxxxxxx as value for Organization ID in SETTINGS tab
-    And I play the "Flash_Only" video from ALL MEDIA with "Flash 96 X128kbps 264X640" encoding
+    And I select Flash_Only as value for media in ALL MEDIA tab
     Then player should not play the playback from remote to duration 00:00 in play state
     And exit from the application
     

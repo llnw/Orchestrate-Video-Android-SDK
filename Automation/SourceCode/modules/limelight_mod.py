@@ -1590,6 +1590,16 @@ class Limelight(object):
 
         elif operation.lower().strip() == "not play" and \
            player_state.lower().strip() == "play":
+            # Check the encoding list should not shown up
+            got_encoding_popup = False
+            try:
+                self.value_should_be("popup-title", "Choose Encoding")
+                got_encoding_popup = True
+            except Exception:
+                pass
+            if got_encoding_popup:
+                raise Exception("encoding list has been shown up")
+            # Check the player doesn't loaded
             for ech_try in range(5):
                 if self.is_item_visible("player"):
                     raise Exception("Player is loaded")
