@@ -77,7 +77,6 @@ class AnalyticsReporter {
         obj.addProperty("userId", mUserId);
         obj.addProperty("htmlCapabilities", "Android");
         String userAgent = System.getProperty("http.agent");
-        System.out.println(userAgent);
         obj.addProperty("userAgent", userAgent);
         obj.addProperty(mMilliSecondElapsed, 0);
         obj.addProperty("platform", mPlatform);
@@ -214,7 +213,6 @@ class AnalyticsReporter {
      * @param channelId Channel ID for the media being played.
      */
     private void addAnalyticsData(String eventType,JsonObject data){
-//        System.out.println(TAG +" Event type: "+eventType);
         mAnalyticsData = new JsonObject();
         mAnalyticsData.addProperty("eventType", eventType);
         mAnalyticsData.addProperty("source", "Limelight Android Player");

@@ -535,35 +535,35 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                     }
                 }
 
-                    @Override
-                    public void onSuccess(ArrayList<Encoding> encodingList) {
-                        mMediaId = mediaID;
-                        final Delivery delivery = contentService.getDeliveryForMedia(encodingList);
-                        if(delivery!= null){
-                            if (delivery.mProtected) {
-                                if (mLogger != null) {
-                                    mLogger.debug(TAG+" Delivery is widevine" + mediaID);
-                                }
-                                mWidevineManager = new WidevineManager(getActivity(),contentService);
-                                mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
-                                    @Override
-                                    public void onSuccess(final String path) {
-                                        if (mLogger != null) {
-                                            mLogger.debug(TAG+" Delivery widevine media path" + path);
-                                        }
-                                        try {
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    setVideoPath(path);
-                                                }
-                                            });
-                                        } catch (Exception ex) {
-                                            playerError();
-                                        }
+                @Override
+                public void onSuccess(ArrayList<Encoding> encodingList) {
+                    mMediaId = mediaID;
+                    final Delivery delivery = contentService.getDeliveryForMedia(encodingList);
+                    if(delivery!= null){
+                        if (delivery.mProtected) {
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" Delivery is widevine" + mediaID);
+                            }
+                            mWidevineManager = new WidevineManager(getActivity(),contentService);
+                            mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
+                                @Override
+                                public void onSuccess(final String path) {
+                                    if (mLogger != null) {
+                                        mLogger.debug(TAG+" Delivery widevine media path" + path);
                                     }
+                                    try {
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                setVideoPath(path);
+                                            }
+                                        });
+                                    } catch (Exception ex) {
+                                        playerError();
+                                    }
+                                }
 
-                                    @Override
+                                @Override
                                 public void onError(final Throwable throwable) {
                                     reset();
                                     if (mPlayerCallback != null){
@@ -822,7 +822,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                     mLogger.debug("Player started");
                     mLogger.warn("Player started");
                 }
-            }
+            } 
             if (mLogger != null) {
                 mLogger.debug(TAG+" PlayerState: play :"+mPlayerView.mPlayerState.name());
             }
@@ -843,7 +843,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             } else{
                 mPlayerView.pause();
                 mPlayerView.mPlayerState = PlayerState.paused;
-            }
+            } 
             if (mLogger != null) {
                 mLogger.debug(TAG+" PlayerState: pause: "+mPlayerView.mPlayerState.name());
             }

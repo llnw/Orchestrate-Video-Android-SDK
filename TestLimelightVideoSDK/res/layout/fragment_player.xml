@@ -90,7 +90,6 @@
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
             android:gravity="center"
-            android:checked = "true"
             android:text="Delivery" />
         <Button
             android:id="@+id/play"
@@ -108,11 +107,11 @@
         android:layout_height="wrap_content"
         android:divider="@android:drawable/divider_horizontal_dark" >
 
-             <TextView
-                android:id="@+id/localFileName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
+        <TextView
+            android:id="@+id/localFileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
     </RelativeLayout>
 
 </LinearLayout>
