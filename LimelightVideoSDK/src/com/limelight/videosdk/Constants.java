@@ -22,7 +22,7 @@ public class Constants {
     public static final String FETCH_ALL_CHANNEL_PATH = "/organizations/%s/channels/all.json";
     public static final String FETCH_ALL_MEDIA_OF_CHANNEL_PATH = "/organizations/%s/channels/%s/media.json";
     public static final String SEARCH_ALL_MEDIA_PATH = "/organizations/%s/media/search.json";
-    public static final String FETCH_CHANNEL_PROPERTY_PATH = "/organizations/%s/channel/%s/properties.json";
+    public static final String FETCH_CHANNEL_PROPERTY_PATH = "/organizations/%s/channels/%s/properties.json";
     public static final String FETCH_MEDIA_PROPERTY_PATH = "/organizations/%s/media/%s/properties.json";
     public static final String ENCODING_PATH = "/organizations/%s/media/%s/encodings.json";
     public static final String API_ENDPOINT_STAGING = "https://staging-api.lvp.llnw.net/rest";

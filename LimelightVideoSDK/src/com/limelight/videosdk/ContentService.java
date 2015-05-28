@@ -54,7 +54,7 @@ import com.limelight.videosdk.utility.Setting;
  */
 public class ContentService {
 
-    private static final String TAG = PlayerSupportFragment.class.getSimpleName();
+    private static final String TAG = ContentService.class.getSimpleName();
     private final ArrayList<Channel> mChannelList = new ArrayList<Channel>();
     private final ArrayList<ChannelGroup> mChannelGroupList = new ArrayList<ChannelGroup>();
     private final ArrayList<Media> mMediaList = new ArrayList<Media>();
