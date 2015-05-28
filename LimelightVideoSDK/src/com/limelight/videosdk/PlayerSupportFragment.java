@@ -101,6 +101,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private int mCurrentPlayPos;
     private boolean isPlaylistPlaying;
     private boolean isReporting = true;
+    View.OnClickListener mPlayListNext;
+    View.OnClickListener mPlayListPrev;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -170,6 +172,58 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 return false;
             }
         });
+
+        mPlayListNext = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //handler for next click
+                if(mPlayerView.mPlayerState != PlayerState.completed){
+                    mPlayerView.mPlayerState = PlayerState.completed;
+                    if (mLogger != null) {
+                        mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+                    }
+                    if (mMediaId != null) {
+                        mReporter.sendMediaComplete(mMediaId, null);
+                    }
+                        if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
+                            if(mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                                mCurrentPlayPos++;
+                                reset();
+                                mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                            }
+                        }
+                    if(mPlayerCallback!= null){
+                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                    }
+                }
+            }
+        };
+
+        mPlayListPrev = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //handler for previous click
+                if(mPlayerView.mPlayerState != PlayerState.completed){
+                    mPlayerView.mPlayerState = PlayerState.completed;
+                    if (mLogger != null) {
+                        mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+                    }
+                    if (mMediaId != null) {
+                        mReporter.sendMediaComplete(mMediaId, null);
+                    }
+                        if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
+                            if(mCurrentPlayPos > 0){
+                                mCurrentPlayPos--;
+                                reset();
+                                mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                            }
+                        }
+                    if(mPlayerCallback!= null){
+                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                    }
+                }
+            }
+        };
         return mPlayerLayout;
     }
 
@@ -633,6 +687,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mLogger.debug(TAG+Constants.PLAYER_STATE_STRING+mPlayerView.mPlayerState.name());
                 mLogger.debug(TAG+" Media play:"+ media);
             }
+            mMediaController.setPrevNextListeners(null, null);
             mPlayerView.setMediaControllerCallback(null);
             if(media!= null && !media.trim().isEmpty()){
                 if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
@@ -751,8 +806,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         if(callback != null){
                             callback.getChannelPlaylist(list);
                         }
-                        //may be this is for fetching next page.
-                        //Already playlist is playing.No need to start play
+                        mMediaController.setPrevNextListeners(mPlayListNext, mPlayListPrev);
                         if(!isPlaylistPlaying){
                             playMediaID(list.get(mCurrentPlayPos).mMediaID,mPlaylistContentSvc);
                             isPlaylistPlaying = true;
