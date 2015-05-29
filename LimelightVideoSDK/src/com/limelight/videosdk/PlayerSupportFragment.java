@@ -177,24 +177,22 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             @Override
             public void onClick(View v) {
                 //handler for next click
-                if(mPlayerView.mPlayerState != PlayerState.completed){
-                    mPlayerView.mPlayerState = PlayerState.completed;
-                    if (mLogger != null) {
-                        mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
-                    }
-                    if (mMediaId != null) {
-                        mReporter.sendMediaComplete(mMediaId, null);
-                    }
-                        if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
-                            if(mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
-                                mCurrentPlayPos++;
-                                reset();
-                                mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
-                            }
+                if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
+                    if(mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                        if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
+                            mPlayerView.stopPlayback();
+                            mPlayerView.mPlayerState = PlayerState.stopped;
                         }
-                    if(mPlayerCallback!= null){
-                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                        if (mLogger != null) {
+                            mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+                        }
+                        mCurrentPlayPos++;
+                        reset();
+                        mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
                     }
+                }
+                if(mPlayerCallback!= null){
+                    mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
                 }
             }
         };
@@ -203,24 +201,22 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             @Override
             public void onClick(View v) {
                 //handler for previous click
-                if(mPlayerView.mPlayerState != PlayerState.completed){
-                    mPlayerView.mPlayerState = PlayerState.completed;
-                    if (mLogger != null) {
-                        mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
-                    }
-                    if (mMediaId != null) {
-                        mReporter.sendMediaComplete(mMediaId, null);
-                    }
-                        if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
-                            if(mCurrentPlayPos > 0){
-                                mCurrentPlayPos--;
-                                reset();
-                                mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
-                            }
+                if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
+                    if(mCurrentPlayPos > 0){
+                        if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
+                            mPlayerView.stopPlayback();
+                            mPlayerView.mPlayerState = PlayerState.stopped;
                         }
-                    if(mPlayerCallback!= null){
-                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                        if (mLogger != null) {
+                            mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+                        }
+                        mCurrentPlayPos--;
+                        reset();
+                        mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
                     }
+                }
+                if(mPlayerCallback!= null){
+                    mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
                 }
             }
         };
