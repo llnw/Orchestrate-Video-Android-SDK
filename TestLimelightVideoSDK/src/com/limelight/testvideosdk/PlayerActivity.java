@@ -34,7 +34,7 @@ import com.limelight.videosdk.model.Media;
 public class PlayerActivity extends FragmentActivity implements IPlayerCallback, OnPageChangeListener,ActionBar.TabListener {
 
     private static final int READ_REQUEST_CODE = 50;
-    private ViewPager mViewPager;
+    public ViewPager mViewPager;    
     private Uri mUri = null;
     private IPlayerControl mControl;
     private PlayersFragment mPlayerFragment = null;
@@ -117,12 +117,13 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
     MediaCallback mediaCallback = new MediaCallback() {
         @Override
         public void callback(String id, ContentService svc) {
+            mViewPager.setCurrentItem(6);
             mChannelId = id;
             if(mPlayerFragment != null){
                 mPlayerFragment.setEditText(id);
                 mPlayerFragment.play(svc);
             }
-            mViewPager.setCurrentItem(6);
+            
         }
 
         @Override

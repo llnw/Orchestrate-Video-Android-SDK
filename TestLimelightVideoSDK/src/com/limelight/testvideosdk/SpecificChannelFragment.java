@@ -79,9 +79,12 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
         addAllPlaylist.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                for(int i= 0;i<mMedias.size();i++)
-                    mCallback.addToPlaylist(mMedias.get(i));
-                Toast.makeText(getActivity(), "Added To Playlist", 5).show();
+                if(mMedias != null)
+                {
+                    for(int i= 0;i<mMedias.size();i++)
+                        mCallback.addToPlaylist(mMedias.get(i));
+                    Toast.makeText(getActivity(), "Added To Playlist", 5).show();
+                }
             }
         });
         return view;

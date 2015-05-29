@@ -22,7 +22,8 @@
         <TextView
             android:id="@id/android:empty"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:gravity="center"
             android:text="No data"
             android:visibility="gone" />
@@ -31,19 +32,40 @@
             android:id="@+id/progress"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center"/>
-         <ProgressBar
+            android:layout_gravity="center" />
+
+        <ProgressBar
             android:id="@+id/progress_load"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-         <Button
-            android:id="@+id/add_all_playlist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add All To Playlist"
-            android:visibility="gone"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp" >
+
+            <Button
+                android:id="@+id/add_all_playlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Add All To Playlist"
+                android:visibility="gone" />
+
+            <SearchView
+                android:id="@+id/search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:iconifiedByDefault="false"
+                android:imeOptions="normal"
+                android:queryHint="@string/searchHint"
+                android:showDividers="middle"
+                android:visibility="gone" />
+        </LinearLayout>
+        
     </LinearLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

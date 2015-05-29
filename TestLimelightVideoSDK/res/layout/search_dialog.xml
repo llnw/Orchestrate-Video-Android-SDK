@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+     <RadioGroup
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/searchParam"
+    android:paddingLeft="20dp"
+    >
+    <RadioButton android:id="@+id/searchMediaTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/searchRadioMediaTitle"/>
+    <RadioButton android:id="@+id/searchDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/searchRadioDescription"/>
+    
+    <RadioButton android:id="@+id/searchChannelID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/searchRadioChannelId"/>
+</RadioGroup>
+
+</LinearLayout>

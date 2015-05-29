@@ -66,6 +66,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
     private PlaylistAdapter mChannelPlayListAdapter;
     private ListView mChannelPlayListView;
     private IPlaylistCallback mCallback;
+    AlertDialog mEncodingDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -367,6 +368,14 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             public void run() {
                 showKeyboard(false);
                 mProgress.hide();
+                if(mEncodingDialog != null && mEncodingDialog.isShowing()){
+                    mEncodingDialog.dismiss();
+                }
+                if (((PlayerActivity)getActivity()).mViewPager != null && ((PlayerActivity)getActivity()).mViewPager.getCurrentItem() != 6)
+                {
+                    return;
+                }
+
                 if(list.size()==0){
                     showMessage("No Valid Encodings Found !");
                     return;
@@ -393,8 +402,8 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
                             dialog.dismiss();
                     }
                 });
-                AlertDialog encodingDialog = builder.create();
-                encodingDialog.show();
+                mEncodingDialog = builder.create();
+                mEncodingDialog.show();
             }
         });
     }

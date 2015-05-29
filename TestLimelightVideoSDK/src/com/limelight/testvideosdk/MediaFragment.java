@@ -1,7 +1,11 @@
 package com.limelight.testvideosdk;
 
 import java.util.ArrayList;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
@@ -13,9 +17,10 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -24,6 +29,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +54,9 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
     private SwipeRefreshLayout mSwipeLayout;
     private int mPreviousTotalCount = 0;
     private static ContentService mContentService = null;
+    private SearchView mSearchControl;
+    private String mSearchParamString;
+    private String mSearchValueString;
 
     public MediaFragment(MediaCallback callback) {
         mCallback = callback;
@@ -79,17 +91,87 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
         mSwipeLayout.setEnabled(false);
         Button addAllPlaylist = (Button)view.findViewById(R.id.add_all_playlist);
         addAllPlaylist.setVisibility(View.VISIBLE);
-        addAllPlaylist.setOnClickListener(new OnClickListener() {
+        addAllPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for(int i= 0;i<mMedias.size();i++)
-                    mCallback.addToPlaylist(mMedias.get(i));
-                Toast.makeText(getActivity(), "Added To Playlist", 5).show();
+                if(mMedias != null)
+                {
+                    for(int i= 0;i<mMedias.size();i++)
+                        mCallback.addToPlaylist(mMedias.get(i));
+                    Toast.makeText(getActivity(), "Added To Playlist", 5).show();
+                }
             }
         });
+
+        mSearchControl = (SearchView)view.findViewById(R.id.search);
+        mSearchControl.setVisibility(View.VISIBLE);
+        mSearchControl.setSubmitButtonEnabled(true);
+        mSearchControl.setIconifiedByDefault(false);
+        mSearchControl.setOnQueryTextListener( new OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                showKeyboard(false);
+                  final AlertDialog.Builder builder = new AlertDialog.Builder(MediaFragment.this.getActivity());
+                  LayoutInflater inflater = (LayoutInflater)MediaFragment.this.getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                  final View view = inflater.inflate(R.layout.search_dialog, null);
+                  builder.setView(view);
+                  builder.setTitle(getActivity().getResources().getString(R.string.searchDialogTitle));
+                  builder.setPositiveButton("Ok", new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final RadioGroup searchParam = (RadioGroup) view.findViewById(R.id.searchParam);
+                        int id = searchParam.getCheckedRadioButtonId();
+                        if(id != -1){
+                            final RadioButton selectedRadio = (RadioButton) view.findViewById(id);
+                            mSearchParamString = selectedRadio.getText().toString();
+                            mSearchValueString = mSearchControl.getQuery().toString();
+                        mProgressLoad.setVisibility(View.VISIBLE);
+                        Bundle b = new Bundle();
+                        b.putString("searchParameter", mSearchParamString);
+                        b.putString("searchValue", mSearchValueString);
+                        getActivity().getSupportLoaderManager().restartLoader(12, b, MediaFragment.this);
+                        }
+                        dialog.dismiss();
+                    }
+                });
+                  builder.setNegativeButton("Cancel", new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                  final Dialog dialog = builder.create();
+                  dialog.show();
+                //Return true if the query has been handled by the listener, false to let the SearchView perform the default action.
+                return true;
+            }
+            
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+        });
+        
+        
         return view;
     }
-
+    
+    private void showKeyboard(boolean show) {   
+        // Check if no view has focus:
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if(show){
+                inputManager.showSoftInput(view, InputMethodManager.HIDE_NOT_ALWAYS);
+            }else{
+                inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                view.clearFocus();
+            }
+        }
+    }
+    
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -140,8 +222,17 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
         mTextView.setText(string);
     }
 
+private void ClearSearch(){
+    mSearchParamString = null;
+    mSearchValueString = null;
+    mSearchControl.setQuery("", false);
+    mSearchControl.setIconified(false);
+    mSearchControl.clearFocus();
+    }
+
     private void restartLoader(){
         mPreviousTotalCount = 0;
+        ClearSearch();
         setListShown(false);
         getActivity().getSupportLoaderManager().restartLoader(12, null, this);
     }
@@ -150,6 +241,11 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
         mProgressLoad.setVisibility(View.VISIBLE);
         Bundle b = new Bundle();
         b.putBoolean("Refresh", true);
+        if(mSearchParamString != null && !mSearchParamString.isEmpty())
+        {
+            b.putString("searchParameter", mSearchParamString);
+            b.putString("searchValue", mSearchValueString);
+        }
         getActivity().getSupportLoaderManager().restartLoader(12, b, this);
     }
 
@@ -158,12 +254,16 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
         private ModelHolder mHolder;
         private boolean refresh = false;
         private Context mContext;
+        private String mSearchParameter;
+        private String mSearchValue;
 
         public MediaLoader(Context context, Bundle arg1) {
             super(context);
             mContext = context;
             if(arg1!= null){
                 refresh = arg1.getBoolean("Refresh", false);
+                mSearchParameter = arg1.getString("searchParameter");
+                mSearchValue = arg1.getString("searchValue");
             }
             mHolder = new ModelHolder();
             if(mContentService == null){
@@ -192,8 +292,26 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
                 }
                 mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_DESC);
                 
-//                mMedias = contentService.searchMedia(ctx, refresh, "and", "4", null, null, null, null, null);
-                mMedias = mContentService.getAllMedia(refresh);
+                if(mSearchParameter != null && !mSearchParameter.isEmpty())
+                {
+                    if(mSearchParameter.equalsIgnoreCase(mContext.getResources().getString(R.string.searchRadioMediaTitle)))
+                    {
+                        mMedias = mContentService.searchMedia(refresh, "and", mSearchValue, null, null, null, "published", null, null, null, null,null);
+                    }
+                    else if(mSearchParameter.equalsIgnoreCase(mContext.getResources().getString(R.string.searchRadioDescription)))
+                    {
+                        mMedias = mContentService.searchMedia(refresh, "and", null, mSearchValue, null, null, "published", null, null, null, null,null);
+                    
+                    }
+                    else if(mSearchParameter.equalsIgnoreCase(mContext.getResources().getString(R.string.searchRadioChannelId)))
+                    {
+                        mMedias = mContentService.searchMedia(refresh, "and", null, null, null, null, "published", null, mSearchValue, null, null,null);
+                    }
+                }
+                else
+                {
+                    mMedias = mContentService.getAllMedia(refresh);
+                }
             } catch (Exception e) {
                 mMedias = null;
                 mErrorMsg = e.getMessage();
@@ -280,7 +398,11 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
                 int offset = (v == null) ? 0 : v.getTop();
                 if (offset == 0) {
                     mSwipeLayout.setEnabled(true);
-                } 
+                }
+                else
+                {
+                    mSwipeLayout.setEnabled(false);
+                }
             }
             else
             {

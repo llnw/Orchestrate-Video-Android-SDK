@@ -56,5 +56,10 @@
     <string name="progressDlgMediaMessage">Fetching Media From Server</string>
     <string name="choose_download_options">Choose Download Option</string>
     <string name="choose_save_options">Choose Save Option</string>
+    <string name="searchHint">Search&#8230;</string>
+    <string name="searchDialogTitle">Select Search Options</string>
+    <string name="searchRadioMediaTitle">Media Title</string>
+    <string name="searchRadioDescription">Description</string>
+    <string name="searchRadioChannelId">Channel ID</string>
 
 </resources>
