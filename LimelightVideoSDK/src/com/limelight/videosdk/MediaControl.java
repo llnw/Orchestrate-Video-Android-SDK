@@ -53,8 +53,8 @@ class MediaControl extends MediaController{
                }
             }
         };
-        final Button searchButton = new Button(mContext);
-        searchButton.setOnClickListener(listener);
+        final Button fullScreenButton = new Button(mContext);
+        fullScreenButton.setOnClickListener(listener);
         FrameLayout container = new FrameLayout(mContext);
         container.setOnClickListener(listener);
         final FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(60, 50);
@@ -63,12 +63,12 @@ class MediaControl extends MediaController{
         containerParams.topMargin = 2;
         final ShapeDrawable drawable = new ShapeDrawable(new RectShape());
         drawable.getPaint().setColor(Color.WHITE);
-        searchButton.setBackgroundDrawable(drawable);
+        fullScreenButton.setBackgroundDrawable(drawable);
         final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(30, 20);
         params.gravity = Gravity.RIGHT;
         params.rightMargin = 30;
         params.topMargin = 20;
-        container.addView(searchButton, params);
+        container.addView(fullScreenButton, params);
         //add a vertical bar to view
         final View rightVerticalBar = new View(mContext);
         rightVerticalBar.setBackgroundColor(Color.BLACK);
