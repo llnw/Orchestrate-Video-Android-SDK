@@ -234,6 +234,8 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
                 int offset = (v == null) ? 0 : v.getTop();
                 if (offset == 0) {
                     mSwipeLayout.setEnabled(true);
+                }else{
+                    mSwipeLayout.setEnabled(false);
                 }
             }
             else

@@ -278,7 +278,9 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
                 int offset = (v == null) ? 0 : v.getTop();
                 if (offset == 0) {
                     mSwipeLayout.setEnabled(true);
-                } 
+                }else{
+                    mSwipeLayout.setEnabled(false);
+                }
             }
             else
                 mSwipeLayout.setEnabled(false);
