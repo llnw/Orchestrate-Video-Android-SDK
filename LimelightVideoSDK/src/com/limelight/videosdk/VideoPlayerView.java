@@ -39,7 +39,7 @@ class VideoPlayerView extends VideoView{
     }
 
     @Override
-    public void seekTo(int msec) {
+    public void seekTo(final int msec) {
         final long before = this.getCurrentPosition();
         super.seekTo(msec);
         final long after = msec;

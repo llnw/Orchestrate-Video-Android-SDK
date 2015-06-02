@@ -178,7 +178,7 @@ public class ContentService {
                HttpURLConnection urlConnection = null;
                try{
                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_GROUP_PATH, mOrgId);
-                   mLogger.debug(TAG + " getAllChannelGroup "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                   mLogger.debug(TAG + " getAllChannelGroup "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                    mLogger.debug(TAG + " getAllChannelGroup "+ " mHasNextGroup: " + mHasNext +" mPageIdGroup: " + mPageId);
                    if(isLoadMore){
                        if(mHasNext){
@@ -196,11 +196,11 @@ public class ContentService {
                    params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                    params.put(Constants.SORT_BY, mSortBy);
                    params.put(Constants.SORT_ORDER, mSortOrder);
-                   mLogger.debug(TAG + " getAllChannelGroup "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                   mLogger.debug(TAG+ " getAllChannelGroup "+Constants.SORT_BY+Constants.SPACE+ mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                    final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                    urlConnection = (HttpURLConnection) new URL(url).openConnection();
                    urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
-                   JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
+                   final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                    parseChannelGroups(reader);
                }
                catch (NoSuchAlgorithmException e) {
@@ -221,7 +221,7 @@ public class ContentService {
                catch(IOException e){
                    String error = null;
                    if(urlConnection != null){
-                       JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                       final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                        error = parseError(reader);
                    }
                    exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
@@ -248,26 +248,29 @@ public class ContentService {
      * @param isLoadMore True if load more called else false.
      * @param callback ChannelGroupCallback
      */
-    public void getAllChannelGroupAsync(boolean isLoadMore,final ChannelGroupCallback callback) {
+    public void getAllChannelGroupAsync(final boolean isLoadMore,final ChannelGroupCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            if(callback != null)
+            if(callback != null){
                 callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
+            }
         } else {
             if(!Connection.isConnected(mContext)){
-                if(callback != null)
+                if(callback != null){
                     callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                }
             }else{
                 try {
                     final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_GROUP_PATH, mOrgId);
-                    mLogger.debug(TAG + " getAllChannelGroupAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                    mLogger.debug(TAG + " getAllChannelGroupAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannelGroupAsync "+ " mHasNextGroup: " + mHasNext +" mPageIdGroup: " + mPageId);
                     if(isLoadMore){
                         if(mHasNext){
                             mPageId++;
                         }else {
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onSuccess(mChannelGroupList);
+                            }
                             return;
                         }
                     }else{
@@ -280,9 +283,9 @@ public class ContentService {
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
-                    mLogger.debug(TAG + " getAllChannelGroupAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                    mLogger.debug(TAG+" getAllChannelGroupAsync "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
-                    Runnable runnable = new Runnable() {
+                    final Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
                             Throwable throwable = null;
@@ -292,8 +295,9 @@ public class ContentService {
                                 urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                                 parseChannelGroups(reader);
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onSuccess(mChannelGroupList);
+                                }
                             }
                             catch (MalformedURLException e) {
                                 throwable = new Throwable(Constants.THUMB_URL_ERROR);
@@ -314,18 +318,20 @@ public class ContentService {
                                     if(mPageId != 0){
                                         mPageId--;
                                     }
-                                    if(callback != null)
+                                    if(callback != null){
                                         callback.onError(throwable);
+                                    }
                                 }
                             }
                         }
                     };
-                    Thread thread = new Thread(runnable);
+                    final Thread thread = new Thread(runnable);
                     thread.start();
                 }
                 catch (Exception e) {
-                    if(callback != null)
+                    if(callback != null){
                         callback.onError(new Throwable(Constants.AUTH_ERROR));
+                    }
                 }
             }
         }
@@ -340,9 +346,9 @@ public class ContentService {
      * @return list of channels
      * @throws Exception
      */
-    public ArrayList<Channel> getAllChannelOfGroup(String channelGroupId,boolean isLoadMore) throws Exception{
+    public ArrayList<Channel> getAllChannelOfGroup(final String channelGroupId,final boolean isLoadMore) throws Exception{
 
-        if (mOrgId == null || mOrgId.trim().length() == 0) {
+        if (mOrgId == null || mOrgId.trim().isEmpty()) {
             throw new Exception(Constants.ORG_ERROR);
         } else {
             if(!Connection.isConnected(mContext)){
@@ -352,7 +358,7 @@ public class ContentService {
                 HttpURLConnection urlConnection = null;
                 try {
                     String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_OF_GROUP_PATH, mOrgId,channelGroupId);
-                    mLogger.debug(TAG + " getAllChannelOfGroup "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                    mLogger.debug(TAG + " getAllChannelOfGroup "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannelOfGroup "+ " mHasNextChannelOfGroup: " + mHasNext +" mPageIdChannelOfGroup: " + mPageId);
                     if(isLoadMore){
                         if(mHasNext){
@@ -370,11 +376,11 @@ public class ContentService {
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
-                    mLogger.debug(TAG + " getAllChannelOfGroup "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                    mLogger.debug(TAG+" getAllChannelOfGroup "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     resourceUrl = appendPagingParameters(resourceUrl, params);
                     urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
                     urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
-                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
+                    final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                     parseChannels(reader);
                 }
                 catch (MalformedURLException e) {
@@ -386,7 +392,7 @@ public class ContentService {
                 catch (IOException e) {
                     String error = null;
                     if(urlConnection != null){
-                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                        final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                         error = parseError(reader);
                     }
                     exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
@@ -417,29 +423,32 @@ public class ContentService {
      */
     public void getAllChannelOfGroupAsync(final String channelGroupId, final boolean isLoadMore,final ChannelCallback callback) {
 
-        if (mOrgId == null || mOrgId.trim().length() == 0) {
-            if(callback != null)
+        if (mOrgId == null || mOrgId.trim().isEmpty()) {
+            if(callback != null){
                 callback.onError(new Throwable(Constants.ORG_ERROR));
+            }
         } else {
             if(!Connection.isConnected(mContext)){
-                if(callback != null)
-                callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                if(callback != null){
+                    callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                }
             }else{
-                Runnable runnable = new Runnable() {
+                final Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
                         HttpURLConnection urlConnection = null;
                         Throwable throwable = null;
                         try {
                             String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_OF_GROUP_PATH, mOrgId,channelGroupId);
-                            mLogger.debug(TAG + " getAllChannelOfGroupAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                            mLogger.debug(TAG + " getAllChannelOfGroupAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                             mLogger.debug(TAG + " getAllChannelOfGroupAsync "+ " mHasNextChannelOfGroup: " + mHasNext +" mPageIdChannelOfGroup: " + mPageId);
                             if(isLoadMore){
                                 if(mHasNext){
                                     mPageId++;
                                 }else {
-                                    if(callback != null)
+                                    if(callback != null){
                                         callback.onSuccess(mChannelList);
+                                    }
                                     return;
                                 }
                             }else{
@@ -452,14 +461,15 @@ public class ContentService {
                             params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                             params.put(Constants.SORT_BY, mSortBy);
                             params.put(Constants.SORT_ORDER, mSortOrder);
-                            mLogger.debug(TAG + " getAllChannelOfGroupAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                            mLogger.debug(TAG+" getAllChannelOfGroupAsync "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                             resourceUrl = appendPagingParameters(resourceUrl, params);
                             urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
                             urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                             JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                             parseChannels(reader);
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onSuccess(mChannelList);
+                            }
                         }
                         catch (UnsupportedEncodingException e) {
                             throwable = new Throwable(Constants.ENCODING_ERROR);
@@ -483,13 +493,14 @@ public class ContentService {
                                 if(mPageId != 0){
                                     mPageId--;
                                 }
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onError(throwable);
+                                }
                             }
                         }
                     }
                 };
-                Thread thread = new Thread(runnable);
+                final Thread thread = new Thread(runnable);
                 thread.start();
             }
         }
@@ -513,8 +524,8 @@ public class ContentService {
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
                 try {
-                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_PATH, mOrgId);
-                    mLogger.debug(TAG + " getAllChannel "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_PATH, mOrgId);
+                    mLogger.debug(TAG + " getAllChannel "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannel "+ " mHasNextChannel: " + mHasNext +" mPageIdChannel: " + mPageId);
                     if(isLoadMore){
                         if(mHasNext){
@@ -527,16 +538,16 @@ public class ContentService {
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    HashMap<String, String> params = new HashMap<String, String>();
+                    final HashMap<String, String> params = new HashMap<String, String>();
                     params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
-                    mLogger.debug(TAG + " getAllChannel "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                    mLogger.debug(TAG+" getAllChannel "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     urlConnection = (HttpURLConnection) new URL(url).openConnection();
                     urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
-                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
+                    final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                     parseChannels(reader);
                 }
                 catch (MalformedURLException e) {
@@ -554,7 +565,7 @@ public class ContentService {
                 catch(IOException e){
                     String error = null;
                     if(urlConnection != null){
-                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                        final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                         error = parseError(reader);
                     }
                     exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
@@ -584,23 +595,26 @@ public class ContentService {
     public void getAllChannelAsync(boolean isLoadMore,final ChannelCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            if(callback != null)
+            if(callback != null){
                 callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
+            }
         } else {
             if(!Connection.isConnected(mContext)){
-                if(callback != null)
+                if(callback != null){
                     callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                }
             }else{
                 try {
-                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_PATH, mOrgId);
-                    mLogger.debug(TAG + " getAllChannelAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_PATH, mOrgId);
+                    mLogger.debug(TAG + " getAllChannelAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannelAsync "+ " mHasNextChannel: " + mHasNext +" mPageIdChannel: " + mPageId);
                     if(isLoadMore){
                         if(mHasNext){
                             mPageId++;
                         }else {
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onSuccess(mChannelList);
+                            }
                             return;
                         }
                     }else{
@@ -613,9 +627,9 @@ public class ContentService {
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
-                    mLogger.debug(TAG + " getAllChannelAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                    mLogger.debug(TAG+" getAllChannelAsync "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
-                    Runnable runnable = new Runnable() {
+                    final Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
                             Throwable throwable = null;
@@ -623,10 +637,11 @@ public class ContentService {
                             try {
                                 urlConnection = (HttpURLConnection) new URL(url).openConnection();
                                 urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
-                                JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
+                                final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                                 parseChannels(reader);
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onSuccess(mChannelList);
+                                } 
                             }
                             catch (MalformedURLException e) {
                                 throwable = new Throwable(Constants.THUMB_URL_ERROR);
@@ -634,7 +649,7 @@ public class ContentService {
                             catch (IOException e) {
                                 String error = null;
                                 if(urlConnection != null){
-                                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                                    final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                     error = parseError(reader);
                                 }
                                 throwable = new Throwable(error == null?Constants.CONNECTION_ERROR:error);
@@ -647,18 +662,20 @@ public class ContentService {
                                     if(mPageId != 0){
                                         mPageId--;
                                     }
-                                    if(callback != null)
+                                    if(callback != null){
                                         callback.onError(throwable);
+                                    }
                                 }
                             }
                         }
                     };
-                    Thread thread = new Thread(runnable);
+                    final Thread thread = new Thread(runnable);
                     thread.start();
                 }
                 catch (Exception e) {
-                    if(callback != null)
+                    if(callback != null){
                         callback.onError(new Throwable(Constants.AUTH_ERROR));
+                    }
                 }
             }
         }
@@ -675,7 +692,7 @@ public class ContentService {
      */
     public ArrayList<Media> getAllMediaOfChannel(String channelId,boolean isLoadMore) throws Exception{
 
-        if (mOrgId == null || mOrgId.trim().length() == 0) {
+        if (mOrgId == null || mOrgId.trim().isEmpty()) {
             throw new Exception(Constants.ORG_ERROR);
         } else {
             if(!Connection.isConnected(mContext)){
@@ -685,7 +702,7 @@ public class ContentService {
                 HttpURLConnection urlConnection = null;
                 try {
                     String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_MEDIA_OF_CHANNEL_PATH, mOrgId,channelId);
-                    mLogger.debug(TAG + " getAllMediaOfChannel "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                    mLogger.debug(TAG + " getAllMediaOfChannel "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllMediaOfChannel "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMediaOfChannel: " + mPageId);
                     if(isLoadMore){
                         if(mHasNext){
@@ -704,13 +721,13 @@ public class ContentService {
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
                     StringBuilder searchStr = new StringBuilder();
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,"published"));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,"published"));
                     params.put("and", searchStr.toString());
-                    mLogger.debug(TAG + " getAllMediaOfChannel "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                    mLogger.debug(TAG+" getAllMediaOfChannel "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     resourceUrl = appendPagingParameters(resourceUrl, params);
                     urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
                     urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
-                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
+                    final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                     parseMedias(reader);
                 }
                 catch (UnsupportedEncodingException e) {
@@ -722,7 +739,7 @@ public class ContentService {
                 catch (IOException e) {
                     String error = null;
                     if(urlConnection != null){
-                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                        final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                         error = parseError(reader);
                     }
                     exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
@@ -753,29 +770,32 @@ public class ContentService {
      */
     public void getAllMediaOfChannelAsync(final String channelId,final boolean isLoadMore,final MediaCallback callback) {
 
-        if (mOrgId == null || mOrgId.trim().length() == 0) {
-            if(callback != null)
+        if (mOrgId == null || mOrgId.trim().isEmpty()) {
+            if(callback != null){
                 callback.onError(new Throwable(Constants.ORG_ERROR));
+            }
         } else {
             if(!Connection.isConnected(mContext)){
-                if(callback != null)
+                if(callback != null){
                     callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                }
             }else{
-                Runnable runnable = new Runnable() {
+                final Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
                         Throwable throwable = null;
                         HttpURLConnection urlConnection = null;
                         try {
                             String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_MEDIA_OF_CHANNEL_PATH, mOrgId,channelId);
-                            mLogger.debug(TAG + " getAllMediaOfChannelAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                            mLogger.debug(TAG + " getAllMediaOfChannelAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                             mLogger.debug(TAG + " getAllMediaOfChannelAsync "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMediaOfChannel: " + mPageId);
                             if(isLoadMore){
                                 if(mHasNext){
                                     mPageId++;
                                 }else {
-                                    if(callback != null)
+                                    if(callback != null){
                                         callback.onSuccess(mMediaList);
+                                    }
                                     return;
                                 }
                             }else{
@@ -789,16 +809,17 @@ public class ContentService {
                             params.put(Constants.SORT_BY, mSortBy);
                             params.put(Constants.SORT_ORDER, mSortOrder);
                             StringBuilder searchStr = new StringBuilder();
-                            searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,"published"));
+                            searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,"published"));
                             params.put("and", searchStr.toString());
-                            mLogger.debug(TAG + " getAllMediaOfChannelAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                            mLogger.debug(TAG+" getAllMediaOfChannelAsync "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                             resourceUrl = appendPagingParameters(resourceUrl, params);
                             urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
                             urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                             JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                             parseMedias(reader);
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onSuccess(mMediaList);
+                            }
                         }
                         catch (UnsupportedEncodingException e) {
                             throwable = new Throwable(Constants.ENCODING_ERROR);
@@ -822,13 +843,14 @@ public class ContentService {
                                 if(mPageId != 0){
                                     mPageId--;
                                 }
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onError(throwable);
+                                }
                             }
                         }
                     }
                 };
-                Thread thread = new Thread(runnable);
+                final Thread thread = new Thread(runnable);
                 thread.start();
             }
         }
@@ -852,8 +874,8 @@ public class ContentService {
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
                 try {
-                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
-                    mLogger.debug(TAG + " getAllMedia "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
+                    mLogger.debug(TAG + " getAllMedia "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllMedia "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMedia: " + mPageId);
                     if(isLoadMore){
                         if(mHasNext){
@@ -872,13 +894,13 @@ public class ContentService {
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
                     StringBuilder searchStr = new StringBuilder();
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,"published"));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,"published"));
                     params.put("and", searchStr.toString());
-                    mLogger.debug(TAG + " getAllMedia "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                    mLogger.debug(TAG+" getAllMedia "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     urlConnection = (HttpURLConnection) new URL(url).openConnection();
                     urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
-                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
+                    final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                     parseMedias(reader);
                 }catch (MalformedURLException e) {
                     exception = new Exception(Constants.URL_ERROR);
@@ -895,7 +917,7 @@ public class ContentService {
                 catch(IOException e){
                     String error = null;
                     if(urlConnection != null){
-                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                        final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                         error = parseError(reader);
                     }
                     exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
@@ -925,23 +947,26 @@ public class ContentService {
     public void getAllMediaAsync(boolean isLoadMore,final MediaCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            if(callback != null)
+            if(callback != null){
                 callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
+            }
         } else {
             if(!Connection.isConnected(mContext)){
-                if(callback != null)
+                if(callback != null){
                     callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                }
             }else{
                 try {
-                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
-                    mLogger.debug(TAG + " getAllMediaAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
+                    mLogger.debug(TAG + " getAllMediaAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllMediaAsync "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMedia: " + mPageId);
                     if(isLoadMore){
                         if(mHasNext){
                             mPageId++;
                         }else {
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onSuccess(mMediaList);
+                            }
                             return;
                         }
                     }else{
@@ -955,11 +980,11 @@ public class ContentService {
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
                     StringBuilder searchStr = new StringBuilder();
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,"published"));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,"published"));
                     params.put("and", searchStr.toString());
-                    mLogger.debug(TAG + " getAllMediaAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                    mLogger.debug(TAG+" getAllMediaAsync "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
-                    Runnable runnable = new Runnable() {
+                    final Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
                             Throwable throwable = null;
@@ -969,8 +994,9 @@ public class ContentService {
                                 urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                                 parseMedias(reader);
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onSuccess(mMediaList);
+                                }
                             }
                             catch (MalformedURLException e1) {
                                 throwable = new Throwable(Constants.THUMB_URL_ERROR);
@@ -991,18 +1017,20 @@ public class ContentService {
                                     if(mPageId != 0){
                                         mPageId--;
                                     }
-                                    if(callback != null)
+                                    if(callback != null){
                                         callback.onError(throwable);
+                                    }
                                 }
                             }
                         }
                     };
-                    Thread thread = new Thread(runnable);
+                    final Thread thread = new Thread(runnable);
                     thread.start();
                 } 
                 catch (Exception e) {
-                    if(callback != null)
+                    if(callback != null){
                         callback.onError(new Throwable(Constants.AUTH_ERROR));
+                    }
                 }
             }
         }
@@ -1024,8 +1052,8 @@ public class ContentService {
      * @param publishedAfter String holding the Date the media is published after, date should be in unix format - Optional
      * @throws Exception
      */
-    public ArrayList<Media> searchMedia(boolean isLoadMore,String operator,String title,String description,String originalFilename,
-            String tag,String state,String mediaType,String channelId,String createdAfter, String updatedAfter, String publishedAfter) throws Exception{
+    public ArrayList<Media> searchMedia(final boolean isLoadMore,final String operator,final String title,final String description,final String originalFilename,
+            final String tag,final String state,final String mediaType,final String channelId,final String createdAfter, final String updatedAfter, final String publishedAfter) throws Exception{
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
             throw new Exception(Constants.ACCOUNT_ERROR);
@@ -1050,34 +1078,34 @@ public class ContentService {
                     }
                     StringBuilder searchStr = new StringBuilder();
                     if(title!= null){
-                        searchStr = searchStr.append(String.format("%s:%s;", Constants.TITLE,title));
+                        searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.TITLE,title));
                     }
                     if(description!= null){
-                        searchStr = searchStr.append(String.format("%s:%s;", Constants.DESCRIPTION,description));
+                        searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.DESCRIPTION,description));
                     }
                     if(originalFilename!= null){
-                        searchStr = searchStr.append(String.format("%s:%s;", Constants.ORIGINAL_FILENAME,originalFilename));
+                        searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.ORIGINAL_FILENAME,originalFilename));
                     }
                     if(tag!= null){
-                        searchStr = searchStr.append(String.format("%s:%s;", Constants.TAG,tag));
+                        searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.TAG,tag));
                     }
                     if(state!= null){
-                        searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,state));
+                        searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,state));
                     }
                     if(mediaType!= null){
-                        searchStr = searchStr.append(String.format("%s:%s;", Constants.MEDIA_TYPE,mediaType));
+                        searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.MEDIA_TYPE,mediaType));
                     }
                     if(channelId!= null){
-                        searchStr = searchStr.append(String.format("%s:%s;", Constants.CHANNEL_ID,channelId));
+                        searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.CHANNEL_ID,channelId));
                     }
                     if(createdAfter!= null){
-                        searchStr = searchStr.append(String.format("%s:%s;", Constants.CREATED_AFTER,createdAfter));
+                        searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.CREATED_AFTER,createdAfter));
                     }
                     if(updatedAfter!= null){
-                        searchStr = searchStr.append(String.format("%s:%s;", Constants.UPDATED_AFTER,updatedAfter));
+                        searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.UPDATED_AFTER,updatedAfter));
                     }
                     if(publishedAfter!= null){
-                        searchStr = searchStr.append(String.format("%s:%s;", Constants.PUBLISHED_AFTER,publishedAfter));
+                        searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.PUBLISHED_AFTER,publishedAfter));
                     }
                     if(searchStr!= null){
                         searchStr = searchStr.deleteCharAt(searchStr.length()-1);
@@ -1089,13 +1117,13 @@ public class ContentService {
                     params.put(Constants.SORT_ORDER, mSortOrder);
                     params.put(operator, searchStr.toString());
                     mLogger.debug(TAG +" searchMedia "+ " search String: "+ searchStr);
-                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
-                    mLogger.debug(TAG + " searchMedia "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
-                    mLogger.debug(TAG + " searchMedia "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
+                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
+                    mLogger.debug(TAG + " searchMedia "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
+                    mLogger.debug(TAG+" searchMedia "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     urlConnection = (HttpURLConnection) new URL(url).openConnection();
                     urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
-                    JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
+                    final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                     parseMedias(reader);
                 }catch (MalformedURLException e) {
                     exception = new Exception(Constants.URL_ERROR);
@@ -1112,7 +1140,7 @@ public class ContentService {
                 catch(IOException e){
                     String error = null;
                     if(urlConnection != null){
-                        JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
+                        final JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                         error = parseError(reader);
                     }
                     exception = new Exception(error == null?Constants.CONNECTION_ERROR:error);
@@ -1151,24 +1179,27 @@ public class ContentService {
      * @param callback MediaCallback
      * @throws Exception
      */
-    public void searchMediaAsync(boolean isLoadMore,String operator,String title,String description,String originalFilename,
-            String tag,String state,String mediaType,String channelId,String createdAfter, String updatedAfter, String publishedAfter,final MediaCallback callback) throws Exception{
+    public void searchMediaAsync(final boolean isLoadMore,final String operator,final String title,final String description,final String originalFilename,
+            final String tag,final String state,final String mediaType,final String channelId,final String createdAfter,final String updatedAfter,final String publishedAfter,final MediaCallback callback) throws Exception{
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            if(callback != null)
+            if(callback != null){
                 callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
+            }
         } else {
             if(!Connection.isConnected(mContext)){
-                if(callback != null)
+                if(callback != null){
                     callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                }
             }else{
                 mLogger.debug(TAG + " searchMediaAsync "+ " mHasNextSearchMedia: " + mHasNext +" mPageIdSearchMedia: " + mPageId);
                 if(isLoadMore){
                     if(mHasNext){
                         mPageId++;
                     }else {
-                        if(callback != null)
+                        if(callback != null){
                             callback.onSuccess(mMediaList);
+                        }
                         return;
                     }
                 }else{
@@ -1178,51 +1209,51 @@ public class ContentService {
                 }
                 StringBuilder searchStr = new StringBuilder();
                 if(title!= null){
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.TITLE,title));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.TITLE,title));
                 }
                 if(description!= null){
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.DESCRIPTION,description));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.DESCRIPTION,description));
                 }
                 if(originalFilename!= null){
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.ORIGINAL_FILENAME,originalFilename));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.ORIGINAL_FILENAME,originalFilename));
                 }
                 if(tag!= null){
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.TAG,tag));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.TAG,tag));
                 }
                 if(state!= null){
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.STATE,state));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,state));
                 }
                 if(mediaType!= null){
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.MEDIA_TYPE,mediaType));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.MEDIA_TYPE,mediaType));
                 }
                 if(channelId!= null){
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.CHANNEL_ID,channelId));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.CHANNEL_ID,channelId));
                 }
                 if(createdAfter!= null){
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.CREATED_AFTER,createdAfter));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.CREATED_AFTER,createdAfter));
                 }
                 if(updatedAfter!= null){
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.UPDATED_AFTER,updatedAfter));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.UPDATED_AFTER,updatedAfter));
                 }
                 if(publishedAfter!= null){
-                    searchStr = searchStr.append(String.format("%s:%s;", Constants.PUBLISHED_AFTER,publishedAfter));
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.PUBLISHED_AFTER,publishedAfter));
                 }
                 if(searchStr!= null){
                     searchStr = searchStr.deleteCharAt(searchStr.length()-1);
                 }
-                HashMap<String, String> params = new HashMap<String, String>();
+                final HashMap<String, String> params = new HashMap<String, String>();
                 params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                 params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                 params.put(Constants.SORT_BY, mSortBy);
                 params.put(Constants.SORT_ORDER, mSortOrder);
                 params.put(operator, searchStr.toString());
                 mLogger.debug(TAG +" searchMediaAsync "+ " search String: "+ searchStr);
-                mLogger.debug(TAG +" searchMediaAsync "+ " mSortBy: "+ mSortBy + " mSortOrder: "+ mSortOrder + " mPageSize " + mPageSize);
-                String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
-                mLogger.debug(TAG + " searchMediaAsync "+" resourceUrl: "+resourceUrl + " isLoadMore: "+ isLoadMore);
+                mLogger.debug(TAG+" searchMediaAsync "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
+                final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
+                mLogger.debug(TAG + " searchMediaAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                 try {
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
-                    Runnable runnable = new Runnable() {
+                    final Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
                             Throwable throwable = null;
@@ -1232,8 +1263,9 @@ public class ContentService {
                                 urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                                 parseMedias(reader);
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onSuccess(mMediaList);
+                                }
                             }
                             catch (MalformedURLException e1) {
                                 throwable = new Throwable("Invalid Request URL !");
@@ -1254,18 +1286,20 @@ public class ContentService {
                                     if(mPageId != 0){
                                         mPageId--;
                                     }
-                                    if(callback != null)
+                                    if(callback != null){
                                         callback.onError(throwable);
+                                    }
                                 }
                             }
                         }
                     };
-                    Thread thread = new Thread(runnable);
+                    final Thread thread = new Thread(runnable);
                     thread.start();
                 }
                 catch (Exception e) {
-                    if(callback != null)
+                    if(callback != null){
                         callback.onError(new Throwable(Constants.AUTH_ERROR));
+                    }
                 }
             }
         }
@@ -1279,15 +1313,17 @@ public class ContentService {
      * @param callback ChannelCallback
      */
     public void getChannelAsync(final String channelId,final ChannelCallback callback) {
-        if (mOrgId == null || mOrgId.trim().length() == 0) {
-            if(callback != null)
+        if (mOrgId == null || mOrgId.trim().isEmpty()) {
+            if(callback != null){
                 callback.onError(new Throwable(Constants.ORG_ERROR));
+            }
         } else {
             if(!Connection.isConnected(mContext)){
-                if(callback != null)
+                if(callback != null){
                     callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                }
             }else{
-                Runnable runnable = new Runnable() {
+                final Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
                         HttpURLConnection urlConnection = null;
@@ -1299,12 +1335,14 @@ public class ContentService {
                             JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                             ArrayList<Channel> channelList = new ArrayList<Channel>();
                             channelList.add(parseChannelProperty(reader));
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onSuccess(channelList);
+                            }
                         }
                         catch (MalformedURLException e) {
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onError(new Throwable("Invalid Request URL !"));
+                            }
                         } 
                         catch (IOException e) {
                             String error = null;
@@ -1312,8 +1350,9 @@ public class ContentService {
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                 error = parseError(reader);
                             }
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
+                            }
                         }
                         finally {
                             if (urlConnection != null) {
@@ -1322,7 +1361,7 @@ public class ContentService {
                         }
                     }
                 };
-                Thread thread = new Thread(runnable);
+                final Thread thread = new Thread(runnable);
                 thread.start();
             }
         }
@@ -1337,15 +1376,17 @@ public class ContentService {
      */
     public void getMediaAsync(final String mediaId,final MediaCallback callback) {
 
-        if (mOrgId == null || mOrgId.trim().length() == 0) {
-            if(callback != null)
+        if (mOrgId == null || mOrgId.trim().isEmpty()) {
+            if(callback != null){
                 callback.onError(new Throwable(Constants.ORG_ERROR));
+            }
         } else {
             if(!Connection.isConnected(mContext)){
-                if(callback != null)
+                if(callback != null){
                     callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                }
             }else{
-                Runnable runnable = new Runnable() {
+                final Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
                         HttpURLConnection urlConnection = null;
@@ -1357,12 +1398,14 @@ public class ContentService {
                             JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
                             ArrayList<Media> mediaList = new ArrayList<Media>();
                             mediaList.add(parseMediaProperty(reader));
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onSuccess(mediaList);
+                            }
                         }
                         catch (MalformedURLException e1) {
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onError(new Throwable(Constants.THUMB_URL_ERROR));
+                            }
                         }
                         catch (IOException e) {
                             String error = null;
@@ -1370,8 +1413,9 @@ public class ContentService {
                                 JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                 error = parseError(reader);
                             }
-                            if(callback != null)
+                            if(callback != null){
                                 callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
+                            }
                         }
                         finally {
                             if (urlConnection != null) {
@@ -1380,7 +1424,7 @@ public class ContentService {
                         }
                     }
                 };
-                Thread thread = new Thread(runnable);
+                final Thread thread = new Thread(runnable);
                 thread.start();
             }
         }
@@ -1395,17 +1439,20 @@ public class ContentService {
         final HashMap<String, String> params = new HashMap<String, String>();
         params.put(Constants.PRIMARY_USE, "all");
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
-            if(callback != null)
+            if(callback != null){
                 callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
+            }
         } else {
             if(!Connection.isConnected(mContext)){
-                if(callback != null)
+                if(callback != null){
                     callback.onError(new Throwable(Constants.CONNECTION_ERROR));
+                }
             }else {
                 try {
                     if(mediaId != null && mediaId.trim().length() == 0){
-                        if(callback != null)
+                        if(callback != null){
                             callback.onError(new Throwable("Invalid Media Id"));
+                        }
                         return;
                     }
                     final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.ENCODING_PATH, mOrgId, mediaId);
@@ -1421,20 +1468,24 @@ public class ContentService {
                                 InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                                 JsonReader reader = new JsonReader(new InputStreamReader(inputStream));
                                 parseEncodings(reader,mediaId);
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onSuccess(mEncodingList);
+                                }
                             }
                             catch(JSONException e){
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onError(new Throwable("JSON Error !"));
+                                }
                             }
                             catch (MalformedURLException e) {
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onError(new Throwable("MalformedURLException Error !"));
+                                }
                             }
                             catch(FileNotFoundException e){
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onError(new Throwable("Invalid Media Id !"));
+                                }
                             }
                             catch (IOException e) {
                                 String error = null;
@@ -1442,8 +1493,9 @@ public class ContentService {
                                     JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getErrorStream())));
                                     error = parseError(reader);
                                 }
-                                if(callback != null)
+                                if(callback != null){
                                     callback.onError(new Throwable(error == null?Constants.CONNECTION_ERROR:error));
+                                }
                             }
                             finally {
                                 if (urlConnection != null) {
@@ -1456,8 +1508,9 @@ public class ContentService {
                     thread.start();
 
                 }catch (Exception e) {
-                    if(callback != null)
+                    if(callback != null){
                         callback.onError(new Throwable(Constants.AUTH_ERROR));
+                    }
                 }
             }
         }
@@ -1467,19 +1520,19 @@ public class ContentService {
      * This method parses channel groups from JSON data.
      * @param channelGroups channel group JSON array
      */
-    private void parseChannelGroups(JsonReader reader){
-        GsonBuilder builder = new GsonBuilder();
+    private void parseChannelGroups(final JsonReader reader){
+        final GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Date.class, new DateDeserializer());
         builder.registerTypeAdapter(Uri.class, new UriDeserializer());
-        Gson gson = builder.create();
-        JsonParser parser = new JsonParser();
-        JsonObject channelGroupsObject = parser.parse(reader).getAsJsonObject();
-        if(channelGroupsObject.isJsonObject()){
-            mHasNext = channelGroupsObject.get("has_next").getAsBoolean();
-            JsonArray channelGroupList = channelGroupsObject.get(Constants.CHANNEL_GROUPS).getAsJsonArray();
+        final Gson gson = builder.create();
+        final JsonParser parser = new JsonParser();
+        final JsonObject channelGroups = parser.parse(reader).getAsJsonObject();
+        if(channelGroups.isJsonObject()){
+            mHasNext = channelGroups.get("has_next").getAsBoolean();
+            final JsonArray channelGroupList = channelGroups.get(Constants.CHANNEL_GROUPS).getAsJsonArray();
             if(channelGroupList.isJsonArray()){
                 for(int i=0; i< channelGroupList.size(); i++){
-                    ChannelGroup group = gson.fromJson(channelGroupList.get(i),  ChannelGroup.class);
+                    final ChannelGroup group = gson.fromJson(channelGroupList.get(i),  ChannelGroup.class);
                     mChannelGroupList.add(group);
                 }
             }
@@ -1491,19 +1544,19 @@ public class ContentService {
      * @param channels channels JSON array
      * @throws JSONException
      */
-    private void parseChannels(JsonReader reader){
-        GsonBuilder builder = new GsonBuilder();
+    private void parseChannels(final JsonReader reader){
+        final GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Date.class, new DateDeserializer());
         builder.registerTypeAdapter(Uri.class, new UriDeserializer());
-        Gson gson = builder.create();
-        JsonParser parser = new JsonParser();
-        JsonObject channelsObject = parser.parse(reader).getAsJsonObject();
+        final Gson gson = builder.create();
+        final JsonParser parser = new JsonParser();
+        final JsonObject channelsObject = parser.parse(reader).getAsJsonObject();
         if(channelsObject.isJsonObject()){
             mHasNext = channelsObject.get("has_next").getAsBoolean();
-            JsonArray channelsList = channelsObject.get(Constants.CHANNELS).getAsJsonArray();
+            final JsonArray channelsList = channelsObject.get(Constants.CHANNELS).getAsJsonArray();
             if(channelsList.isJsonArray()){
                 for(int i=0; i< channelsList.size(); i++){
-                    Channel channel = gson.fromJson(channelsList.get(i),  Channel.class);
+                    final Channel channel = gson.fromJson(channelsList.get(i),  Channel.class);
                     mChannelList.add(channel);
                 }
             }
@@ -1515,14 +1568,14 @@ public class ContentService {
      * @param channels channels JSON array
      * @throws JSONException
      */
-    private Channel parseChannelProperty(JsonReader reader){
+    private Channel parseChannelProperty(final JsonReader reader){
         Channel channel = new Channel();
-        GsonBuilder builder = new GsonBuilder();
+        final GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Date.class, new DateDeserializer());
         builder.registerTypeAdapter(Uri.class, new UriDeserializer());
-        Gson gson = builder.create();
-        JsonParser parser = new JsonParser();
-        JsonObject channelsObject = parser.parse(reader).getAsJsonObject();
+        final Gson gson = builder.create();
+        final JsonParser parser = new JsonParser();
+        final JsonObject channelsObject = parser.parse(reader).getAsJsonObject();
         if(channelsObject.isJsonObject()){
             channel = gson.fromJson(channelsObject,  Channel.class);
         }
@@ -1533,16 +1586,16 @@ public class ContentService {
      * This method parses media properties from JSON data.
      * @param medias JSON array
      */
-    private Media parseMediaProperty(JsonReader reader){
+    private Media parseMediaProperty(final JsonReader reader){
         Media media = new Media();
-        GsonBuilder builder = new GsonBuilder();
+        final GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Date.class, new DateDeserializer());
         builder.registerTypeAdapter(Time.class, new TimeDeserializer());
         builder.registerTypeAdapter(Uri.class, new UriDeserializer());
         builder.registerTypeAdapter(MediaThumbnail.class, new ThumbnailDeserializer());
-        Gson gson = builder.create();
-        JsonParser parser = new JsonParser();
-        JsonObject mediasObject = parser.parse(reader).getAsJsonObject();
+        final Gson gson = builder.create();
+        final JsonParser parser = new JsonParser();
+        final JsonObject mediasObject = parser.parse(reader).getAsJsonObject();
         if(mediasObject.isJsonObject()){
             media = gson.fromJson(mediasObject,  Media.class);
         }
@@ -1553,21 +1606,21 @@ public class ContentService {
      * This method parses media from JSON data.
      * @param medias JSON array
      */
-    private void parseMedias(JsonReader reader){
-        GsonBuilder builder = new GsonBuilder();
+    private void parseMedias(final JsonReader reader){
+        final GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Date.class, new DateDeserializer());
         builder.registerTypeAdapter(Time.class, new TimeDeserializer());
         builder.registerTypeAdapter(Uri.class, new UriDeserializer());
         builder.registerTypeAdapter(MediaThumbnail.class, new ThumbnailDeserializer());
-        Gson gson = builder.create();
-        JsonParser parser = new JsonParser();
-        JsonObject mediasObject = parser.parse(reader).getAsJsonObject();
+        final Gson gson = builder.create();
+        final JsonParser parser = new JsonParser();
+        final JsonObject mediasObject = parser.parse(reader).getAsJsonObject();
         if(mediasObject.isJsonObject()){
             mHasNext = mediasObject.get("has_next").getAsBoolean();
-            JsonArray mediasList = mediasObject.get(Constants.MEDIAS).getAsJsonArray();
+            final JsonArray mediasList = mediasObject.get(Constants.MEDIAS).getAsJsonArray();
             if(mediasList.isJsonArray()){
                 for(int i=0; i< mediasList.size(); i++){
-                    Media media = gson.fromJson(mediasList.get(i),  Media.class);
+                    final Media media = gson.fromJson(mediasList.get(i),  Media.class);
                     mMediaList.add(media);
                 }
             }
@@ -1582,11 +1635,11 @@ public class ContentService {
      */
     private void parseEncodings(final JsonReader reader, final String mediaId) throws JSONException{
         mEncodingList.clear();
-        JsonParser parser = new JsonParser();
-        JsonObject object = parser.parse(reader).getAsJsonObject();
-        JsonArray encodingsList = object.getAsJsonArray(Constants.ENCODINGS);
+        final JsonParser parser = new JsonParser();
+        final JsonObject object = parser.parse(reader).getAsJsonObject();
+        final JsonArray encodingsList = object.getAsJsonArray(Constants.ENCODINGS);
         for (int i = 0; i < encodingsList.size(); i++) {
-            JsonObject encodingObject = encodingsList.get(i).getAsJsonObject();
+            final JsonObject encodingObject = encodingsList.get(i).getAsJsonObject();
             Encoding encoding = new Encoding();
             String use = null;
             if(!(encodingObject.get(Constants.PRIMARY_USE).isJsonNull())){
@@ -1604,36 +1657,44 @@ public class ContentService {
                     url = encodingObject.get(Constants.FILE_URL).getAsString();
                 }
             }else{
-                if(!(encodingObject.get(Constants.URL).isJsonNull()))
+                if(!(encodingObject.get(Constants.URL).isJsonNull())){
                     url = encodingObject.get(Constants.URL).getAsString();
+                }
             }
             if("null".equalsIgnoreCase(url)|| url == null){
-                if(!(encodingObject.get(Constants.MASTER_PLAYLIST_URL).isJsonNull()))
+                if(!(encodingObject.get(Constants.MASTER_PLAYLIST_URL).isJsonNull())){
                     url = encodingObject.get(Constants.MASTER_PLAYLIST_URL).getAsString();
+                }
             }
             mLogger.error(TAG + " Unsupported URL : "+url);
             //some cases only rtmp is present, dont add the encoding
             if("null".equalsIgnoreCase(url)|| url == null){
                 continue;
             }
-            encoding.mEncodingUrl = url!= null ?Uri.parse(url):null;
+            encoding.mEncodingUrl = url== null ?null:Uri.parse(url);
             //check if the encoding is already added based on url
             if(getEncodingFromUrl(url)!= null){
                 continue;
             }
             encoding.mMediaID = mediaId;
-            if(!(encodingObject.get(Constants.GROUP).isJsonNull()))
+            if(!(encodingObject.get(Constants.GROUP).isJsonNull())){
                 encoding.mGroup = encodingObject.get(Constants.GROUP).getAsString();
-            if(!(encodingObject.get(Constants.SIZE).isJsonNull()))
+            }
+            if(!(encodingObject.get(Constants.SIZE).isJsonNull())){
                 encoding.mSizeInBytes = Integer.parseInt(encodingObject.get(Constants.SIZE).getAsString());
-            if(!(encodingObject.get(Constants.HEIGHT).isJsonNull()))
+            }
+            if(!(encodingObject.get(Constants.HEIGHT).isJsonNull())){
                 encoding.mHeight = Integer.parseInt(encodingObject.get(Constants.HEIGHT).getAsString());
-            if(!(encodingObject.get(Constants.WIDTH).isJsonNull()))
+            }
+            if(!(encodingObject.get(Constants.WIDTH).isJsonNull())){
                 encoding.mWidth = Integer.parseInt(encodingObject.get(Constants.WIDTH).getAsString());
-            if(!(encodingObject.get(Constants.AUDIO_BITRATE).isJsonNull()))
+            }
+            if(!(encodingObject.get(Constants.AUDIO_BITRATE).isJsonNull())){
                 encoding.mAudioBitRate = Integer.parseInt(encodingObject.get(Constants.AUDIO_BITRATE).getAsString());
-            if(!(encodingObject.get(Constants.VIDEO_BITRATE).isJsonNull()))
+            }
+            if(!(encodingObject.get(Constants.VIDEO_BITRATE).isJsonNull())){
                 encoding.mVideoBitRate = Integer.parseInt(encodingObject.get(Constants.VIDEO_BITRATE).getAsString());
+            }
             mEncodingList.add(encoding);
         }
     }
@@ -1644,8 +1705,8 @@ public class ContentService {
      * @return Error message
      */
     private String parseError(final JsonReader reader){
-        JsonParser parser = new JsonParser();
-        JsonObject object = parser.parse(reader).getAsJsonObject();
+        final JsonParser parser = new JsonParser();
+        final JsonObject object = parser.parse(reader).getAsJsonObject();
         if(!object.get("errors").isJsonNull()){
             return object.get("errors").getAsString();
         }
@@ -1724,10 +1785,10 @@ public class ContentService {
      */
     Delivery getDeliveryForMedia(final ArrayList<Encoding> encodingList) {
         if(encodingList!= null && !encodingList.isEmpty()){
-            Map<Uri,ArrayList<Encoding>> encodingsMap = getEncodingsByUrl(encodingList);
-            ArrayList<Delivery> deliveryList =  new ArrayList<Delivery>();
+            final Map<Uri,ArrayList<Encoding>> encodingsMap = getEncodingsByUrl(encodingList);
+            final ArrayList<Delivery> deliveryList =  new ArrayList<Delivery>();
             for(Uri uri:encodingsMap.keySet()){
-                ArrayList<Encoding> enc = encodingsMap.get(uri);
+                final ArrayList<Encoding> enc = encodingsMap.get(uri);
                 Delivery delivery =  new Delivery();
                 switch (enc.get(0).primaryUse) {
                 case MobileH264:
@@ -1749,7 +1810,6 @@ public class ContentService {
                     delivery.mDownloadable = true;
                     break;
                 default:
-                    delivery = null;
                     continue;
                 }
                 delivery.mRemoteURL = enc.get(0).mEncodingUrl;
@@ -1770,14 +1830,14 @@ public class ContentService {
      * @return Map of Encoding Uri and Encoding List
      */
     private Map<Uri,ArrayList<Encoding>> getEncodingsByUrl(final ArrayList<Encoding> encodingList){
-        Map<Uri,ArrayList<Encoding>> map = new HashMap<Uri, ArrayList<Encoding>>();
+        final Map<Uri,ArrayList<Encoding>> map = new HashMap<Uri, ArrayList<Encoding>>();
         for(Encoding encoding:encodingList){
             if(map.containsKey(encoding.mEncodingUrl)){
-                ArrayList<Encoding> enc = map.get(encoding.mEncodingUrl);
+                final ArrayList<Encoding> enc = map.get(encoding.mEncodingUrl);
                 enc.add(encoding);
                 map.put(encoding.mEncodingUrl, enc);
             }else{
-                ArrayList<Encoding> enc = new ArrayList<Encoding>();
+                final ArrayList<Encoding> enc = new ArrayList<Encoding>();
                 enc.add(encoding);
                 map.put(encoding.mEncodingUrl, enc);
                 

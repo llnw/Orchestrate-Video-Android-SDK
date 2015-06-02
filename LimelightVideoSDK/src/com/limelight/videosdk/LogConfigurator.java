@@ -15,6 +15,7 @@
  */
 package com.limelight.videosdk;
 
+import java.io.IOException;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -39,7 +40,7 @@ class LogConfigurator {
     private boolean immediateFlush = true;
     private boolean useFileAppender = true;
     private boolean resetConfiguration = true;
-    private boolean internalDebugging = false;
+    private boolean internalDebugging;
 
     public LogConfigurator() {
         //empty constructor.
@@ -141,23 +142,22 @@ class LogConfigurator {
      * until rolling and logging format.
      */
     private void configureFileAppender() {
-        final RollingFileAppender rollingFileAppender;
+        RollingFileAppender rollingAppender;
         final Layout fileLayout = new PatternLayout(getFilePattern());
 
         try {
-            rollingFileAppender = new RollingFileAppender(fileLayout,
-                    getFileName());
-        } catch (Exception e) {
+            rollingAppender = new RollingFileAppender(fileLayout,getFileName());
+        } catch (IOException e) {
             Log.e("LogConfigurator", "Exception configuring log system", e);
             return;
         }
 
-        rollingFileAppender.setMaxBackupIndex(getMaxBackupSize());
-        rollingFileAppender.setMaximumFileSize(getMaxFileSize());
-        rollingFileAppender.setImmediateFlush(isImmediateFlush());
+        rollingAppender.setMaxBackupIndex(getMaxBackupSize());
+        rollingAppender.setMaximumFileSize(getMaxFileSize());
+        rollingAppender.setImmediateFlush(isImmediateFlush());
 
         final Logger root = Logger.getRootLogger();
-        root.addAppender(rollingFileAppender);
+        root.addAppender(rollingAppender);
     }
 
     /**
@@ -290,8 +290,8 @@ class LogConfigurator {
      * Default is true.
      * @param resetConfiguration
      */
-    void setResetConfiguration(final boolean resetConfiguration) {
-        this.resetConfiguration = resetConfiguration;
+    void setResetConfiguration(final boolean reset) {
+        this.resetConfiguration = reset;
     }
 
     /**

@@ -1,9 +1,6 @@
 package com.limelight.videosdk.model;
 
 import java.util.ArrayList;
-
-
-
 import android.net.Uri;
 
 /**

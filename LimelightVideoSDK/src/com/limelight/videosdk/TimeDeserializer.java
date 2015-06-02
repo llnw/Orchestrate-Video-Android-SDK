@@ -16,12 +16,12 @@ import com.google.gson.JsonSerializer;
  */
 class TimeDeserializer implements JsonDeserializer<Time>,JsonSerializer<Time> {
     @Override
-    public JsonElement serialize(Time src, Type type, JsonSerializationContext context) {
+    public JsonElement serialize(final Time src,final Type type,final JsonSerializationContext context) {
         return src == null ? null : new JsonPrimitive(src.getTime());
     }
 
     @Override
-    public Time deserialize(JsonElement json, Type type,JsonDeserializationContext context) {
+    public Time deserialize(final JsonElement json,final Type type,final JsonDeserializationContext context) {
         return json == null ? null : new Time(json.getAsLong());
     }
 }

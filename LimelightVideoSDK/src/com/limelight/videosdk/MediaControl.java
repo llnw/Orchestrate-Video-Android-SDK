@@ -17,7 +17,7 @@ import android.widget.MediaController;
 class MediaControl extends MediaController{
 
     private final Context mContext;
-    private FullScreenCallback mFullScreenCallback;
+    private FullScreenCallback mCallback;
     private boolean mIsFullScreen;
 
     MediaControl(final Context context, final boolean useFastForward) {
@@ -38,24 +38,24 @@ class MediaControl extends MediaController{
     @Override 
     public void setAnchorView(final View view) {
         super.setAnchorView(view);
-        OnClickListener listener = new OnClickListener() {
+        final OnClickListener listener = new OnClickListener() {
             @Override
             public void onClick(final View view) {
                 if(mIsFullScreen){
-                    if(mFullScreenCallback!=null){
-                        mFullScreenCallback.fullScreen();
+                    if(mCallback!=null){
+                        mCallback.fullScreen();
                     }
                 }
                else{
-                   if(mFullScreenCallback !=null){
-                       mFullScreenCallback.closeFullScreen();
+                   if(mCallback !=null){
+                       mCallback.closeFullScreen();
                    }
                }
             }
         };
         final Button fullScreenButton = new Button(mContext);
         fullScreenButton.setOnClickListener(listener);
-        FrameLayout container = new FrameLayout(mContext);
+        final FrameLayout container = new FrameLayout(mContext);
         container.setOnClickListener(listener);
         final FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(60, 50);
         containerParams.gravity = Gravity.RIGHT;
@@ -72,19 +72,19 @@ class MediaControl extends MediaController{
         //add a vertical bar to view
         final View rightVerticalBar = new View(mContext);
         rightVerticalBar.setBackgroundColor(Color.BLACK);
-        final FrameLayout.LayoutParams rightVerticalBarParams = new FrameLayout.LayoutParams(2,15);
-        rightVerticalBarParams.gravity = Gravity.RIGHT;
-        rightVerticalBarParams.rightMargin = 33;
-        rightVerticalBarParams.topMargin = 22;
-        container.addView(rightVerticalBar, rightVerticalBarParams);
+        final FrameLayout.LayoutParams rightBarParams = new FrameLayout.LayoutParams(2,15);
+        rightBarParams.gravity = Gravity.RIGHT;
+        rightBarParams.rightMargin = 33;
+        rightBarParams.topMargin = 22;
+        container.addView(rightVerticalBar, rightBarParams);
         //add a vertical bar to view
         final View leftVerticalBar = new View(mContext);
         leftVerticalBar.setBackgroundColor(Color.BLACK);
-        final FrameLayout.LayoutParams leftVerticalBarParams = new FrameLayout.LayoutParams(2,15);
-        leftVerticalBarParams.gravity = Gravity.RIGHT;
-        leftVerticalBarParams.rightMargin = 55;
-        leftVerticalBarParams.topMargin = 22;
-        container.addView(leftVerticalBar,leftVerticalBarParams);
+        final FrameLayout.LayoutParams leftBarParams = new FrameLayout.LayoutParams(2,15);
+        leftBarParams.gravity = Gravity.RIGHT;
+        leftBarParams.rightMargin = 55;
+        leftBarParams.topMargin = 22;
+        container.addView(leftVerticalBar,leftBarParams);
         addView(container,containerParams);
     }
 
@@ -94,7 +94,7 @@ class MediaControl extends MediaController{
      * @param fullScreen
      */
     void setFullScreenCallback(final FullScreenCallback callback,final boolean fullScreen){
-        mFullScreenCallback = callback;
+        mCallback = callback;
         mIsFullScreen = fullScreen;
     }
 

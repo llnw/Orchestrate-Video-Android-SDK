@@ -37,7 +37,7 @@ import com.limelight.videosdk.utility.Setting;
  * @author kanchan
  */
 class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
-    private Downloader mWidevineDownloader;
+    private Downloader mDownloader;
     private String mDownloadingUrl;
     private final Context mContext;
     private WVCallback mCallback;
@@ -143,8 +143,8 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
     private void downloadWidevine(final String url, final String mediaId,final String saveDirLocation) {
         mLogger.debug(TAG + " widevine download url : " + url + " saveDirLocation :" + saveDirLocation + " mediaId :" + mediaId);
         mDownloadingUrl = url;
-        mWidevineDownloader = new Downloader((Activity) mContext);
-        mWidevineDownloader.startDownload(url, "video/wvm", saveDirLocation, mediaId,new DownLoadCallback(){
+        mDownloader = new Downloader((Activity) mContext);
+        mDownloader.startDownload(url, "video/wvm", saveDirLocation, mediaId,new DownLoadCallback(){
 
             @Override
             public void onSuccess(final String path) {
@@ -181,7 +181,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * the rights.
      * @throws JSONException 
      */
-    private void requestRights(final String uri,String mediaId) throws JSONException {
+    private void requestRights(final String uri,final String mediaId) throws JSONException {
         if(mCallback!= null){
             mCallback.onSendMessage("Processing Widevine Rights !");
         }
@@ -367,7 +367,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         final DrmManagerClient drm = new DrmManagerClient(ctx);
         boolean supported = false;
         final String[] engines = drm.getAvailableDrmEngines();
-        for (String engine : engines) {
+        for (final String engine : engines) {
             if (engine.contains("Widevine")) {
                 supported = true;
                 break;
@@ -407,9 +407,9 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * This method cancels the widevine offline content download operation.
      */
     void cancelDownload() {
-        if(mWidevineDownloader!= null){
+        if(mDownloader!= null){
             mLogger.debug(TAG + " cancelDownload : " + mDownloadingUrl);
-            mWidevineDownloader.cancelDownload(mDownloadingUrl);
+            mDownloader.cancelDownload(mDownloadingUrl);
         }
     }
 
@@ -544,7 +544,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         unRegister();
         mCredentials = null;
         mDrm = null;
-        mWidevineDownloader  = null;
+        mDownloader  = null;
         mFileStream = null;
         mDrmInfoRequest = null;
     }

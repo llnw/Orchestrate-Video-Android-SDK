@@ -22,8 +22,9 @@ import android.util.Base64;
  * @author kanchan
  *
  */
-class URLAuthenticator {
+final class URLAuthenticator {
 
+    private URLAuthenticator(){}
     /**
      * Method to sign the request url with customer application secret and access key.
      * @param httpVerb httpMethod
@@ -71,7 +72,7 @@ class URLAuthenticator {
 
         // Iterating through keys in sorted order to build up the string to sign
         // and the signed url query string
-        for (Map.Entry<String, String> entry : sortedParams.entrySet()) {
+        for (final Map.Entry<String, String> entry : sortedParams.entrySet()) {
             signedUrlBuilder.append(URLEncoder.encode(entry.getKey(),Constants.URL_CHARACTER_ENCODING_TYPE));
             signedUrlBuilder = signedUrlBuilder.append("=");
             signedUrlBuilder.append(URLEncoder.encode(entry.getValue(),Constants.URL_CHARACTER_ENCODING_TYPE));
@@ -106,14 +107,29 @@ class URLAuthenticator {
      */
     static String signWithKey(final String key, final String data){
         final String TAG = AnalyticsReporter.class.getSimpleName();
-        Logger mLogger = LoggerUtil.getLogger(null);//It is hack,since we dont have context here.
+        final Logger mLogger = LoggerUtil.getLogger(null);//It is hack,since we dont have context here.
         try{
             final Key secretKey = new SecretKeySpec(key.getBytes(), Constants.SHA256_HASH_ALGORITHM);
             final Mac mac = Mac.getInstance(Constants.SHA256_HASH_ALGORITHM);
             mac.init(secretKey);
-            byte[] hashValue = mac.doFinal(data.getBytes(Constants.URL_CHARACTER_ENCODING_TYPE));
+            final byte[] hashValue = mac.doFinal(data.getBytes(Constants.URL_CHARACTER_ENCODING_TYPE));
             return Base64.encodeToString(hashValue, Base64.DEFAULT).trim();
-        }catch (Exception e){
+        }catch (IllegalArgumentException e){
+            if(mLogger != null){
+                mLogger.error(TAG + e==null?Constants.AUTH_ERROR:e.getMessage());
+            }
+        }
+        catch (NoSuchAlgorithmException e){
+            if(mLogger != null){
+                mLogger.error(TAG + e==null?Constants.AUTH_ERROR:e.getMessage());
+            }
+        }
+        catch (InvalidKeyException e){
+            if(mLogger != null){
+                mLogger.error(TAG + e==null?Constants.AUTH_ERROR:e.getMessage());
+            }
+        }
+        catch (UnsupportedEncodingException e){
             if(mLogger != null){
                 mLogger.error(TAG + e==null?Constants.AUTH_ERROR:e.getMessage());
             }

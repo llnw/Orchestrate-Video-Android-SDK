@@ -87,16 +87,15 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private IPlayerCallback mPlayerCallback;
     private Logger mLogger;
     private int mPosition;
-    private RelativeLayout mPlayerLayout;
     private PlayerControl mPlayerControl;
     private MediaControl mMediaController;
     private CountDownTimer mTimer;
     private CountDownTimer mBufferingTimer;
     private WidevineManager mWidevineManager;
     private AnalyticsReporter mReporter;
-    private String mMediaId = null;
-    private boolean mIsMediacontrollerRemoved = true;
-    private ContentService mPlaylistContentSvc;
+    private String mMediaId;
+    private boolean mIsControlRemoved = true;
+    private ContentService mPlaylistService;
     private boolean mIsAutoPlay = true;
     private int mCurrentPlayPos;
     private boolean isPlaylistPlaying;
@@ -105,8 +104,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     View.OnClickListener mPlayListPrev;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater,final ViewGroup container,final Bundle savedInstanceState) {
         /*
          * When VideoView calls setAnchorView method or setMediaController, it
          * will use the VideoView's parent as the anchor.
@@ -116,7 +114,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          * view layout parameters can be adjusted or modified in the layout.Like
          * its position is in center.
          */
-        mPlayerLayout = new RelativeLayout(getActivity());
+        RelativeLayout mPlayerLayout = new RelativeLayout(getActivity());
         mPlayerLayout.setBackgroundColor(Color.BLACK);
         mPlayerLayout.setGravity(Gravity.CENTER);
         mPlayerView = new VideoPlayerView(getActivity());
@@ -126,13 +124,13 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         mMediaController.setFullScreenCallback(new FullScreenCallback() {
             @Override
             public void fullScreen() {
-                Intent i = new Intent(getActivity(),FullScreenPlayer.class);
-                i.putExtra("URI",mUri.toString());
-                i.putExtra("POSITION",mPlayerView.getCurrentPosition());
-                i.putExtra("STATE",mPlayerView.mPlayerState.name());
-                i.putExtra("MEDIAID",mMediaId);
+                final Intent intent = new Intent(getActivity(),FullScreenPlayer.class);
+                intent.putExtra("URI",mUri.toString());
+                intent.putExtra("POSITION",mPlayerView.getCurrentPosition());
+                intent.putExtra("STATE",mPlayerView.mPlayerState.name());
+                intent.putExtra("MEDIAID",mMediaId);
                 try{
-                    getActivity().startActivity(i);
+                    getActivity().startActivity(intent);
                     if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
                         mPlayerView.stopPlayback();
                         mPlayerView.mPlayerState = PlayerState.stopped;
@@ -149,6 +147,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
             @Override
             public void closeFullScreen() {
+                //Dont Do anything
             }
         },true);
         //This is to stretch the video to full screen
@@ -165,9 +164,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         mPlayerView.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(final View arg0, final MotionEvent arg1) {
-                if(mIsMediacontrollerRemoved){
+                if(mIsControlRemoved){
                     mPlayerView.setMediaController(mMediaController);
-                    mIsMediacontrollerRemoved = false;
+                    mIsControlRemoved = false;
                 }
                 return false;
             }
@@ -175,10 +174,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 
         mPlayListNext = new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View view) {
                 //handler for next click
-                if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
-                    if(mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
+                    if(mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
                         if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
                             mPlayerView.stopPlayback();
                             mPlayerView.mPlayerState = PlayerState.stopped;
@@ -188,7 +187,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         }
                         mCurrentPlayPos++;
                         reset();
-                        mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                        mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
                     }
                 }
                 if(mPlayerCallback!= null){
@@ -199,9 +198,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 
         mPlayListPrev = new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View view) {
                 //handler for previous click
-                if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
+                if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
                     if(mCurrentPlayPos > 0){
                         if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
                             mPlayerView.stopPlayback();
@@ -212,7 +211,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         }
                         mCurrentPlayPos--;
                         reset();
-                        mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                        mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
                     }
                 }
                 if(mPlayerCallback!= null){
@@ -231,7 +230,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         if(mMediaController != null){
             mMediaController.hide();
             mPlayerView.setMediaController(null);
-            mIsMediacontrollerRemoved = true;
+            mIsControlRemoved = true;
         }
     }
 
@@ -250,10 +249,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
         mReporter.sendStartSession();
         mPlayerCallback.playerAttached(mPlayerControl);
-        IntentFilter filter = new IntentFilter("limelight.intent.action.PLAY_FULLSCREEN");
+        final IntentFilter filter = new IntentFilter("limelight.intent.action.PLAY_FULLSCREEN");
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(new BroadcastReceiver() {
             @Override
-            public void onReceive(Context context, Intent intent) {
+            public void onReceive(final Context context,final Intent intent) {
                 //sometimes playerview or state becomes null.
                 final String state = intent.getStringExtra("STATE");
                 mPosition  = intent.getIntExtra("POSITION",0);
@@ -267,25 +266,21 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     @Override
     public void onPause() {
         super.onPause();
-        if (mPlayerView != null) {
-            if(mPlayerView.mPlayerState != PlayerState.stopped){
-                PlayerState state = mPlayerView.isPlaying()?PlayerState.playing:PlayerState.paused;
-                mPlayerView.pause();
-                mPlayerView.mPlayerState = state;//store the old state
-                mPosition = mPlayerView.getCurrentPosition();
-                hideMediaController();
-            }
+        if (mPlayerView != null && mPlayerView.mPlayerState != PlayerState.stopped) {
+            final PlayerState state = mPlayerView.isPlaying()?PlayerState.playing:PlayerState.paused;
+            mPlayerView.pause();
+            mPlayerView.mPlayerState = state;//store the old state
+            mPosition = mPlayerView.getCurrentPosition();
+            hideMediaController();
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mPlayerView != null) {
-            if(mPlayerView.mPlayerState!= PlayerState.stopped){
-                if(mPlayerView.canSeekBackward() || mPlayerView.canSeekForward()){
-                    mPlayerView.seekTo(mPosition);
-                }
+        if (mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped) {
+            if(mPlayerView.canSeekBackward() || mPlayerView.canSeekForward()){
+                mPlayerView.seekTo(mPosition);
             }
         }
     }
@@ -294,7 +289,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
      * To set the {@link IPlayerCallback} implementation.
      * @param listener
      */
-    public void setPlayerCallback(IPlayerCallback listener) {
+    public void setPlayerCallback(final IPlayerCallback listener) {
         mPlayerCallback = listener;
     }
 
@@ -307,13 +302,13 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         if (mPlayerCallback != null){
             mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), what,"Error In Media Player");
         }
-        if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
-                && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+        if(mIsAutoPlay && mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()
+                && mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
             mCurrentPlayPos++;
             if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
                 mPlayerView.mPlayerState = PlayerState.stopped;
             }
-            mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+            mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
         }
         return true;
     }
@@ -324,10 +319,12 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
      */
     public int getCurrentPlayState() {
         if (mPlayerView.mPlayerState != PlayerState.stopped) {
-            if (mPlayerView.isPlaying())
+            if (mPlayerView.isPlaying()){
                 mPlayerView.mPlayerState = PlayerState.playing;
-            else if(mPlayerView.mPlayerState != PlayerState.completed)
+            }
+            else if(mPlayerView.mPlayerState != PlayerState.completed){
                 mPlayerView.mPlayerState = PlayerState.paused;
+            }
         }
         return mPlayerView.mPlayerState.ordinal();
     }
@@ -372,7 +369,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
             }
             if(contentService != null){
-                Encoding encoding = contentService.getEncodingFromUrl(remoteURL);
+                final Encoding encoding = contentService.getEncodingFromUrl(remoteURL);
                 if(encoding != null){
                     mMediaId = encoding.mMediaID;
                     if (PrimaryUse.WidevineOffline.equals(encoding.primaryUse)||PrimaryUse.Widevine.equals(encoding.primaryUse)) {
@@ -448,9 +445,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         if (mLogger != null) {
                             mLogger.debug(TAG+" widevine direct url Content: "+remoteURL);
                         }
-                        Delivery delivery =  new Delivery();
+                        final Delivery delivery =  new Delivery();
                         delivery.mRemoteURL = Uri.parse(remoteURL);
-                        String[] paths = remoteURL.split("/");
+                        final String[] paths = remoteURL.split("/");
                         delivery.mMediaId = paths[5];
                         if (mLogger != null) {
                             mLogger.debug(TAG+" Local widevine Content: media Id : "+delivery.mMediaId);
@@ -577,11 +574,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     if (mPlayerCallback != null){
                         mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
                     }
-                    if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
-                            && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                    if(mIsAutoPlay && mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()
+                            && mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
                         mCurrentPlayPos++;
                         reset();
-                        mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                        mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
                     }
                 }
 
@@ -619,10 +616,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                     if (mPlayerCallback != null){
                                         mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
                                     }
-                                    if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
-                                            && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                                    if(mIsAutoPlay && mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()
+                                            && mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
                                         mCurrentPlayPos++;
-                                        mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                                        mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
                                     }
                                 }
 
@@ -657,11 +654,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         if (mPlayerCallback != null){
                             mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Proper Delivery Found");
                         }
-                        if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
-                                && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                        if(mIsAutoPlay && mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()
+                                && mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
                             mCurrentPlayPos++;
                             reset();
-                            mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                            mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
                         }
                     }
                 }
@@ -680,7 +677,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             if direct remote URL then play
             if local content URL  then play.*/
             if (mLogger != null) {
-                mLogger.debug(TAG+Constants.PLAYER_STATE_STRING+mPlayerView.mPlayerState.name());
+                mLogger.debug(TAG+Constants.PLAYER_STATE+mPlayerView.mPlayerState.name());
                 mLogger.debug(TAG+" Media play:"+ media);
             }
             mMediaController.setPrevNextListeners(null, null);
@@ -704,7 +701,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 //it may be 3GP or just media Id
                 //if media ID, fetch encodings and find suitable delivery and play
                 else{
-                    String scheme = Uri.parse(media).getScheme();
+                    final String scheme = Uri.parse(media).getScheme();
                     if (mLogger != null) {
                         mLogger.debug(TAG+" 3gp or delivery media : " + media);
                     }
@@ -718,13 +715,14 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 }
             }
             else{
-                if (mPlayerCallback != null)
+                if (mPlayerCallback != null){
                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Invalid Media!");
+                }
             }
             //clearing out playlist informations start
             isPlaylistPlaying = false;
             mCurrentPlayPos = 0;
-            mPlaylistContentSvc = null;
+            mPlaylistService = null;
             //clearing out playlist informations end
         }
 
@@ -742,7 +740,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          * @see com.limelight.videosdk.IPlayerControl#playChannel(java.lang.String, com.limelight.videosdk.ContentService, int, com.limelight.videosdk.IPlaylistCallback)
          */
         @Override
-        public void playChannel(String channelId, final ContentService contentService,final IPlaylistCallback callback){
+        public void playChannel(final String channelId, final ContentService contentService,final IPlaylistCallback callback){
 
             if(contentService == null){
                 if (mPlayerCallback != null){
@@ -774,18 +772,18 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             reset();
 
             mCurrentPlayPos = 0;
-            mPlaylistContentSvc = contentService;
+            mPlaylistService = contentService;
             isPlaylistPlaying = false;//reset to initial
             fetchPlaylist(channelId, callback);
         }
 
         @Override
         public void playInPlaylist(int position){
-            if(mPlaylistContentSvc!= null &&  !mPlaylistContentSvc.getMediaList().isEmpty()
-                    && mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos)!= null){
+            if(mPlaylistService!= null &&  !mPlaylistService.getMediaList().isEmpty()
+                    && mPlaylistService.getMediaList().get(mCurrentPlayPos)!= null){
                 reset();
                 mCurrentPlayPos = position;
-                playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID,mPlaylistContentSvc);
+                playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID,mPlaylistService);
             }
         }
 
@@ -795,19 +793,19 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          * @param callback
          */
         private void fetchPlaylist(final String channelId,final IPlaylistCallback callback){
-            mPlaylistContentSvc.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
+            mPlaylistService.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
                 @Override
-                public void onSuccess(ArrayList<Media> list) {
+                public void onSuccess(final ArrayList<Media> list) {
                     if(list!= null && !list.isEmpty()){
                         if(callback != null){
                             callback.getChannelPlaylist(list);
                         }
                         mMediaController.setPrevNextListeners(mPlayListNext, mPlayListPrev);
                         if(!isPlaylistPlaying){
-                            playMediaID(list.get(mCurrentPlayPos).mMediaID,mPlaylistContentSvc);
+                            playMediaID(list.get(mCurrentPlayPos).mMediaID,mPlaylistService);
                             isPlaylistPlaying = true;
                         }
-                        if(mPlaylistContentSvc.hasNextPage()){
+                        if(mPlaylistService.hasNextPage()){
                             fetchPlaylist(channelId, callback);
                         }
                     }else{
@@ -819,7 +817,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 }
 
                 @Override
-                public void onError(Throwable throwable) {
+                public void onError(final Throwable throwable) {
                     if (mPlayerCallback != null){
                         mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
                     }
@@ -839,10 +837,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             if (mPlayerCallback != null){
                 mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Error During Playback");
             }
-            if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
-                    && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+            if(mIsAutoPlay && mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()
+                    && mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
                 mCurrentPlayPos++;
-                mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
             }
         }
 
@@ -854,8 +852,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 if (mLogger != null) {
                     mLogger.warn("Please Set The Uri");
                 }
-                if (mPlayerCallback != null)
+                if (mPlayerCallback != null){
                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Invalid URI");
+                }
                 return;
             }
             if (mPlayerView == null) {
@@ -866,10 +865,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mPlayerView.start();
                 if (mLogger != null) {
                     mLogger.info("Player started");
-                    mLogger.error("Player started");
-                    mLogger.fatal("Player started");
-                    mLogger.debug("Player started");
-                    mLogger.warn("Player started");
                 }
             } 
             if (mLogger != null) {
@@ -913,7 +908,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          * This method sets the media content uri in player.
          * @param uri
          */
-        private void setVideoUri(Uri uri) {
+        private void setVideoUri(final Uri uri) {
             mPosition = 0;
             if (uri == null) {
                 if (mLogger != null) {
@@ -936,8 +931,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         startTimerForPrepare();
                     } catch (IllegalStateException e) {
                         reset();
-                        if (mPlayerCallback != null)
+                        if (mPlayerCallback != null){
                             mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Media Player Error");
+                        }
                     }
                 }
                 if (mLogger != null) {
@@ -950,7 +946,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          * This method sets the media content path in player.
          * @param path
          */
-        private void setVideoPath(String path) {
+        private void setVideoPath(final String path) {
             mPosition = 0;
             if (path == null) {
                 if (mLogger != null) {
@@ -969,8 +965,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         startTimerForPrepare();
                     } catch (IllegalStateException e) {
                         reset();
-                        if (mPlayerCallback != null)
+                        if (mPlayerCallback != null){
                             mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Media Player Error");
+                        }
                     }
                 }
                 if (mLogger != null) {
@@ -989,10 +986,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             if(mPlayerView.getDuration() == -1){
                 mPlayerView.stopPlayback();
             }
-            if(mIsAutoPlay && mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()
-                    && mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+            if(mIsAutoPlay && mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()
+                    && mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
                 mCurrentPlayPos++;
-                mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
                 if(mPlayerCallback!= null){
                     mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
                 }
@@ -1041,7 +1038,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
         if (mLogger != null) {
-            mLogger.debug(TAG+Constants.PLAYER_STATE_STRING+mPlayerView.mPlayerState.name());
+            mLogger.debug(TAG+Constants.PLAYER_STATE+mPlayerView.mPlayerState.name());
         }
         hideMediaController();
         isReporting = true;
@@ -1059,11 +1056,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
 
             if(mIsAutoPlay){
-                if(mPlaylistContentSvc!= null && !mPlaylistContentSvc.getMediaList().isEmpty()){
-                    if(mPlaylistContentSvc.getMediaList().size() > mCurrentPlayPos+1){
+                if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
+                    if(mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
                         mCurrentPlayPos++;
                         reset();
-                        mPlayerControl.playMediaID(mPlaylistContentSvc.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistContentSvc);
+                        mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
                     }
                 }
             }
@@ -1108,7 +1105,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             mWidevineManager.cancelDownload();
         }
         if (mLogger != null) {
-            mLogger.debug(TAG+Constants.PLAYER_STATE_STRING+mPlayerView.mPlayerState.name());
+            mLogger.debug(TAG+Constants.PLAYER_STATE+mPlayerView.mPlayerState.name());
         }
     }
 
@@ -1126,8 +1123,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             @Override
             public void onFinish() {
                 reset();
-                if (mPlayerCallback != null)
+                if (mPlayerCallback != null){
                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Timeout Buffering Media");
+                }
             }
         };
         mBufferingTimer.start();
@@ -1162,8 +1160,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             @Override
             public void onFinish() {
                 reset();
-                if (mPlayerCallback != null)
+                if (mPlayerCallback != null){
                     mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Timeout Fetching Media");
+                }
             }
         };
         mTimer.start();
@@ -1199,7 +1198,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     }
 
     @Override
-    public void onMediaControllerSeek(long positionBefore,long positionAfter) {
+    public void onMediaControllerSeek(final long positionBefore,final long positionAfter) {
         if(isReporting){
             mReporter.sendSeekWithPositionBefore(positionBefore, positionAfter,mMediaId,null);
         }
@@ -1211,7 +1210,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         mReporter.unregisterReceiver();
         reset();
         mPlayerView = null;
-        mPlayerLayout = null;
         mLogger = null;
         mPlayerCallback = null;
     }

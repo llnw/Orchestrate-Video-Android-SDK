@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Nagaraju
  */
 class RequestExecutor extends ScheduledThreadPoolExecutor {
-    
+
     private boolean mIsExecutorPaused;
     private final ReentrantLock mExecutorLock = new ReentrantLock();
     private final Condition mExeUnpausedCon = mExecutorLock.newCondition();
@@ -51,11 +51,12 @@ class RequestExecutor extends ScheduledThreadPoolExecutor {
 
 
     @Override
-    protected void beforeExecute(Thread thread, Runnable runnable) {
+    protected void beforeExecute(final Thread thread,final  Runnable runnable) {
         mExecutorLock.lock();
         try {
-            while (mIsExecutorPaused)
+            while (mIsExecutorPaused){
                 mExeUnpausedCon.await();
+            }
         } catch (InterruptedException ie) {
             thread.interrupt();
         } finally {

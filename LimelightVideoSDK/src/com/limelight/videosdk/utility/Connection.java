@@ -11,8 +11,9 @@ import android.net.NetworkInfo;
  * @author kanchan
  *
  */
-public class Connection {
+final public class Connection {
 
+    private Connection(){}
     /**
      * This method checks if the device is connected to Internet.
      * @param ctx

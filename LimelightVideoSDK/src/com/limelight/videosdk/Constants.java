@@ -89,7 +89,19 @@ public class Constants {
     public static final String ORG_ERROR = "Please Ensure Organization ID is Set.";
     public static final String DESERIALIZE_ERROR = "Exception raised In MediaThumbnail deserialize";
     public static final String PLAYER_NOT_INIT_ERROR = "Player Not Initilized";
-    public static final String PLAYER_STATE_STRING = " PlayerState:";
+    public static final String PLAYER_STATE = " PlayerState:";
+
+    public static final String ELAPSED_TIME = "millisecondsElapsed";
+    public static final String MEDIAID = "mediaId";
+    public static final String CHANNELID = "channelId";
+    public static final String CHANNEL_LIST_ID = "channelListId";
+    public static final String POSITION ="positionInMilliseconds";
+    public static final String SPACE =" ";
+    public static final String RES_URL =" resourceUrl: ";
+    public static final String IS_LOAD_MORE =" isLoadMore: ";
+    public static final String SEARCH_PATTERN = "%s:%s;";
+
+    public static final int MAX_THREAD_COUNT = 1;
     /**
      * Various message states.<br>
      * status 0<br>

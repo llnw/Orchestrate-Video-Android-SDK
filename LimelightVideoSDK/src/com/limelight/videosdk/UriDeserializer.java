@@ -16,12 +16,12 @@ import com.google.gson.JsonSerializer;
  */
 class UriDeserializer implements JsonDeserializer<Uri>,JsonSerializer<Uri> {
     @Override
-    public JsonElement serialize(Uri src, Type type,JsonSerializationContext context) {
+    public JsonElement serialize(final Uri src,final Type type,final JsonSerializationContext context) {
         return src == null ? null : new JsonPrimitive(src.toString());
     }
 
     @Override
-    public Uri deserialize(JsonElement json, Type type,JsonDeserializationContext context){
+    public Uri deserialize(final JsonElement json,final Type type,final JsonDeserializationContext context){
         return json==null?null:Uri.parse(json.getAsString());
     }
 }

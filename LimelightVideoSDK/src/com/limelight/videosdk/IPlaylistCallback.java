@@ -1,7 +1,6 @@
 package com.limelight.videosdk;
 
 import java.util.ArrayList;
-
 import com.limelight.videosdk.model.Media;
 
 /**

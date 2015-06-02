@@ -18,7 +18,7 @@ public interface IPlayerCallback {
      * Method will be implemented in activity.IPlayerControl will be used to control Player.
      * @param control {@link IPlayerControl}
      */
-    public void playerAttached(IPlayerControl control);
+    void playerAttached(IPlayerControl control);
     /**
      * Method will be implemented in activity.
      * Player will send error information or some status message.
@@ -28,12 +28,12 @@ public interface IPlayerCallback {
      * @param extra an extra code, specific to the error. Typically implementation dependent. 
      * @param msg any message that has to be sent from SDK to Application.
      */
-    public void playerMessage(int what,int extra,String msg);
+    void playerMessage(int what,int extra,String msg);
 
     /**
      * Method will be implemented in activity.
      * This callback method is called when player is prepared to play.
      * @param control {@link IPlayerControl}
      */
-    public void playerPrepared(IPlayerControl control);
+    void playerPrepared(IPlayerControl control);
 }

@@ -17,14 +17,14 @@ import com.google.gson.JsonSerializer;
 class DateDeserializer implements JsonDeserializer<Date>, JsonSerializer<Date> {
 
     @Override
-    public JsonElement serialize(Date src, Type type,JsonSerializationContext ctx) {
+    public JsonElement serialize(final Date src,final Type type,final JsonSerializationContext ctx) {
         // We need the time interval as seconds dividing with 1000 to convert it
         // to seconds
         return src == null ? null : new JsonPrimitive(src.getTime() / 1000);
     }
 
     @Override
-    public Date deserialize(JsonElement json, Type type,JsonDeserializationContext ctx){
+    public Date deserialize(final JsonElement json,final Type type,final JsonDeserializationContext ctx){
         // We get the time interval as seconds multiplying with 1000 to convert
         // it to milliseconds
         return json == null ? null : new Date(json.getAsLong() * 1000);

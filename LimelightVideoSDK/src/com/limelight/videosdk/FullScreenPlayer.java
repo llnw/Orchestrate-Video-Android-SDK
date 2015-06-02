@@ -36,7 +36,7 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
     private boolean isReporting;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -89,28 +89,22 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
 
     @Override
     public void onMediaControllerPlay(final long position) {
-        if(isReporting){
-            if(mMediaId!= null){
-                mReporter.sendPlayWithPosition(position,mMediaId,null);
-            }
+        if(isReporting && mMediaId!= null){
+            mReporter.sendPlayWithPosition(position,mMediaId,null);
         }
     }
 
     @Override
     public void onMediaControllerPause(final long position) {
-        if(isReporting){
-            if(mMediaId!= null){
-                mReporter.sendPauseWithPosition(position,mMediaId,null);
-            }
+        if(isReporting && mMediaId!= null){
+            mReporter.sendPauseWithPosition(position,mMediaId,null);
         }
     }
 
     @Override
     public void onMediaControllerSeek(final long beforePosition, final long afterPosition) {
-        if(isReporting){
-            if(mMediaId!= null){
-                mReporter.sendSeekWithPositionBefore(beforePosition, afterPosition,mMediaId,null);
-            }
+        if(isReporting && mMediaId!= null){
+            mReporter.sendSeekWithPositionBefore(beforePosition, afterPosition,mMediaId,null);
         }
     }
 
@@ -168,11 +162,8 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         mReporter.unregisterReceiver();
-        mPlayerView = null;
-        mLogger = null;
-        mReporter = null;
+        super.onDestroy();
     }
 
     @Override

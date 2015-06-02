@@ -20,6 +20,7 @@ import com.limelight.videosdk.model.Media.MediaThumbnail;
  *
  */
 class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSerializer<MediaThumbnail> {
+    final String TAG = ThumbnailDeserializer.class.getSimpleName();
 
     @Override
     public JsonElement serialize(MediaThumbnail thumbnail, Type type,JsonSerializationContext context) {
@@ -28,38 +29,37 @@ class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSeri
 
     @Override
     public MediaThumbnail deserialize(JsonElement jsonElement,Type type, JsonDeserializationContext context){
-        final String TAG = ThumbnailDeserializer.class.getSimpleName();
         if (null == jsonElement) {
             // The thumbnail element is null.
             return null;
         }
         MediaThumbnail mediaThumbnail = null;
-        Logger logger = LoggerUtil.getLogger(null);//It is hack,since we dont have context here.
+        final Logger logger = LoggerUtil.getLogger(null);//It is hack,since we dont have context here.
         if (jsonElement.isJsonArray()) {
-            final JsonArray thummbnailListArray = jsonElement.getAsJsonArray();
-            JsonObject maxWidthThumbnailObj = null;
+            final JsonArray thummbnailList = jsonElement.getAsJsonArray();
+            JsonObject maxWidthThumb = null;
             JsonObject tmpThumbnail = null;
-            int widthOfMaxWidthThumbnail = 0;
-            for (int j = 0; j < thummbnailListArray.size(); j++) {
-                tmpThumbnail = thummbnailListArray.get(j).getAsJsonObject();
-                if (null == maxWidthThumbnailObj) {
-                    maxWidthThumbnailObj = tmpThumbnail;
+            int maxWidth = 0;
+            for (int j = 0; j < thummbnailList.size(); j++) {
+                tmpThumbnail = thummbnailList.get(j).getAsJsonObject();
+                if (null == maxWidthThumb) {
+                    maxWidthThumb = tmpThumbnail;
                     // when assigning object to maxWidthThumbnailObj preserving
                     // widthOfMaxWidthThumbnail
                     try {
-                        widthOfMaxWidthThumbnail = maxWidthThumbnailObj.get(Constants.WIDTH).getAsInt();
+                        maxWidth = maxWidthThumb.get(Constants.WIDTH).getAsInt();
                     } catch (ClassCastException ex) {
-                        widthOfMaxWidthThumbnail = 0;
+                        maxWidth = 0;
                         if(logger != null){
                             logger.debug(TAG+" ClassCastException "+Constants.DESERIALIZE_ERROR);
                         }
                     } catch (IllegalStateException ex) {
-                        widthOfMaxWidthThumbnail = 0;
+                        maxWidth = 0;
                         if(logger != null){
                             logger.debug(TAG+" IllegalStateException "+Constants.DESERIALIZE_ERROR);
                         }
                     } catch (Exception ex) {
-                        widthOfMaxWidthThumbnail = 0;
+                        maxWidth = 0;
                         if(logger != null){
                             logger.debug(TAG+" Exception "+Constants.DESERIALIZE_ERROR);
                         }
@@ -67,7 +67,7 @@ class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSeri
                 } else {
                     final JsonElement objTempJsonElement = tmpThumbnail.get(Constants.WIDTH);
 
-                    if (false == objTempJsonElement.isJsonNull()) {
+                    if (!objTempJsonElement.isJsonNull()) {
                         int width = 0;
                         try {
                             width = objTempJsonElement.getAsInt();
@@ -85,39 +85,41 @@ class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSeri
                                 logger.debug(TAG+" Exception "+Constants.DESERIALIZE_ERROR);
                             }
                         }
-                        if (width > widthOfMaxWidthThumbnail) {
-                            maxWidthThumbnailObj = tmpThumbnail;
+                        if (width > maxWidth) {
+                            maxWidthThumb = tmpThumbnail;
                             try {
-                                widthOfMaxWidthThumbnail = maxWidthThumbnailObj.get(Constants.WIDTH).getAsInt();
+                                maxWidth = maxWidthThumb.get(Constants.WIDTH).getAsInt();
                             } catch (ClassCastException ex) {
-                                widthOfMaxWidthThumbnail = 0;
+                                maxWidth = 0;
                                 if(logger != null){
                                     logger.debug(TAG+" ClassCastException "+Constants.DESERIALIZE_ERROR);
                                 }
                             } catch (IllegalStateException ex) {
-                                widthOfMaxWidthThumbnail = 0;
+                                maxWidth = 0;
                                 if(logger != null){
                                     logger.debug(TAG+" IllegalStateException "+Constants.DESERIALIZE_ERROR);
                                 }
                             } catch (Exception ex) {
-                                widthOfMaxWidthThumbnail = 0;
+                                maxWidth = 0;
                                 if(logger != null){
                                     logger.debug(TAG+" Exception "+Constants.DESERIALIZE_ERROR);
                                 }
                             }
                         }
                     } else {
-                        logger.error(TAG + " Received null json element");
+                        if(logger != null){
+                            logger.error(TAG + " Received null json element");
+                        }
                     }
                 }// end of else
             }// end of for
 
-            if (maxWidthThumbnailObj.isJsonObject()) {
-                GsonBuilder myGsonBuilder = new GsonBuilder();
+            if (maxWidthThumb.isJsonObject()) {
+                final GsonBuilder myGsonBuilder = new GsonBuilder();
                 myGsonBuilder.registerTypeAdapter(Uri.class,new UriDeserializer());
-                Gson myGson = myGsonBuilder.create();
+                final Gson myGson = myGsonBuilder.create();
                 try {
-                    mediaThumbnail = myGson.fromJson(maxWidthThumbnailObj, MediaThumbnail.class);
+                    mediaThumbnail = myGson.fromJson(maxWidthThumb, MediaThumbnail.class);
                 } catch (JsonSyntaxException ex) {
                     mediaThumbnail = null;
                     if(logger != null){

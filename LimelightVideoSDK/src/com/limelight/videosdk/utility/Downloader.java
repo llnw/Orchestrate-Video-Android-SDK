@@ -105,7 +105,7 @@ public class Downloader {
      * @return
      */
     public boolean cancelDownload(final String url){
-        for(DownloadTask task : mDownloadTasks){
+        for(final DownloadTask task : mDownloadTasks){
             if(url.equals(task.mUrl)){
                 task.cancel(true);
                 return true;
@@ -133,15 +133,17 @@ public class Downloader {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if(mCallback !=null)
+            if(mCallback !=null){
                 mCallback.onProgress(0);
+            }
         }
 
         @Override
         protected void onProgressUpdate(final Integer... progress) {
             super.onProgressUpdate(progress);
-            if(mCallback !=null)
+            if(mCallback !=null){
                 mCallback.onProgress(progress[0]);
+            }
         }
 
         @Override
@@ -218,24 +220,29 @@ public class Downloader {
         protected void onPostExecute(final String pathToFile) {
             mDownloadTasks.remove(this);
             if (mError == null) {
-                if(mCallback !=null)
+                if(mCallback !=null){
                     mCallback.onProgress(100);
+                }
                 if(mTempFile!= null && mTempFile.exists()){
                     if(mTempFile.renameTo(mFile)){
-                        if(mCallback !=null)
+                        if(mCallback !=null){
                             mCallback.onSuccess(pathToFile);
+                        }
                     }
                     else{
-                        if(mCallback !=null)
+                        if(mCallback !=null){
                             mCallback.onError(new Throwable("Failed To Write !"));
+                        }
                     }
                 }else{
-                    if(mCallback !=null)
+                    if(mCallback !=null){
                         mCallback.onSuccess(pathToFile);
+                    }
                 }
             } else {
-                if(mCallback !=null)
+                if(mCallback !=null){
                     mCallback.onError(mError);
+                }
                 if(mTempFile!= null && mTempFile.exists()){
                     mTempFile.delete();
                 }
