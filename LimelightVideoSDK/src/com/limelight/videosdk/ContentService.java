@@ -61,7 +61,7 @@ public class ContentService {
     private final ArrayList<Encoding> mEncodingList = new ArrayList<Encoding>();
 
     private int mPageSize = 500;
-    private final String[] mSortValues = {Constants.SORT_BY_UPDATE_DATE,Constants.SORT_BY_CREATE_DATE};
+    private final String[] mSortValues = {Constants.SORT_BY_UPDATE_DATE,Constants.SORT_BY_CREATE};
     private final String[] mSortOrderValues = {Constants.SORT_ORDER_ASC,Constants.SORT_ORDER_DESC};
     private String mSortBy = Constants.SORT_BY_UPDATE_DATE;
     private String mSortOrder = Constants.SORT_ORDER_ASC;
@@ -177,7 +177,7 @@ public class ContentService {
                Exception exception = null;
                HttpURLConnection urlConnection = null;
                try{
-                   final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_GROUP_PATH, mOrgId);
+                   final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.CHANNEL_GROUP_PATH, mOrgId);
                    mLogger.debug(TAG + " getAllChannelGroup "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                    mLogger.debug(TAG + " getAllChannelGroup "+ " mHasNextGroup: " + mHasNext +" mPageIdGroup: " + mPageId);
                    if(isLoadMore){
@@ -261,7 +261,7 @@ public class ContentService {
                 }
             }else{
                 try {
-                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_GROUP_PATH, mOrgId);
+                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.CHANNEL_GROUP_PATH, mOrgId);
                     mLogger.debug(TAG + " getAllChannelGroupAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannelGroupAsync "+ " mHasNextGroup: " + mHasNext +" mPageIdGroup: " + mPageId);
                     if(isLoadMore){
@@ -357,7 +357,7 @@ public class ContentService {
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
                 try {
-                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_OF_GROUP_PATH, mOrgId,channelGroupId);
+                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.CHANNEL_OF_GROUP_PATH, mOrgId,channelGroupId);
                     mLogger.debug(TAG + " getAllChannelOfGroup "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannelOfGroup "+ " mHasNextChannelOfGroup: " + mHasNext +" mPageIdChannelOfGroup: " + mPageId);
                     if(isLoadMore){
@@ -439,7 +439,7 @@ public class ContentService {
                         HttpURLConnection urlConnection = null;
                         Throwable throwable = null;
                         try {
-                            String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_OF_GROUP_PATH, mOrgId,channelGroupId);
+                            String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.CHANNEL_OF_GROUP_PATH, mOrgId,channelGroupId);
                             mLogger.debug(TAG + " getAllChannelOfGroupAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                             mLogger.debug(TAG + " getAllChannelOfGroupAsync "+ " mHasNextChannelOfGroup: " + mHasNext +" mPageIdChannelOfGroup: " + mPageId);
                             if(isLoadMore){
@@ -524,7 +524,7 @@ public class ContentService {
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
                 try {
-                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_PATH, mOrgId);
+                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.ALL_CHANNEL_PATH, mOrgId);
                     mLogger.debug(TAG + " getAllChannel "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannel "+ " mHasNextChannel: " + mHasNext +" mPageIdChannel: " + mPageId);
                     if(isLoadMore){
@@ -605,7 +605,7 @@ public class ContentService {
                 }
             }else{
                 try {
-                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_CHANNEL_PATH, mOrgId);
+                    final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.ALL_CHANNEL_PATH, mOrgId);
                     mLogger.debug(TAG + " getAllChannelAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllChannelAsync "+ " mHasNextChannel: " + mHasNext +" mPageIdChannel: " + mPageId);
                     if(isLoadMore){
@@ -701,7 +701,7 @@ public class ContentService {
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
                 try {
-                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_MEDIA_OF_CHANNEL_PATH, mOrgId,channelId);
+                    String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.MEDIA_OF_CHANNEL_PATH, mOrgId,channelId);
                     mLogger.debug(TAG + " getAllMediaOfChannel "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                     mLogger.debug(TAG + " getAllMediaOfChannel "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMediaOfChannel: " + mPageId);
                     if(isLoadMore){
@@ -786,7 +786,7 @@ public class ContentService {
                         Throwable throwable = null;
                         HttpURLConnection urlConnection = null;
                         try {
-                            String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_ALL_MEDIA_OF_CHANNEL_PATH, mOrgId,channelId);
+                            String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.MEDIA_OF_CHANNEL_PATH, mOrgId,channelId);
                             mLogger.debug(TAG + " getAllMediaOfChannelAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                             mLogger.debug(TAG + " getAllMediaOfChannelAsync "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMediaOfChannel: " + mPageId);
                             if(isLoadMore){
@@ -1328,7 +1328,7 @@ public class ContentService {
                     public void run() {
                         HttpURLConnection urlConnection = null;
                         try {
-                            String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_CHANNEL_PROPERTY_PATH, mOrgId,channelId);
+                            String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.CHANNEL_PROPERTY_PATH, mOrgId,channelId);
                             mLogger.debug(TAG + " getChannelAsync " + " resourceUrl "+ resourceUrl);
                             urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
                             urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
@@ -1391,7 +1391,7 @@ public class ContentService {
                     public void run() {
                         HttpURLConnection urlConnection = null;
                         try {
-                            String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.FETCH_MEDIA_PROPERTY_PATH, mOrgId,mediaId);
+                            String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.MEDIA_PROPERTY_PATH, mOrgId,mediaId);
                             mLogger.debug(TAG + " getMediaAsync " + " resourceUrl "+ resourceUrl);
                             urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
                             urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
@@ -1760,9 +1760,9 @@ public class ContentService {
         StringBuilder urlBuilder = new StringBuilder(url);
         urlBuilder = urlBuilder.append("?");
         for (Map.Entry<String, String> entry : params.entrySet()) {
-            urlBuilder.append(URLEncoder.encode(entry.getKey(),Constants.URL_CHARACTER_ENCODING_TYPE));
+            urlBuilder.append(URLEncoder.encode(entry.getKey(),Constants.ENCODING));
             urlBuilder = urlBuilder.append("=");
-            urlBuilder.append(URLEncoder.encode(entry.getValue(),Constants.URL_CHARACTER_ENCODING_TYPE));
+            urlBuilder.append(URLEncoder.encode(entry.getValue(),Constants.ENCODING));
             urlBuilder = urlBuilder.append("&");
             urlBuilder.append(entry.getKey());
             urlBuilder = urlBuilder.append("=");

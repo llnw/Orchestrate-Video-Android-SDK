@@ -32,15 +32,15 @@ import android.util.Log;
  * of log file until rolling and logging format
  */
 class LogConfigurator {
-    private Level rootLevel = Level.DEBUG;
-    private String filePattern = "%d - %p - %c - %t - %m%n";
-    private String fileName;
-    private int maxBackupSize = 5;
-    private long maxFileSize = 512 * 1024;
-    private boolean immediateFlush = true;
-    private boolean useFileAppender = true;
-    private boolean resetConfiguration = true;
-    private boolean internalDebugging;
+    private Level mRootLevel = Level.DEBUG;
+    private String mFilePattern = "%d - %p - %c - %t - %m%n";
+    private String mFileName;
+    private int mMaxBackupSize = 5;
+    private long mMaxFileSize = 512 * 1024;
+    private boolean mImmediateFlush = true;
+    private boolean mUseFileAppender = true;
+    private boolean mReset = true;
+    private boolean mInternalDebug;
 
     public LogConfigurator() {
         //empty constructor.
@@ -81,8 +81,7 @@ class LogConfigurator {
      * @param filePattern
      *            Log pattern for the file appender
      */
-    LogConfigurator(final String fileName, final Level rootLevel,
-            final String filePattern) {
+    LogConfigurator(final String fileName, final Level rootLevel,final String filePattern) {
         this(fileName);
         setRootLevel(rootLevel);
         setFilePattern(filePattern);
@@ -166,7 +165,7 @@ class LogConfigurator {
      * @return Log level of the root logger
      */
     Level getRootLevel() {
-        return rootLevel;
+        return mRootLevel;
     }
 
     /**
@@ -176,7 +175,7 @@ class LogConfigurator {
      *            Log level for the root logger
      */
     void setRootLevel(final Level level) {
-        this.rootLevel = level;
+        this.mRootLevel = level;
     }
 
     /**
@@ -184,7 +183,7 @@ class LogConfigurator {
      * @return filePattern
      */
     private String getFilePattern() {
-        return filePattern;
+        return mFilePattern;
     }
 
     /**
@@ -192,7 +191,7 @@ class LogConfigurator {
      * @param filePattern
      */
     void setFilePattern(final String filePattern) {
-        this.filePattern = filePattern;
+        this.mFilePattern = filePattern;
     }
 
     /**
@@ -201,7 +200,7 @@ class LogConfigurator {
      * @return the name of the log file
      */
     String getFileName() {
-        return fileName;
+        return mFileName;
     }
 
     /**
@@ -211,7 +210,7 @@ class LogConfigurator {
      *            Name of the log file
      */
     void setFileName(final String fileName) {
-        this.fileName = fileName;
+        this.mFileName = fileName;
     }
 
     /**
@@ -220,7 +219,7 @@ class LogConfigurator {
      * @return Maximum number of backed up log files
      */
     private int getMaxBackupSize() {
-        return maxBackupSize;
+        return mMaxBackupSize;
     }
 
     /**
@@ -230,7 +229,7 @@ class LogConfigurator {
      *            Maximum number of backed up log files
      */
     void setMaxBackupSize(final int maxBackupSize) {
-        this.maxBackupSize = maxBackupSize;
+        this.mMaxBackupSize = maxBackupSize;
     }
 
     /**
@@ -239,7 +238,7 @@ class LogConfigurator {
      * @return Maximum size of log file until rolling
      */
     private long getMaxFileSize() {
-        return maxFileSize;
+        return mMaxFileSize;
     }
 
     /**
@@ -249,7 +248,7 @@ class LogConfigurator {
      *            Maximum size of log file until rolling
      */
     void setMaxFileSize(final long maxFileSize) {
-        this.maxFileSize = maxFileSize;
+        this.mMaxFileSize = maxFileSize;
     }
 
     /**
@@ -257,7 +256,7 @@ class LogConfigurator {
      * @return immediateFlush
      */
     private boolean isImmediateFlush() {
-        return immediateFlush;
+        return mImmediateFlush;
     }
 
     /**
@@ -265,7 +264,7 @@ class LogConfigurator {
      * @param immediateFlush
      */
     void setImmediateFlush(final boolean immediateFlush) {
-        this.immediateFlush = immediateFlush;
+        this.mImmediateFlush = immediateFlush;
     }
 
     /**
@@ -274,7 +273,7 @@ class LogConfigurator {
      * @return True, if FileAppender is used for logging
      */
     private boolean isUseFileAppender() {
-        return useFileAppender;
+        return mUseFileAppender;
     }
 
     /**
@@ -282,16 +281,16 @@ class LogConfigurator {
      *            the useFileAppender to set
      */
     void setUseFileAppender(final boolean useFileAppender) {
-        this.useFileAppender = useFileAppender;
+        this.mUseFileAppender = useFileAppender;
     }
 
     /**
      * This method resets the log4j configuration before applying this configuration.
      * Default is true.
-     * @param resetConfiguration
+     * @param boolean reset
      */
     void setResetConfiguration(final boolean reset) {
-        this.resetConfiguration = reset;
+        this.mReset = reset;
     }
 
     /**
@@ -299,7 +298,7 @@ class LogConfigurator {
      * @return resetConfiguration
      */
     private boolean isResetConfiguration() {
-        return resetConfiguration;
+        return mReset;
     }
 
     /**
@@ -307,7 +306,7 @@ class LogConfigurator {
      * @param internalDebugging
      */
     void setInternalDebugging(final boolean internalDebugging) {
-        this.internalDebugging = internalDebugging;
+        this.mInternalDebug = internalDebugging;
     }
 
     /**
@@ -315,6 +314,6 @@ class LogConfigurator {
      * @return
      */
     private boolean isInternalDebugging() {
-        return internalDebugging;
+        return mInternalDebug;
     }
 }

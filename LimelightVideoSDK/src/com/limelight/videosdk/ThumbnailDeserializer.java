@@ -23,12 +23,12 @@ class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSeri
     final String TAG = ThumbnailDeserializer.class.getSimpleName();
 
     @Override
-    public JsonElement serialize(MediaThumbnail thumbnail, Type type,JsonSerializationContext context) {
+    public JsonElement serialize(final MediaThumbnail thumbnail,final Type type,final JsonSerializationContext context) {
         return null;
     }
 
     @Override
-    public MediaThumbnail deserialize(JsonElement jsonElement,Type type, JsonDeserializationContext context){
+    public MediaThumbnail deserialize(final JsonElement jsonElement,final Type type, final JsonDeserializationContext context){
         if (null == jsonElement) {
             // The thumbnail element is null.
             return null;

@@ -13,14 +13,15 @@ import android.preference.PreferenceManager;
  * @author kanchan
  *
  */
-public class Setting{
+public final class Setting{
     private static final boolean IS_RELEASE = true;
-    private static String sApiEndPoint;
+    private static String sContentApi;
     private static String sLicenseProxy;
     private static String sPortalkey;
     private static String sDeviceId;
-    private static String sAnalyticsEndPoint;
+    private static String sAnalyticsAPI;
 
+    private Setting(){}
     /**
      * To set widevine specific details like, Limelight API endpoint,
      * License proxy address and portal key
@@ -29,7 +30,7 @@ public class Setting{
      * @param portalKey PortalKey
      */
     public static void configureLimelightSettings(final String apiEndPoint,final String licenseProxy,final String portalKey){
-        sApiEndPoint= apiEndPoint;
+        sContentApi= apiEndPoint;
         sLicenseProxy = licenseProxy;
         sPortalkey = portalKey;
     }
@@ -77,14 +78,14 @@ public class Setting{
      * @return ContentAPIEndPoint
      */
     public static String getApiEndPoint(){
-        if(sApiEndPoint== null|| sApiEndPoint.trim().isEmpty()){
+        if(sContentApi== null|| sContentApi.trim().isEmpty()){
             if(IS_RELEASE){
-                return Constants.API_ENDPOINT_PROD;
+                return Constants.API_PROD;
             }else{
-                return Constants.API_ENDPOINT_STAGING;
+                return Constants.API_STAGING;
             }
         }else{
-            return sApiEndPoint;
+            return sContentApi;
         }
     }
 
@@ -97,9 +98,9 @@ public class Setting{
     public static String getLicenseProxyURL(){
         if(sLicenseProxy== null|| sLicenseProxy.trim().isEmpty()){
             if(IS_RELEASE){
-                return Constants.LICENSE_PROXY_PROD;
+                return Constants.LICENSE_PROD;
             }else{
-                return Constants.LICENSE_PROXY_STAGING;
+                return Constants.LICENSE_STAGING;
             }
         }else{
             return sLicenseProxy;
@@ -127,14 +128,14 @@ public class Setting{
      * @return AnalyticsEndPoint
      */
     public static String getAnalyticsEndPoint(){
-        if(sAnalyticsEndPoint== null){
+        if(sAnalyticsAPI== null){
             if(IS_RELEASE){
-                return Constants.ANALYTICS_ENDPOINT_PROD;
+                return Constants.ANALYTICS_PROD;
             }else{
-                return Constants.ANALYTICS_ENDPOINT_STAGING;
+                return Constants.ANALYTICS_STAGING;
             }
         }else{
-            return sAnalyticsEndPoint;
+            return sAnalyticsAPI;
         }
     }
 }

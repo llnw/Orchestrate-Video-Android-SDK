@@ -220,7 +220,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         mDrmInfoRequest.put("WVAssetURIKey", uri);
         mDrmInfoRequest.put("WVDeviceIDKey",deviceId);
 
-        final boolean isOffline = uri.startsWith("/");
+        final boolean isOffline = uri.charAt(0)=='/';
         if (isOffline) {
             try {
                 mFileStream = new FileInputStream(uri);
@@ -320,7 +320,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         setMediaCredentials(mediaID);
         String userData = null;
         try {
-            userData = URLEncoder.encode(mCredentials.toString(), Constants.URL_CHARACTER_ENCODING_TYPE);
+            userData = URLEncoder.encode(mCredentials.toString(), Constants.ENCODING);
         } catch (UnsupportedEncodingException e) {
             mLogger.error(TAG + " " +e == null ?"UnsupportedEncodingException":e.getStackTrace());
             if(mCallback!= null){

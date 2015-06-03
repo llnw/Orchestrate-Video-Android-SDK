@@ -248,7 +248,7 @@ class AnalyticsReporter {
             public void run() {
                 HttpURLConnection urlConnection;
                 try {
-                    byte[] data = mAnalyticsData.toString().getBytes(Constants.URL_CHARACTER_ENCODING_TYPE);
+                    byte[] data = mAnalyticsData.toString().getBytes(Constants.ENCODING);
                     urlConnection = (HttpURLConnection) new URL(Setting.getAnalyticsEndPoint()).openConnection();
                     urlConnection.setRequestMethod("POST");
                     urlConnection.setRequestProperty("Content-Type", "application/json");

@@ -114,7 +114,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          * view layout parameters can be adjusted or modified in the layout.Like
          * its position is in center.
          */
-        RelativeLayout mPlayerLayout = new RelativeLayout(getActivity());
+        final RelativeLayout mPlayerLayout = new RelativeLayout(getActivity());
         mPlayerLayout.setBackgroundColor(Color.BLACK);
         mPlayerLayout.setGravity(Gravity.CENTER);
         mPlayerView = new VideoPlayerView(getActivity());
@@ -366,7 +366,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         private void playRemoteURL(final String remoteURL, final ContentService contentService) {
 
             if (mPlayerCallback != null){
-                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,Constants.FETCH_MEDIA);
             }
             if(contentService != null){
                 final Encoding encoding = contentService.getEncodingFromUrl(remoteURL);
@@ -534,7 +534,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          */
         private void playRTSP(final String rtspURL) {
             if (mPlayerCallback != null){
-                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,Constants.FETCH_MEDIA);
             }
             if (mLogger != null) {
                 mLogger.debug(TAG+" 3gp media : " + rtspURL);
@@ -550,7 +550,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         private void playMediaID(final String mediaID, final ContentService contentService) {
             mPlayerView.setMediaControllerCallback(PlayerSupportFragment.this);
             if (mPlayerCallback != null){
-                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,Constants.FETCH_MEDIA);
             }
             if (mLogger != null) {
                 mLogger.debug(TAG+" delivery media : " + mediaID);
@@ -583,7 +583,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 }
 
                 @Override
-                public void onSuccess(ArrayList<Encoding> encodingList) {
+                public void onSuccess(final ArrayList<Encoding> encodingList) {
                     mMediaId = mediaID;
                     final Delivery delivery = contentService.getDeliveryForMedia(encodingList);
                     if(delivery!= null){
@@ -727,7 +727,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
 
         @Override
-        public void setAutoPlay(boolean isAutoPlay){
+        public void setAutoPlay(final boolean isAutoPlay){
             mIsAutoPlay = isAutoPlay;
         }
 
@@ -762,7 +762,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
 
             if (mPlayerCallback != null){
-                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,"Fetching Media From Server !");
+                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), 0,Constants.FETCH_MEDIA);
             }
 
             if (mLogger != null) {
@@ -778,7 +778,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
 
         @Override
-        public void playInPlaylist(int position){
+        public void playInPlaylist(final int position){
             if(mPlaylistService!= null &&  !mPlaylistService.getMediaList().isEmpty()
                     && mPlaylistService.getMediaList().get(mCurrentPlayPos)!= null){
                 reset();
@@ -796,7 +796,19 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             mPlaylistService.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
                 @Override
                 public void onSuccess(final ArrayList<Media> list) {
-                    if(list!= null && !list.isEmpty()){
+                    if(list == null){
+                        if (mPlayerCallback != null){
+                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Media For This Channel !");
+                        }
+                        return;
+                    }
+                    else if(list.isEmpty()){
+                        if (mPlayerCallback != null){
+                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Media For This Channel !");
+                        }
+                        return;
+                    }
+                    else{
                         if(callback != null){
                             callback.getChannelPlaylist(list);
                         }
@@ -808,11 +820,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         if(mPlaylistService.hasNextPage()){
                             fetchPlaylist(channelId, callback);
                         }
-                    }else{
-                        if (mPlayerCallback != null){
-                            mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"No Media For This Channel !");
-                        }
-                        return;
                     }
                 }
 
@@ -859,7 +866,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
             if (mPlayerView == null) {
                 if (mLogger != null) {
-                    mLogger.error(Constants.PLAYER_NOT_INIT_ERROR);
+                    mLogger.error(Constants.PLAYER_INIT_ERROR);
                 }
             } else{
                 mPlayerView.start();
@@ -882,7 +889,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
             if (mPlayerView == null) {
                 if (mLogger != null) {
-                    mLogger.error(Constants.PLAYER_NOT_INIT_ERROR);
+                    mLogger.error(Constants.PLAYER_INIT_ERROR);
                 }
             } else{
                 mPlayerView.pause();
@@ -897,7 +904,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         public void stop() {
             if (mPlayerView == null){
                 if (mLogger != null) {
-                    mLogger.error(Constants.PLAYER_NOT_INIT_ERROR);
+                    mLogger.error(Constants.PLAYER_INIT_ERROR);
                 }
             } else{
                 reset();
@@ -918,7 +925,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mUri = uri;
                 if (mPlayerView == null) {
                     if (mLogger != null) {
-                        mLogger.error(Constants.PLAYER_NOT_INIT_ERROR);
+                        mLogger.error(Constants.PLAYER_INIT_ERROR);
                     }
                 }else {
                     if(mPlayerView.mPlayerState!= PlayerState.stopped){
@@ -978,7 +985,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     }
 
     @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
+    public void onPrepared(final MediaPlayer mediaPlayer) {
         stopTimerForPrepare();
         if(mPlayerView.mPlayerState == PlayerState.paused){
             mPlayerView.pause();
@@ -996,9 +1003,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
         else{
-            final String str3gp = "3gp";
             //Special case for 3GP url as it takes long time to play.
-            if(!(URLUtil.isContentUrl(mUri.toString())) && str3gp.equalsIgnoreCase(MimeTypeMap.getFileExtensionFromUrl(mUri.toString()))){
+            if(!(URLUtil.isContentUrl(mUri.toString())) && Constants.THREEGP.equalsIgnoreCase(MimeTypeMap.getFileExtensionFromUrl(mUri.toString()))){
                 if (mLogger != null) {
                     mLogger.debug(TAG+" 3GP case Uri:" + mUri.toString());
                 }
@@ -1045,7 +1051,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     }
 
     @Override
-    public void onCompletion(MediaPlayer player) {
+    public void onCompletion(final MediaPlayer player) {
         if(mPlayerView.mPlayerState != PlayerState.completed){
             mPlayerView.mPlayerState = PlayerState.completed;
             if (mLogger != null) {
@@ -1117,7 +1123,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private void startTimerForBuffer() {
         mBufferingTimer = new CountDownTimer(Constants.BUFFERING_TIMEOUT, 1000) {
             @Override
-            public void onTick(final long millisUntilFinished) {
+            public void onTick(final long millis) {
+                //ignore the tick
             }
 
             @Override
@@ -1154,7 +1161,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private void startTimerForPrepare() {
         mTimer = new CountDownTimer(Constants.PREPARING_TIMEOUT, 1000) {
             @Override
-            public void onTick(final long millisUntilFinished) {
+            public void onTick(final long millis) {
+                //Ignore the tick
             }
 
             @Override

@@ -36,10 +36,11 @@ import android.content.Context;
  * LoggerUtil.configure( "LLVSDK.log" , "%d - [%p::%c::%t] - %m%n" , 5 , 1024);<br>
  * LoggerUtil.getLogger( “SDK” ).error( "XXXX" );
  */
-public class LoggerUtil {
+public final class LoggerUtil {
 
     private static LogConfigurator sLogConfigurator = new LogConfigurator();
     private final static String LOGGER_NAME = "Limelight_Video_SDK";
+    private LoggerUtil(){}
 
     /**
      * Method to configure Logging.
@@ -63,7 +64,7 @@ public class LoggerUtil {
      * If the log file does not exists then configure the logger and create a log file.
      * @return {@link Logger}
      */
-    public synchronized static Logger getLogger(final Context context) {
+    public static Logger getLogger(final Context context) {
         final String filePath = sLogConfigurator.getFileName();
         if(filePath == null && context != null){
             final File file = new File(context.getFilesDir(), LoggerUtil.LOGGER_NAME + ".log");

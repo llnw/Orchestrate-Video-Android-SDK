@@ -73,9 +73,9 @@ final class URLAuthenticator {
         // Iterating through keys in sorted order to build up the string to sign
         // and the signed url query string
         for (final Map.Entry<String, String> entry : sortedParams.entrySet()) {
-            signedUrlBuilder.append(URLEncoder.encode(entry.getKey(),Constants.URL_CHARACTER_ENCODING_TYPE));
+            signedUrlBuilder.append(URLEncoder.encode(entry.getKey(),Constants.ENCODING));
             signedUrlBuilder = signedUrlBuilder.append("=");
-            signedUrlBuilder.append(URLEncoder.encode(entry.getValue(),Constants.URL_CHARACTER_ENCODING_TYPE));
+            signedUrlBuilder.append(URLEncoder.encode(entry.getValue(),Constants.ENCODING));
             signedUrlBuilder = signedUrlBuilder.append("&");
 
             strToSignBuilder.append(entry.getKey());
@@ -93,7 +93,7 @@ final class URLAuthenticator {
             throw new InvalidKeyException();
         }
         signedUrlBuilder = signedUrlBuilder.append("signature=");
-        signedUrlBuilder.append(URLEncoder.encode(signature,Constants.URL_CHARACTER_ENCODING_TYPE));
+        signedUrlBuilder.append(URLEncoder.encode(signature,Constants.ENCODING));
 
         return signedUrlBuilder.toString();
     }
@@ -109,10 +109,10 @@ final class URLAuthenticator {
         final String TAG = AnalyticsReporter.class.getSimpleName();
         final Logger mLogger = LoggerUtil.getLogger(null);//It is hack,since we dont have context here.
         try{
-            final Key secretKey = new SecretKeySpec(key.getBytes(), Constants.SHA256_HASH_ALGORITHM);
-            final Mac mac = Mac.getInstance(Constants.SHA256_HASH_ALGORITHM);
+            final Key secretKey = new SecretKeySpec(key.getBytes(), Constants.SHA256_HASH);
+            final Mac mac = Mac.getInstance(Constants.SHA256_HASH);
             mac.init(secretKey);
-            final byte[] hashValue = mac.doFinal(data.getBytes(Constants.URL_CHARACTER_ENCODING_TYPE));
+            final byte[] hashValue = mac.doFinal(data.getBytes(Constants.ENCODING));
             return Base64.encodeToString(hashValue, Base64.DEFAULT).trim();
         }catch (IllegalArgumentException e){
             if(mLogger != null){

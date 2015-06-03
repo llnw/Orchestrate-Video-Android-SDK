@@ -1,6 +1,6 @@
 package com.limelight.videosdk.model;
 
-import java.util.ArrayList;
+import java.util.List;
 import android.net.Uri;
 
 /**
@@ -35,7 +35,7 @@ public class Delivery {
     /**
      * The encodings that make up this delivery.
      */
-    public ArrayList<Encoding> mEncodings;
+    public List<Encoding> mEncodings;
 
     /**
      * The group to which the delivery belongs.

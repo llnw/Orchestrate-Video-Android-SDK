@@ -85,7 +85,7 @@ public class Media {
      * The captions array for this media.
      */
     @SerializedName("captions")
-    public Captions[] mClosedCaptionsArray;
+    public Captions[] mClosedCaptions;
 
     /**
      * Represents a Caption item.
@@ -109,7 +109,7 @@ public class Media {
          * Represents a Caption native language name.
          */
         @SerializedName("native_language_name")
-        public String mNativeLanguageName;
+        public String mNativeLanguage;
 
         /**
          * Represents a Caption URL.
