@@ -100,8 +100,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private int mCurrentPlayPos;
     private boolean isPlaylistPlaying;
     private boolean isReporting = true;
-    View.OnClickListener mPlayListNext;
-    View.OnClickListener mPlayListPrev;
+    private View.OnClickListener mPlayListNext;
+    private View.OnClickListener mPlayListPrev;
 
     @Override
     public View onCreateView(final LayoutInflater inflater,final ViewGroup container,final Bundle savedInstanceState) {
