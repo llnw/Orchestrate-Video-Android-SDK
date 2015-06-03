@@ -79,7 +79,7 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
         addAllPlaylist.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mMedias != null)
+                if(mMedias != null && mMedias.size() >0)
                 {
                     for(int i= 0;i<mMedias.size();i++)
                         mCallback.addToPlaylist(mMedias.get(i));

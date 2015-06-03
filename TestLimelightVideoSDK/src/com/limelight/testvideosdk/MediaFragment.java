@@ -94,7 +94,7 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
         addAllPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mMedias != null)
+                if(mMedias != null && mMedias.size() >0)
                 {
                     for(int i= 0;i<mMedias.size();i++)
                         mCallback.addToPlaylist(mMedias.get(i));
