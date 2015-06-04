@@ -95,24 +95,29 @@ public class PlaylistAdapter extends BaseAdapter {
             holder.mTextView.setTextColor(Color.BLACK);
         }
         if(mPlayList.get(position)!= null && mPlayList.get(position).mThumbnail!= null && mPlayList.get(position).mThumbnail.mUrl!= null){
-            mDownloader.startDownload(mPlayList.get(position).mThumbnail.mUrl.toString(), null, null, mPlayList.get(position).mMediaID,new Downloader.DownLoadCallback(){
-                @Override
-                public void onSuccess(String path) {
-                    Thumbnail t = new Thumbnail();
-                    t.loadBitmap(mFragmentActivity, path, holder.mThumbnailImage, null);
-                    holder.mProgress.setVisibility(View.GONE);
-                }
-                @Override
-                public void onError(Throwable ex) {
-                    holder.mThumbnailImage.setImageBitmap(mLoadingBitmap);
-                    holder.mProgress.setVisibility(View.GONE);
-                }
-                @Override
-                public void onProgress(int percentFinished) {
-                    holder.mThumbnailImage.setImageBitmap(mLoadingBitmap);
-                    holder.mProgress.setVisibility(View.VISIBLE);
-                }
-            });
+            if(holder.mThumbnailImage.getTag()== null || !holder.mThumbnailImage.getTag().equals(mPlayList.get(position).mThumbnail.mUrl)){
+                mDownloader.startDownload(mPlayList.get(position).mThumbnail.mUrl.toString(), null, null, mPlayList.get(position).mMediaID,new Downloader.DownLoadCallback(){
+                    @Override
+                    public void onSuccess(String path) {
+                        Thumbnail t = new Thumbnail();
+                        t.loadBitmap(mFragmentActivity, path, holder.mThumbnailImage, null);
+                        holder.mProgress.setVisibility(View.GONE);
+                        holder.mThumbnailImage.setTag(mPlayList.get(position).mThumbnail.mUrl);
+                    }
+                    @Override
+                    public void onError(Throwable ex) {
+                        holder.mThumbnailImage.setImageBitmap(mLoadingBitmap);
+                        holder.mProgress.setVisibility(View.GONE);
+                        holder.mThumbnailImage.setTag(null);
+                    }
+                    @Override
+                    public void onProgress(int percentFinished) {
+                        holder.mThumbnailImage.setImageBitmap(mLoadingBitmap);
+                        holder.mProgress.setVisibility(View.VISIBLE);
+                        holder.mThumbnailImage.setTag(null);
+                    }
+                });
+            }
         }
         if(mModelType == Constants.TYPE_MEDIA){
             holder.mRemovePlaylist.setVisibility(View.VISIBLE);
