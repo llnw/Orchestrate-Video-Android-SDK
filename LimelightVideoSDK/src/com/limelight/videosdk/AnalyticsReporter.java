@@ -70,7 +70,14 @@ class AnalyticsReporter {
         final JsonObject obj = new JsonObject();
         obj.addProperty("appName", mAppName);
         obj.addProperty("userId", mUserId);
-        obj.addProperty("htmlCapabilities", "Android");
+        
+        //obj.addProperty("htmlCapabilities", "Android");
+        JsonObject htmlObj = new JsonObject();
+        htmlObj.addProperty("embedMode", "Android");
+        htmlObj.addProperty("H264", "Probably");
+        //obj.addProperty("htmlCapabilities", htmlObj.toString());//adding as string
+        obj.add("htmlCapabilities", htmlObj);
+        
         final String userAgent = System.getProperty("http.agent");
         obj.addProperty("userAgent", userAgent);
         obj.addProperty(Constants.ELAPSED_TIME, 0);
