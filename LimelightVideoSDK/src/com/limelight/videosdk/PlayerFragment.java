@@ -90,7 +90,6 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     private PlayerControl mPlayerControl;
     private MediaControl mMediaController;
     private CountDownTimer mTimer;
-    private CountDownTimer mBufferingTimer;
     private WidevineManager mWidevineManager;
     private AnalyticsReporter mReporter;
     private String mMediaId;
@@ -1003,45 +1002,10 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             }
         }
         else{
-            //Special case for 3GP url as it takes long time to play.
-            if(!(URLUtil.isContentUrl(mUri.toString())) && Constants.THREEGP.equalsIgnoreCase(MimeTypeMap.getFileExtensionFromUrl(mUri.toString()))){
-                if (mLogger != null) {
-                    mLogger.debug(TAG+" 3GP case Uri:" + mUri.toString());
-                }
-                mediaPlayer.setOnInfoListener(new OnInfoListener() {
-                    @Override
-                    public boolean onInfo(final MediaPlayer mediaPlayer, final int what, final int extra) {
-                        if(what == MediaPlayer.MEDIA_INFO_BUFFERING_START||
-                                what == MediaPlayer.MEDIA_INFO_BUFFERING_END||
-                                what == MediaPlayer.MEDIA_INFO_METADATA_UPDATE){
-                            if (mLogger != null) {
-                                mLogger.debug(TAG+" Info now"+": "+what +":"+extra);
-                            }
-                            if(mPlayerCallback!= null){
-                                mPlayerCallback.playerPrepared(mPlayerControl);
-                            }
-                        }
-                        return true;
-                    }
-                });
-                mediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
-
-                    @Override
-                    public void onBufferingUpdate(final MediaPlayer mediaPlayer, final int percent) {
-                        if(mPlayerCallback!= null){
-                            mPlayerCallback.playerPrepared(mPlayerControl);
-                        }
-                        stopTimerForBuffer();
-                    }
-                });
-                startTimerForBuffer();
-                mPlayerControl.play();
-            }else{
-                if(mPlayerCallback!= null){
-                    mPlayerCallback.playerPrepared(mPlayerControl);
-                }
-                mPlayerControl.play();
+            if(mPlayerCallback!= null){
+                mPlayerCallback.playerPrepared(mPlayerControl);
             }
+            mPlayerControl.play();
         }
         if (mLogger != null) {
             mLogger.debug(TAG+Constants.PLAYER_STATE+mPlayerView.mPlayerState.name());
@@ -1106,50 +1070,11 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             mPlayerView.mPlayerState = PlayerState.stopped;
         }
         stopTimerForPrepare();
-        stopTimerForBuffer();
         if(mWidevineManager!= null){
             mWidevineManager.cancelDownload();
         }
         if (mLogger != null) {
             mLogger.debug(TAG+Constants.PLAYER_STATE+mPlayerView.mPlayerState.name());
-        }
-    }
-
-    /**
-     * Method to start timer for buffering the media data.<br>
-     * The timer kicks its callback methods on completion to terminate the player 
-     * preparation and send message to developer application.
-     */
-    private void startTimerForBuffer() {
-        mBufferingTimer = new CountDownTimer(Constants.BUFFERING_TIMEOUT, 1000) {
-            @Override
-            public void onTick(final long millis) {
-                //ignore the tick
-            }
-
-            @Override
-            public void onFinish() {
-                reset();
-                if (mPlayerCallback != null){
-                    mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,"Timeout Buffering Media");
-                }
-            }
-        };
-        mBufferingTimer.start();
-        if (mLogger != null) {
-            mLogger.debug(TAG+" Started Timer Buffer");
-        }
-    }
-
-    /**
-     * Method to stop timer for buffering.
-     */
-    private void stopTimerForBuffer() {
-        if(mBufferingTimer != null){
-            if (mLogger != null) {
-                mLogger.debug(TAG+" Stopped Timer Buffer");
-            }
-            mBufferingTimer.cancel();
         }
     }
 
