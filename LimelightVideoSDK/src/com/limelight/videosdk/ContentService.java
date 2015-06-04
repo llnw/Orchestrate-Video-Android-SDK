@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import android.content.Context;
@@ -703,7 +704,7 @@ public class ContentService {
                 try {
                     String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.MEDIA_OF_CHANNEL_PATH, mOrgId,channelId);
                     mLogger.debug(TAG + " getAllMediaOfChannel "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
-                    mLogger.debug(TAG + " getAllMediaOfChannel "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMediaOfChannel: " + mPageId);
+                    mLogger.debug(TAG + " getAllMediaOfChannel "+ Constants.NEXTMEDIA_CHANNEL + mHasNext +" mPageIdMediaOfChannel: " + mPageId);
                     if(isLoadMore){
                         if(mHasNext){
                            mPageId++;
@@ -721,8 +722,8 @@ public class ContentService {
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
                     StringBuilder searchStr = new StringBuilder();
-                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,"published"));
-                    params.put("and", searchStr.toString());
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,Constants.PUBLISHED));
+                    params.put(Constants.AND, searchStr.toString());
                     mLogger.debug(TAG+" getAllMediaOfChannel "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     resourceUrl = appendPagingParameters(resourceUrl, params);
                     urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
@@ -788,7 +789,7 @@ public class ContentService {
                         try {
                             String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.MEDIA_OF_CHANNEL_PATH, mOrgId,channelId);
                             mLogger.debug(TAG + " getAllMediaOfChannelAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
-                            mLogger.debug(TAG + " getAllMediaOfChannelAsync "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMediaOfChannel: " + mPageId);
+                            mLogger.debug(TAG + " getAllMediaOfChannelAsync "+ Constants.NEXTMEDIA_CHANNEL + mHasNext +" mPageIdMediaOfChannel: " + mPageId);
                             if(isLoadMore){
                                 if(mHasNext){
                                     mPageId++;
@@ -809,8 +810,8 @@ public class ContentService {
                             params.put(Constants.SORT_BY, mSortBy);
                             params.put(Constants.SORT_ORDER, mSortOrder);
                             StringBuilder searchStr = new StringBuilder();
-                            searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,"published"));
-                            params.put("and", searchStr.toString());
+                            searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,Constants.PUBLISHED));
+                            params.put(Constants.AND, searchStr.toString());
                             mLogger.debug(TAG+" getAllMediaOfChannelAsync "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                             resourceUrl = appendPagingParameters(resourceUrl, params);
                             urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
@@ -876,7 +877,7 @@ public class ContentService {
                 try {
                     final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
                     mLogger.debug(TAG + " getAllMedia "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
-                    mLogger.debug(TAG + " getAllMedia "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMedia: " + mPageId);
+                    mLogger.debug(TAG + " getAllMedia "+ Constants.NEXTMEDIA_CHANNEL + mHasNext +" mPageIdMedia: " + mPageId);
                     if(isLoadMore){
                         if(mHasNext){
                            mPageId++;
@@ -894,8 +895,8 @@ public class ContentService {
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
                     StringBuilder searchStr = new StringBuilder();
-                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,"published"));
-                    params.put("and", searchStr.toString());
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,Constants.PUBLISHED));
+                    params.put(Constants.AND, searchStr.toString());
                     mLogger.debug(TAG+" getAllMedia "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     urlConnection = (HttpURLConnection) new URL(url).openConnection();
@@ -959,7 +960,7 @@ public class ContentService {
                 try {
                     final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
                     mLogger.debug(TAG + " getAllMediaAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
-                    mLogger.debug(TAG + " getAllMediaAsync "+ " mHasNextMediaOfChannel: " + mHasNext +" mPageIdMedia: " + mPageId);
+                    mLogger.debug(TAG + " getAllMediaAsync "+ Constants.NEXTMEDIA_CHANNEL + mHasNext +" mPageIdMedia: " + mPageId);
                     if(isLoadMore){
                         if(mHasNext){
                             mPageId++;
@@ -980,8 +981,8 @@ public class ContentService {
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
                     StringBuilder searchStr = new StringBuilder();
-                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,"published"));
-                    params.put("and", searchStr.toString());
+                    searchStr = searchStr.append(String.format(Constants.SEARCH_PATTERN, Constants.STATE,Constants.PUBLISHED));
+                    params.put(Constants.AND, searchStr.toString());
                     mLogger.debug(TAG+" getAllMediaAsync "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     final Runnable runnable = new Runnable() {
@@ -1063,7 +1064,7 @@ public class ContentService {
             }else{
                 Exception exception = null;
                 HttpURLConnection urlConnection = null;
-                mLogger.debug(TAG + " searchMedia "+ " mHasNextSearchMedia: " + mHasNext +" mPageIdSearchMedia: " + mPageId);
+                mLogger.debug(TAG + Constants.SEARCH_MEDIA+ " mHasNextSearchMedia: " + mHasNext +" mPageIdSearchMedia: " + mPageId);
                 try {
                     if(isLoadMore){
                         if(mHasNext){
@@ -1116,10 +1117,10 @@ public class ContentService {
                     params.put(Constants.SORT_BY, mSortBy);
                     params.put(Constants.SORT_ORDER, mSortOrder);
                     params.put(operator, searchStr.toString());
-                    mLogger.debug(TAG +" searchMedia "+ " search String: "+ searchStr);
+                    mLogger.debug(TAG +Constants.SEARCH_MEDIA+ " search String: "+ searchStr);
                     final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
-                    mLogger.debug(TAG + " searchMedia "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
-                    mLogger.debug(TAG+" searchMedia "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
+                    mLogger.debug(TAG + Constants.SEARCH_MEDIA+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
+                    mLogger.debug(TAG+Constants.SEARCH_MEDIA+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     urlConnection = (HttpURLConnection) new URL(url).openConnection();
                     urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
@@ -1192,7 +1193,7 @@ public class ContentService {
                     callback.onError(new Throwable(Constants.CONNECTION_ERROR));
                 }
             }else{
-                mLogger.debug(TAG + " searchMediaAsync "+ " mHasNextSearchMedia: " + mHasNext +" mPageIdSearchMedia: " + mPageId);
+                mLogger.debug(TAG + Constants.SEARCH_MEDIA_ASYNC+ " mHasNextSearchMedia: " + mHasNext +" mPageIdSearchMedia: " + mPageId);
                 if(isLoadMore){
                     if(mHasNext){
                         mPageId++;
@@ -1247,10 +1248,10 @@ public class ContentService {
                 params.put(Constants.SORT_BY, mSortBy);
                 params.put(Constants.SORT_ORDER, mSortOrder);
                 params.put(operator, searchStr.toString());
-                mLogger.debug(TAG +" searchMediaAsync "+ " search String: "+ searchStr);
-                mLogger.debug(TAG+" searchMediaAsync "+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
+                mLogger.debug(TAG +Constants.SEARCH_MEDIA_ASYNC+ " search String: "+ searchStr);
+                mLogger.debug(TAG+Constants.SEARCH_MEDIA_ASYNC+Constants.SORT_BY+Constants.SPACE+mSortBy+Constants.SPACE+Constants.SORT_ORDER+Constants.SPACE+mSortOrder+Constants.SPACE+Constants.PAGE_SIZE+Constants.SPACE+mPageSize);
                 final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.SEARCH_ALL_MEDIA_PATH, mOrgId);
-                mLogger.debug(TAG + " searchMediaAsync "+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
+                mLogger.debug(TAG + Constants.SEARCH_MEDIA_ASYNC+Constants.RES_URL+resourceUrl + Constants.IS_LOAD_MORE+ isLoadMore);
                 try {
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
                     final Runnable runnable = new Runnable() {
@@ -1830,8 +1831,8 @@ public class ContentService {
      * @return Map of Encoding Uri and Encoding List
      */
     private Map<Uri,ArrayList<Encoding>> getEncodingsByUrl(final ArrayList<Encoding> encodingList){
-        final Map<Uri,ArrayList<Encoding>> map = new HashMap<Uri, ArrayList<Encoding>>();
-        for(Encoding encoding:encodingList){
+        final ConcurrentHashMap<Uri,ArrayList<Encoding>> map = new ConcurrentHashMap<Uri, ArrayList<Encoding>>();
+        for(final Encoding encoding:encodingList){
             if(map.containsKey(encoding.mEncodingUrl)){
                 final ArrayList<Encoding> enc = map.get(encoding.mEncodingUrl);
                 enc.add(encoding);

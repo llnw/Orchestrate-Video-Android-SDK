@@ -538,7 +538,6 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
 
     @Override
     protected void finalize() throws Throwable {
-        super.finalize();
         mLogger.debug(TAG + " finalizing");
         cancelDownload();
         unRegister();
@@ -547,5 +546,6 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         mDownloader  = null;
         mFileStream = null;
         mDrmInfoRequest = null;
+        super.finalize();
     }
 }

@@ -102,6 +102,11 @@ public class Constants {
     public static final String SEARCH_PATTERN = "%s:%s;";
     public static final String FETCH_MEDIA = "Fetching Media From Server !";
     public static final String THREEGP = "3gp";
+    public static final String NEXTMEDIA_CHANNEL = " mHasNextMediaOfChannel: ";
+    public static final String PUBLISHED = "published";
+    public static final String AND = "and";
+    public static final String SEARCH_MEDIA = " searchMedia ";
+    public static final String SEARCH_MEDIA_ASYNC = " searchMediaAsync ";
 
     public static final int MAX_THREAD_COUNT = 1;
     /**
