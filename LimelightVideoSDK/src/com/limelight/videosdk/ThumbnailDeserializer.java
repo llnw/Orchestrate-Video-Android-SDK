@@ -65,12 +65,12 @@ class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSeri
                         }
                     }
                 } else {
-                    final JsonElement objTempJsonElement = tmpThumbnail.get(Constants.WIDTH);
+                    final JsonElement tempElement = tmpThumbnail.get(Constants.WIDTH);
 
-                    if (!objTempJsonElement.isJsonNull()) {
+                    if (!tempElement.isJsonNull()) {
                         int width = 0;
                         try {
-                            width = objTempJsonElement.getAsInt();
+                            width = tempElement.getAsInt();
                         } catch (ClassCastException ex) {
                             width = 0;
                             if(logger != null){

@@ -99,7 +99,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private boolean mIsAutoPlay = true;
     private int mCurrentPlayPos;
     private boolean isPlaylistPlaying;
-    private boolean isReporting = true;
+    private boolean isReporting = true;//dont send extra analytics data when switching from normal to full screen.
     private View.OnClickListener mPlayListNext;
     private View.OnClickListener mPlayListPrev;
 
