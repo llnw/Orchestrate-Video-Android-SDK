@@ -20,15 +20,12 @@ public interface IPlayerCallback {
      */
     void playerAttached(IPlayerControl control);
     /**
-     * Method will be implemented in activity.
-     * Player will send error information or some status message.
-     * Error information may be like type of error that has occurred.
-     * Extra can have value like progress information in case of downloader.
-     * @param what the type of error/status that has occurred
-     * @param extra an extra code, specific to the error. Typically implementation dependent. 
-     * @param msg any message that has to be sent from SDK to Application.
+     * Method will be implemented in application activity and it will be used to send messages from SDK to application.
+     * @param messageType The type of message. Message type can be error or player status or download progress.
+     * @param value Extra code, specific to the error or download percent finished or player state. 
+     * @param message Any message that has to be sent from SDK to Application.
      */
-    void playerMessage(int what,int extra,String msg);
+    void playerMessage(int messageType,int value,String message);
 
     /**
      * Method will be implemented in activity.

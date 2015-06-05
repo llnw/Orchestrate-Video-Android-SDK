@@ -254,13 +254,13 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
     }
 
     @Override
-    public void playerMessage(int what, int extra,String msg) {
+    public void playerMessage(int messageType,int value,String message) {
         if (mPlayerFragment == null) {
             mPlayerFragment = (PlayersFragment) mRefer.get(0);
         }
         if(mPlayerFragment != null){
-            if(what == Constants.Message.status.ordinal()){
-                if(extra == Constants.PlayerState.completed.ordinal()){
+            if(messageType == Constants.Message.status.ordinal()){
+                if(value == Constants.PlayerState.completed.ordinal()){
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -268,13 +268,13 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
                         }
                     });
                 }else{
-                    mPlayerFragment.showProgress(true,msg);
+                    mPlayerFragment.showProgress(true,message);
                 }
             }
-            else if(what == Constants.Message.error.ordinal()){
+            else if(messageType == Constants.Message.error.ordinal()){
                 mPlayerFragment.hide();
                 mPlayerFragment.showProgress(false,null);
-                mPlayerFragment.showMessage(msg);
+                mPlayerFragment.showMessage(message);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -282,15 +282,15 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
                     }
                 });
             }
-            else if(what == Constants.Message.progress.ordinal()){
+            else if(messageType == Constants.Message.progress.ordinal()){
                 mPlayerFragment.hide();
                 mPlayerFragment.showProgress(false,null);
-                mPlayerFragment.showProgressDialog(extra);
+                mPlayerFragment.showProgressDialog(value);
             }
             else{
                 mPlayerFragment.hide();
                 mPlayerFragment.showProgress(false,null);
-                mPlayerFragment.showMessage(msg);
+                mPlayerFragment.showMessage(message);
             }
         }
     }

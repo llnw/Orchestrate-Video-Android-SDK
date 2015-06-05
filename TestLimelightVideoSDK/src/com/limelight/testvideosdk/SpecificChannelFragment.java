@@ -257,7 +257,7 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
         }
         else if(mMedias.size()==0){
             mSwipeLayout.setEnabled(true);
-            setEmptyText("No Channel Found");
+            setEmptyText("No Media Found In This Channel");
             mSwipeLayout.setRefreshing(false);
             setListShown(true);
         }

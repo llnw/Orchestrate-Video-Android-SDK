@@ -65,7 +65,7 @@ public class ContentService {
     private final String[] mSortValues = {Constants.SORT_BY_UPDATE_DATE,Constants.SORT_BY_CREATE};
     private final String[] mSortOrderValues = {Constants.SORT_ORDER_ASC,Constants.SORT_ORDER_DESC};
     private String mSortBy = Constants.SORT_BY_UPDATE_DATE;
-    private String mSortOrder = Constants.SORT_ORDER_ASC;
+    private String mSortOrder = Constants.SORT_ORDER_DESC;
     private int mPageId;
     private boolean mHasNext;
 
