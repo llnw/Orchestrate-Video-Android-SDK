@@ -90,6 +90,7 @@ final class URLAuthenticator {
         // Create the signature
         final String signature = signWithKey(secret,strToSignBuilder.toString());
         if(signature == null){
+          //Can send the proper exception, in that case signWithKey method should not catch and should throw back.
             throw new InvalidKeyException();
         }
         signedUrlBuilder = signedUrlBuilder.append("signature=");
@@ -106,7 +107,7 @@ final class URLAuthenticator {
      * @return signed data
      */
     static String signWithKey(final String key, final String data){
-        final String TAG = AnalyticsReporter.class.getSimpleName();
+        final String TAG = URLAuthenticator.class.getSimpleName();
         final Logger mLogger = LoggerUtil.getLogger(null);//It is hack,since we dont have context here.
         try{
             final Key secretKey = new SecretKeySpec(key.getBytes(), Constants.SHA256_HASH);
