@@ -811,7 +811,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     }
                 }
             });*/
-            mPlaylistContentSvc.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
+            mPlaylistService.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
                 @Override
                 public void onSuccess(final ArrayList<Media> list) {
                     if(list == null){
