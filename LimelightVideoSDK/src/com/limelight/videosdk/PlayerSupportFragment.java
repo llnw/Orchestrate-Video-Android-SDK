@@ -792,7 +792,26 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          * @param callback
          */
         private void fetchPlaylist(final String channelId,final IPlaylistCallback callback){
-            mPlaylistService.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
+            //find for auto play in channel property
+            /*mPlaylistContentSvc.getChannelAsync(channelId, new ChannelCallback() {
+                @Override
+                public void onSuccess(ArrayList<Channel> channel) {
+                    if(channel != null && !channel.isEmpty()){
+                        mIsAutoPlay = channel.get(0).mAutoPlayEnabled;
+                    }else{
+                        if (mLogger != null) {
+                            mLogger.debug(TAG+" Error in getting auto play for Channel:"+channelId);
+                        }
+                    }
+                }
+                @Override
+                public void onError(Throwable throwable) {
+                    if (mPlayerCallback != null){
+                        mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
+                    }
+                }
+            });*/
+            mPlaylistContentSvc.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
                 @Override
                 public void onSuccess(final ArrayList<Media> list) {
                     if(list == null){

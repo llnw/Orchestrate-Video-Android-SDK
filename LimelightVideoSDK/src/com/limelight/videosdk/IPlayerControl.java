@@ -34,10 +34,11 @@ public interface IPlayerControl {
      */
     void stop();
     /**
-     * To set the autoplay for playlist.<br>
+     * To set the autoplay for channel playlist.<br>
      * @param isAutoPlay true if autoplay playlist else false<br>
      */
-    void setAutoPlay(boolean isAutoPlay);/**
+    void setAutoPlay(boolean isAutoPlay);
+    /**
      * To get the current play position in playlist.<br>
      * @return current play position<br>
      */
