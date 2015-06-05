@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
@@ -192,7 +192,7 @@ public class ContentService {
                        mHasNext = false;
                        mPageId = 0;
                    }
-                   final HashMap<String, String> params = new HashMap<String, String>();
+                   final TreeMap<String, String> params = new TreeMap<String, String>();
                    params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                    params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                    params.put(Constants.SORT_BY, mSortBy);
@@ -279,7 +279,7 @@ public class ContentService {
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    final HashMap<String, String> params = new HashMap<String, String>();
+                    final TreeMap<String, String> params = new TreeMap<String, String>();
                     params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
@@ -372,7 +372,7 @@ public class ContentService {
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    final HashMap<String, String> params = new HashMap<String, String>();
+                    final TreeMap<String, String> params = new TreeMap<String, String>();
                     params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
@@ -457,7 +457,7 @@ public class ContentService {
                                 mHasNext = false;
                                 mPageId = 0;
                             }
-                            HashMap<String, String> params = new HashMap<String, String>();
+                            TreeMap<String, String> params = new TreeMap<String, String>();
                             params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                             params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                             params.put(Constants.SORT_BY, mSortBy);
@@ -539,7 +539,7 @@ public class ContentService {
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    final HashMap<String, String> params = new HashMap<String, String>();
+                    final TreeMap<String, String> params = new TreeMap<String, String>();
                     params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
@@ -623,7 +623,7 @@ public class ContentService {
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    final HashMap<String, String> params = new HashMap<String, String>();
+                    final TreeMap<String, String> params = new TreeMap<String, String>();
                     params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
@@ -716,7 +716,7 @@ public class ContentService {
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    final HashMap<String, String> params = new HashMap<String, String>();
+                    final TreeMap<String, String> params = new TreeMap<String, String>();
                     params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
@@ -804,7 +804,7 @@ public class ContentService {
                                 mHasNext = false;
                                 mPageId = 0;
                             }
-                            HashMap<String, String> params = new HashMap<String, String>();
+                            TreeMap<String, String> params = new TreeMap<String, String>();
                             params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                             params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                             params.put(Constants.SORT_BY, mSortBy);
@@ -889,7 +889,7 @@ public class ContentService {
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    final HashMap<String, String> params = new HashMap<String, String>();
+                    final TreeMap<String, String> params = new TreeMap<String, String>();
                     params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
@@ -975,7 +975,7 @@ public class ContentService {
                         mHasNext = false;
                         mPageId = 0;
                     }
-                    final HashMap<String, String> params = new HashMap<String, String>();
+                    final TreeMap<String, String> params = new TreeMap<String, String>();
                     params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
@@ -1111,7 +1111,7 @@ public class ContentService {
                     if(searchStr!= null){
                         searchStr = searchStr.deleteCharAt(searchStr.length()-1);
                     }
-                    final HashMap<String, String> params = new HashMap<String, String>();
+                    final TreeMap<String, String> params = new TreeMap<String, String>();
                     params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                     params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                     params.put(Constants.SORT_BY, mSortBy);
@@ -1242,7 +1242,7 @@ public class ContentService {
                 if(searchStr!= null){
                     searchStr = searchStr.deleteCharAt(searchStr.length()-1);
                 }
-                final HashMap<String, String> params = new HashMap<String, String>();
+                final TreeMap<String, String> params = new TreeMap<String, String>();
                 params.put(Constants.PAGE_ID, Integer.toString(mPageId));
                 params.put(Constants.PAGE_SIZE, Integer.toString(mPageSize));
                 params.put(Constants.SORT_BY, mSortBy);
@@ -1437,7 +1437,7 @@ public class ContentService {
      * @param callback EncodingsCallback
      */
     public void getAllEncodingsForMediaId(final String mediaId,final EncodingsCallback callback) {
-        final HashMap<String, String> params = new HashMap<String, String>();
+        final TreeMap<String, String> params = new TreeMap<String, String>();
         params.put(Constants.PRIMARY_USE, "all");
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
             if(callback != null){
@@ -1841,7 +1841,6 @@ public class ContentService {
                 final ArrayList<Encoding> enc = new ArrayList<Encoding>();
                 enc.add(encoding);
                 map.put(encoding.mEncodingUrl, enc);
-                
             }
         }
         return map;

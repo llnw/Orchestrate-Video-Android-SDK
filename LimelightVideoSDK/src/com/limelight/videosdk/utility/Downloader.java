@@ -179,13 +179,12 @@ public class Downloader {
 
                 output = new FileOutputStream(mTempFile);
 
-                byte data[] = new byte[1024 * 1024];
+                final byte data[] = new byte[1024 * 1024];
                 long total = 0;
                 int count;
                 while ((count = input.read(data)) != -1) {
                    if(isCancelled()){
                        output.close();
-                       data = null;
                        mTempFile.delete();
                        mError = new Exception("Cancelled");
                        break;
@@ -198,7 +197,6 @@ public class Downloader {
                     output.write(data, 0, count);
                 }
                 output.close();
-                data = null;
             }
             catch (IOException ex) {
                 mError = ex;

@@ -72,7 +72,7 @@ class AnalyticsReporter {
         obj.addProperty("userId", mUserId);
         
         //obj.addProperty("htmlCapabilities", "Android");
-        JsonObject htmlObj = new JsonObject();
+        final JsonObject htmlObj = new JsonObject();
         htmlObj.addProperty("embedMode", "Android");
         htmlObj.addProperty("H264", "Probably");
         //obj.addProperty("htmlCapabilities", htmlObj.toString());//adding as string

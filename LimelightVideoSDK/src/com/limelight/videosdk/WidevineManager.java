@@ -541,11 +541,6 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         mLogger.debug(TAG + " finalizing");
         cancelDownload();
         unRegister();
-        mCredentials = null;
-        mDrm = null;
-        mDownloader  = null;
-        mFileStream = null;
-        mDrmInfoRequest = null;
         super.finalize();
     }
 }
