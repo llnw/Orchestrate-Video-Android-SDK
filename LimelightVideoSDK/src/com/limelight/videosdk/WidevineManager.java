@@ -195,8 +195,9 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         // get our license
 
         final int val = mDrm.acquireRights(mDrmInfoRequest);
-        if(val != DrmManagerClient.ERROR_NONE && mCallback!= null){
-            mCallback.onError(new Throwable("AcquireRights Failed"));
+        if(val != DrmManagerClient.ERROR_NONE){
+            if(mCallback!= null)
+                mCallback.onError(new Throwable("AcquireRights Failed"));
         }
         if(mFileStream != null){
             try {
@@ -280,8 +281,10 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         final long clientTime = System.currentTimeMillis() / 1000L;
         final String toSign = String.format("%s|%s|%s|get_license|%s",mContentService.getAccessKey(), clientTime, mediaID, mContentService.getOrgId());
         final String signature = URLAuthenticator.signWithKey(mContentService.getSecret(), toSign);
-        if(signature == null && mCallback!= null){
-            mCallback.onError(new Throwable("Signing Failed !"));
+        if(signature == null){
+            if(mCallback!= null){
+                mCallback.onError(new Throwable("Signing Failed !"));
+            }
             return;
         }
         // add values to credentials
