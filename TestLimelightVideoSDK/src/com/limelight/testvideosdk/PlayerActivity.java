@@ -34,10 +34,11 @@ import com.limelight.videosdk.model.Media;
 public class PlayerActivity extends FragmentActivity implements IPlayerCallback, OnPageChangeListener,ActionBar.TabListener {
 
     private static final int READ_REQUEST_CODE = 50;
-    public ViewPager mViewPager;    
+    public ViewPager mViewPager;
     private Uri mUri = null;
     private IPlayerControl mControl;
     private PlayersFragment mPlayerFragment = null;
+    //cashing the player fragment
     private SparseArray<Fragment> mRefer = new SparseArray<Fragment>();
     private PlayerTestAdapter mPlayerTestAdapter;
 
@@ -244,8 +245,10 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
     @Override
     public void playerAttached(IPlayerControl control) {
         mControl = control;
-        if (mPlayerFragment == null)
+        //sometimes the mPlayerFragment can  be null as it gets destroyed by the system, so using the cashed object
+        if (mPlayerFragment == null){
             mPlayerFragment = (PlayersFragment) mRefer.get(0);
+        }
         if (mPlayerFragment != null){
             mPlayerFragment.setControl(mControl);
             mPlayerFragment.showProgress(false,null);
@@ -323,8 +326,9 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
                     //mControl.setVideoUri(mUri);
                     //mControl.play(null);
                     mControl.play(mUri.toString(), null);//local  file playback
-                } else
+                } else {
                     Log.e(getLocalClassName(), "Control is null");
+                }
             }
         }
     }
@@ -347,6 +351,7 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
         }
         if (mPlayerFragment != null){
             mPlayerFragment.hideController();
+            //page is for player
             if(page == 7){
                 if(mPlayerFragment.getPlayerState() != PlayerState.stopped.ordinal())//stopped
                     mPlayerFragment.show();

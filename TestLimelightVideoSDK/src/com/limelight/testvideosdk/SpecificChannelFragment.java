@@ -46,6 +46,7 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
     private SwipeRefreshLayout mSwipeLayout;
     private int mPreviousTotalCount = 0;
     private static ContentService mContentService = null;
+    private Button mAddAllPlaylist;
 
     public SpecificChannelFragment(SpecificChannelCallback callback,String id) {
         mCallback = callback;
@@ -62,7 +63,7 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_model, container,false);
+        View view = inflater.inflate(R.layout.fragment_media, container,false);
         mListView = (ListView) view.findViewById(android.R.id.list);
         mTextView = (TextView) view.findViewById(android.R.id.empty);
         mProgress = (ProgressBar) view.findViewById(R.id.progress);
@@ -74,9 +75,9 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
         mSwipeLayout.setColorSchemeColors(Color.BLUE,Color.GREEN,Color.RED);
         mSwipeLayout.setDistanceToTriggerSync(250);
         mSwipeLayout.setEnabled(false);
-        Button addAllPlaylist = (Button)view.findViewById(R.id.add_all_playlist);
-        addAllPlaylist.setVisibility(View.VISIBLE);
-        addAllPlaylist.setOnClickListener(new OnClickListener() {
+        mAddAllPlaylist = (Button)view.findViewById(R.id.add_all_playlist);
+//        mAddAllPlaylist.setVisibility(View.VISIBLE);
+        mAddAllPlaylist.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(mMedias != null && mMedias.size() >0)
@@ -126,15 +127,18 @@ public class SpecificChannelFragment extends Fragment implements LoaderManager.L
             if(mMedias!= null && mMedias.size()>0){
                 mListView.setVisibility(View.VISIBLE);
                 mTextView.setVisibility(View.GONE);
+                mAddAllPlaylist.setVisibility(View.VISIBLE);
             }else{
                 mListView.setVisibility(View.GONE);
                 mTextView.setVisibility(View.VISIBLE);
+                mAddAllPlaylist.setVisibility(View.GONE);
             }
         }else{
             //show progress hide text hide list
             mListView.setVisibility(View.GONE);
             mTextView.setVisibility(View.GONE);
             mProgress.setVisibility(View.VISIBLE);
+            mAddAllPlaylist.setVisibility(View.GONE);
         }
     }
 
