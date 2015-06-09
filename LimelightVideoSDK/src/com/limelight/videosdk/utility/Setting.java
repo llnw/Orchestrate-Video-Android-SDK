@@ -114,7 +114,7 @@ public final class Setting{
      * @return AnalyticsEndPoint
      */
     public static String getPortalKey(){
-        if(sPortalkey== null|| sPortalkey.trim().isEmpty()){
+        if(sPortalkey== null || sPortalkey.trim().isEmpty()){
             return "Limelight";
         }else{
             return sPortalkey;
@@ -128,7 +128,7 @@ public final class Setting{
      * @return AnalyticsEndPoint
      */
     public static String getAnalyticsEndPoint(){
-        if(sAnalyticsAPI== null){
+        if(sAnalyticsAPI== null || sAnalyticsAPI.trim().isEmpty()){
             if(IS_RELEASE){
                 return Constants.ANALYTICS_PROD;
             }else{
@@ -137,5 +137,15 @@ public final class Setting{
         }else{
             return sAnalyticsAPI;
         }
+    }
+    
+    //when not required to expose this method from SDK. Simple change the scope of this method to private.
+    /**
+     * This method is to set the analytics end point.
+     * If Application has provided analytics end point, then provided end point will be used.
+     * Otherwise SDK will use default analytics end point based on Release mode(staging or production) 
+     */
+    public static void SetAnalyticsEndPoint(String analyticsEndPoint) {
+        sAnalyticsAPI = analyticsEndPoint;
     }
 }
