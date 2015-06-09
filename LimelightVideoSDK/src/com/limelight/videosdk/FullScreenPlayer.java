@@ -75,7 +75,6 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         mPlayerView.setOnCompletionListener(this);
         mPlayerView.setMediaControllerCallback(this);
         mLogger = LoggerUtil.getLogger(this);
-        mReporter = new AnalyticsReporter(this);
         final Uri uri = Uri.parse(getIntent().getStringExtra("URI"));
         mPosition  = getIntent().getIntExtra("POSITION",0);
         final String state = getIntent().getStringExtra("STATE");

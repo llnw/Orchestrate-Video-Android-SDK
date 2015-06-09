@@ -18,7 +18,7 @@ class DateDeserializer implements JsonDeserializer<Date>, JsonSerializer<Date> {
 
     @Override
     public JsonElement serialize(final Date src,final Type type,final JsonSerializationContext ctx) {
-        // We need the time interval as seconds dividing with 1000 to convert it
+        // We need the time interval as seconds, dividing with 1000 to convert it
         // to seconds
         return src == null ? null : new JsonPrimitive(src.getTime() / 1000);
     }
