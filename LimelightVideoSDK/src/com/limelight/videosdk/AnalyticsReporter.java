@@ -268,6 +268,7 @@ class AnalyticsReporter {
                     str.write(data);
                     str.flush();
                     str.close();
+                    mLogger.info(TAG+" ResponseCode:"+urlConnection.getResponseCode());
                 } catch (ProtocolException e) {
                     mLogger.error(TAG+" ProtocolException");
                 }catch (IOException e1) {
