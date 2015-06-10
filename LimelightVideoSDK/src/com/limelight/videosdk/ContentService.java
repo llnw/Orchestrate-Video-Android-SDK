@@ -232,8 +232,10 @@ public class ContentService {
                        urlConnection.disconnect();
                    }
                    if(exception != null){
-                       if(mPageId != 0){
-                           mPageId--;
+                       if(isLoadMore){
+                           if(mPageId > 0){
+                               mPageId--;
+                           }
                        }
                        throw exception;
                    }
@@ -316,8 +318,10 @@ public class ContentService {
                                     urlConnection.disconnect();
                                 }
                                 if(throwable != null){
-                                    if(mPageId != 0){
-                                        mPageId--;
+                                    if(isLoadMore){
+                                        if(mPageId > 0){
+                                            mPageId--;
+                                        }
                                     }
                                     if(callback != null){
                                         callback.onError(throwable);
@@ -330,6 +334,12 @@ public class ContentService {
                     thread.start();
                 }
                 catch (Exception e) {
+                    if(isLoadMore){
+                        if(mPageId > 0){
+                            mPageId--;
+                        }
+                    }
+
                     if(callback != null){
                         callback.onError(new Throwable(Constants.AUTH_ERROR));
                     }
@@ -403,8 +413,10 @@ public class ContentService {
                         urlConnection.disconnect();
                     }
                     if(exception != null){
-                        if(mPageId != 0){
-                            mPageId--;
+                        if(isLoadMore){
+                            if(mPageId > 0){
+                                mPageId--;
+                            }
                         }
                         throw exception;
                     }
@@ -491,8 +503,10 @@ public class ContentService {
                                 urlConnection.disconnect();
                             }
                             if(throwable != null){
-                                if(mPageId != 0){
-                                    mPageId--;
+                                if(isLoadMore){
+                                    if(mPageId > 0){
+                                        mPageId--;
+                                    }
                                 }
                                 if(callback != null){
                                     callback.onError(throwable);
@@ -576,8 +590,10 @@ public class ContentService {
                         urlConnection.disconnect();
                     }
                     if(exception != null){
-                        if(mPageId != 0){
-                            mPageId--;
+                        if(isLoadMore){
+                            if(mPageId > 0){
+                                mPageId--;
+                            }
                         }
                         throw exception;
                     }
@@ -593,7 +609,7 @@ public class ContentService {
      * @param isLoadMore True if load more called else false.
      * @param callback ChannelCallback
      */
-    public void getAllChannelAsync(boolean isLoadMore,final ChannelCallback callback) {
+    public void getAllChannelAsync(final boolean isLoadMore,final ChannelCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
             if(callback != null){
@@ -660,8 +676,10 @@ public class ContentService {
                                     urlConnection.disconnect();
                                 }
                                 if(throwable != null){
-                                    if(mPageId != 0){
-                                        mPageId--;
+                                    if(isLoadMore){
+                                        if(mPageId > 0){
+                                            mPageId--;
+                                        }
                                     }
                                     if(callback != null){
                                         callback.onError(throwable);
@@ -674,6 +692,12 @@ public class ContentService {
                     thread.start();
                 }
                 catch (Exception e) {
+                    if(isLoadMore){
+                        if(mPageId > 0){
+                            mPageId--;
+                        }
+                    }
+                    
                     if(callback != null){
                         callback.onError(new Throwable(Constants.AUTH_ERROR));
                     }
@@ -750,8 +774,10 @@ public class ContentService {
                         urlConnection.disconnect();
                     }
                     if(exception != null){
-                        if(mPageId != 0){
-                            mPageId--;
+                        if(isLoadMore){
+                            if(mPageId > 0){
+                                mPageId--;
+                            }
                         }
                         throw exception;
                     }
@@ -841,8 +867,10 @@ public class ContentService {
                                 urlConnection.disconnect();
                             }
                             if(throwable != null){
-                                if(mPageId != 0){
-                                    mPageId--;
+                                if(isLoadMore){
+                                    if(mPageId > 0){
+                                        mPageId--;
+                                    }
                                 }
                                 if(callback != null){
                                     callback.onError(throwable);
@@ -928,8 +956,10 @@ public class ContentService {
                         urlConnection.disconnect();
                     }
                     if(exception != null){
-                        if(mPageId != 0){
-                            mPageId--;
+                        if(isLoadMore){
+                            if(mPageId > 0){
+                                mPageId--;
+                            }
                         }
                         throw exception;
                     }
@@ -945,7 +975,7 @@ public class ContentService {
      * @param isLoadMore True if load more called else false.
      * @param callback MediaCallback
      */
-    public void getAllMediaAsync(boolean isLoadMore,final MediaCallback callback) {
+    public void getAllMediaAsync(final boolean isLoadMore,final MediaCallback callback) {
 
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
             if(callback != null){
@@ -1015,8 +1045,10 @@ public class ContentService {
                                     urlConnection.disconnect();
                                 }
                                 if(throwable != null){
-                                    if(mPageId != 0){
-                                        mPageId--;
+                                    if(isLoadMore){
+                                        if(mPageId > 0){
+                                            mPageId--;
+                                        }
                                     }
                                     if(callback != null){
                                         callback.onError(throwable);
@@ -1029,6 +1061,12 @@ public class ContentService {
                     thread.start();
                 } 
                 catch (Exception e) {
+                    if(isLoadMore){
+                        if(mPageId > 0){
+                            mPageId--;
+                        }
+                    }
+                    
                     if(callback != null){
                         callback.onError(new Throwable(Constants.AUTH_ERROR));
                     }
@@ -1151,8 +1189,10 @@ public class ContentService {
                         urlConnection.disconnect();
                     }
                     if(exception != null){
-                        if(mPageId != 0){
-                            mPageId--;
+                        if(isLoadMore){
+                            if(mPageId > 0){
+                                mPageId--;
+                            }
                         }
                         throw exception;
                     }
@@ -1284,8 +1324,10 @@ public class ContentService {
                                     urlConnection.disconnect();
                                 }
                                 if(throwable != null){
-                                    if(mPageId != 0){
-                                        mPageId--;
+                                    if(isLoadMore){
+                                        if(mPageId > 0){
+                                            mPageId--;
+                                        }
                                     }
                                     if(callback != null){
                                         callback.onError(throwable);
@@ -1298,6 +1340,12 @@ public class ContentService {
                     thread.start();
                 }
                 catch (Exception e) {
+                    if(isLoadMore){
+                        if(mPageId > 0){
+                            mPageId--;
+                        }
+                    }
+
                     if(callback != null){
                         callback.onError(new Throwable(Constants.AUTH_ERROR));
                     }
@@ -1450,7 +1498,7 @@ public class ContentService {
                 }
             }else {
                 try {
-                    if(mediaId != null && mediaId.trim().length() == 0){
+                    if(mediaId != null && mediaId.trim().isEmpty()){
                         if(callback != null){
                             callback.onError(new Throwable("Invalid Media Id"));
                         }
@@ -1672,11 +1720,11 @@ public class ContentService {
             if("null".equalsIgnoreCase(url)|| url == null){
                 continue;
             }
-            encoding.mEncodingUrl = url== null ?null:Uri.parse(url);
             //check if the encoding is already added based on url
             if(getEncodingFromUrl(url)!= null){
                 continue;
             }
+            encoding.mEncodingUrl = Uri.parse(url);
             encoding.mMediaID = mediaId;
             if(!(encodingObject.get(Constants.GROUP).isJsonNull())){
                 encoding.mGroup = encodingObject.get(Constants.GROUP).getAsString();
@@ -1743,10 +1791,10 @@ public class ContentService {
             mPageSize = pageSize;
         }
         if(sortBy!= null && sortBy.equalsIgnoreCase(mSortValues[0])||sortBy.equalsIgnoreCase(mSortValues[1])){
-            mSortBy = sortBy;
+            mSortBy = sortBy.toLowerCase();
         }
         if(sortOrder!= null && sortOrder.equalsIgnoreCase(mSortOrderValues[0])||sortOrder.equalsIgnoreCase(mSortOrderValues[1])){
-            mSortOrder = sortOrder;
+            mSortOrder = sortOrder.toLowerCase();
         }
     }
 
