@@ -243,11 +243,14 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 if (mLogger != null) {
                     mLogger.error("Activity Not Started");
                 }
-                return;
+                //removed to provide a way to set mPlayerCallback later
+                //return;
             }
         }
         mReporter.sendStartSession();
-        mPlayerCallback.playerAttached(mPlayerControl);
+        if(mPlayerCallback != null){
+            mPlayerCallback.playerAttached(mPlayerControl);
+        }
         final IntentFilter filter = new IntentFilter("limelight.intent.action.PLAY_FULLSCREEN");
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(new BroadcastReceiver() {
             @Override
@@ -538,7 +541,17 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             if (mLogger != null) {
                 mLogger.debug(TAG+" 3gp media : " + rtspURL);
             }
-            setVideoPath(rtspURL);
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setVideoPath(rtspURL);
+                    }
+                });
+            } catch (Exception ex) {
+                playerError();
+                return;
+            }
         }
 
         /**
@@ -1011,6 +1024,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             if(mPlayerView.getDuration() == -1){
                 mPlayerView.stopPlayback();
             }
+            //Control reaches here when play-back of an item is completed in full screen
+            //checking for mIsAutoPlay and playing the next item
             if(mIsAutoPlay && mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()
                     && mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
                 mCurrentPlayPos++;
