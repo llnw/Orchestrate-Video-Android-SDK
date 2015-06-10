@@ -9,9 +9,10 @@
 # Copyright  :  (c) Rebaca 2015
 #-------------------------------------------------------------------------------
 """
+# pylint: disable=E1101
 from __future__ import print_function
 from datetime import datetime
-from colorama import init, Fore, Back, Style
+from colorama import init, Fore, Back
 init()
 
 COLOR_MAP = {'FAIL': Fore.RED,

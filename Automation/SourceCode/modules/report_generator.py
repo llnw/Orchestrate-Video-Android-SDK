@@ -1,3 +1,4 @@
+# pylint: disable=W0703,W0612,R0915,R0914
 """
 #-------------------------------------------------------------------------------
 # Name       :  report_generator
@@ -10,8 +11,9 @@
 #-------------------------------------------------------------------------------
 """
 import json
-from modules.logger import info
+#from modules.logger import info
 import time
+
 def format_argument(argument):
     """ To format the argument that send from feature file """
     return_format = ""

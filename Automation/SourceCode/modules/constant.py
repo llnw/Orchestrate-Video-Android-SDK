@@ -55,3 +55,8 @@ ICON_DIR = os.path.join(SCREEN_SHOT_DIR, "player_btn")
 
 SCENARIO_DATA = {}
 SCENARIO_EVENT_KY = "SCENARIO_WISE_PLAYER_EVENT"
+
+BASE_URL = "https://staging-api.lvp.llnw.net/rest"
+ACCESS_KEY = "6QDyPljwRS8L2w7Q7AnRo3sYIoQ="
+SECRET_KEY = "+d62cBI73hxWcRPpput4RR7a8v8="
+ORG_ID = "a851c50193064ed6be08c7e75f8f4910"

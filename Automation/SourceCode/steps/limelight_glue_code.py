@@ -1,3 +1,4 @@
+# pylint: disable=E0602,E0102,W0602,W0613,W0611,F0401,C0103,W0603,C0301,W0612
 """
 #-------------------------------------------------------------------------------
 # Name      :  limelight_glude_code
@@ -21,6 +22,11 @@ def parse_optional(text):
 parse_optional.pattern = r'\s*-?\s*'
 register_type(optional=parse_optional)
 
+def parse_optional1(text):
+    return text.strip()
+parse_optional1.pattern = r'\s*(with\s\S+\smode)?\s*'
+register_type(optional1=parse_optional1)
+
 ret_data = {}
 
 def test_step(function):
@@ -40,13 +46,20 @@ def test_step(function):
 def step_impl(context):
     """This will launch the application"""
     global LIME_LIGHT_OBJ
-    if not LIME_LIGHT_OBJ or not LIME_LIGHT_OBJ.is_app_running():
+    if not LIME_LIGHT_OBJ or not LIME_LIGHT_OBJ.is_app_running:
         info("NO APP RUNNING, LAUNCHING THE APP.")
         LIME_LIGHT_OBJ = Limelight()
         LIME_LIGHT_OBJ.launch_app()
-        LIME_LIGHT_OBJ.uncheck_delivery()
+        LIME_LIGHT_OBJ.switch_internet_connection('on')
+    elif LIME_LIGHT_OBJ.need_to_relaunch_app:
+        info("relaunching the app from menu")
+        LIME_LIGHT_OBJ.relaunch_app_frm_menu()
     else:
         info("APP IS RUNNING FROM PREVIOUS SCENARIO, SO RE-USING IT.")
+
+    LIME_LIGHT_OBJ.uncheck_delivery()
+    LIME_LIGHT_OBJ.set_orientation()
+
 
 @given('the application has launched with following ' + \
        'configuration in {tab_name} tab -')
@@ -54,20 +67,23 @@ def step_impl(context):
 def step_impl(context, tab_name):
     """This will launch the application"""
     global LIME_LIGHT_OBJ
-    if not LIME_LIGHT_OBJ or not LIME_LIGHT_OBJ.is_app_running():
+    if not LIME_LIGHT_OBJ or not LIME_LIGHT_OBJ.is_app_running:
         info("NO APP RUNNING, LAUNCHING THE APP.")
         LIME_LIGHT_OBJ = Limelight()
         LIME_LIGHT_OBJ.launch_app()
+        LIME_LIGHT_OBJ.switch_internet_connection('on')
         LIME_LIGHT_OBJ.select_tab(tab_name)
         for row in context.table:
             LIME_LIGHT_OBJ.set_select_value( tab_name, str(row['name']),
                                              'set', str(row['value']))
         for ech_tab in ['CHANNEL GROUPS', 'ALL CHANNELS', 'ALL MEDIA']:
             LIME_LIGHT_OBJ.perform_oper_on_tab(ech_tab, "refresh")
-
-        LIME_LIGHT_OBJ.uncheck_delivery()
+    elif LIME_LIGHT_OBJ.need_to_relaunch_app:
+        info("relaunching the app from menu")
+        LIME_LIGHT_OBJ.relaunch_app_frm_menu()
     else:
         info("APP IS RUNNING FROM PREVIOUS SCENARIO, SO RE-USING IT.")
+    LIME_LIGHT_OBJ.uncheck_delivery()
 
 
 @when('I {opr} {val} as value for {target_ele} in {tab_name} tab')
@@ -103,7 +119,8 @@ def step_impl(context, opr, media_type, media_source, encoding_type):
         opr : operations - play / pause / resume / seek-xx:xx / forwarded
                        / reversed / attempt-to-play
         media_type : local / remote / media-name
-        media_source : file-name / url / media-id / media-tab
+        media_source : file-name-with-path / url / media-id / media-tab /
+                      PLAY-LIST
         encoding_type: encoding-name / automatic / no-select
     """
     global LIME_LIGHT_OBJ
@@ -120,9 +137,24 @@ def step_impl(context, action_itm, perform, target):
         action_itm : home-button / app-icon / screen
         perform    : press / orientation
         target     : application / device
+
+        For full screen: I apply full-screen ON on the player
+            action_itm : full-screen
+            perform    : on/off
+            target     : player
+        For no-internet scenario: I apply internet off on the device
+            action_itm : internet
+            perform    : on/off
+            target     : device
+
     """
     global LIME_LIGHT_OBJ
-    LIME_LIGHT_OBJ.perform_device_operations(action_itm.strip(),
+    if target.strip().lower() == "player":
+        # Perform the actions on player
+        LIME_LIGHT_OBJ.perform_player_operation(action_itm.strip().lower(),
+                                                perform.strip().lower())
+    else:
+        LIME_LIGHT_OBJ.perform_device_operations(action_itm.strip(),
                                              perform.strip(),
                                              target.strip())
 
@@ -183,6 +215,23 @@ def step_impl(context, target_ele, page_name, val):
     LIME_LIGHT_OBJ.select_tab(page_name)
     LIME_LIGHT_OBJ.verify_value(page_name, target_ele, val)
 
+@then('the {check_ele} should {op} following {table_header} at {location} -')
+@test_step
+def step_impl(context, check_ele, op, table_header, location):
+    """
+    @args :
+        check_ele : the element that should contain the data
+        op : have / not have
+        table_header : Header of data table
+        location : top/bottom
+    """
+    should_equal = False if 'not' in op else True
+    global LIME_LIGHT_OBJ
+    LIME_LIGHT_OBJ.check_contains(check_ele,
+             [str(row[table_header.lower()]) for row in context.table],
+             should_equal, table_header.lower().strip(), location)
+
+
 @then('the {check_ele} should {op} following {table_header} -')
 @test_step
 def step_impl(context, check_ele, op, table_header):
@@ -206,11 +255,11 @@ def step_impl(context, check_ele, op, table_header):
     else:
         LIME_LIGHT_OBJ.check_contains(check_ele,
              [str(row[table_header.lower()]) for row in context.table],
-             should_equal)
+             should_equal, table_header.lower().strip())
 
-@then('player should {opr} the playback from {source_type} to duration {duration} in {state} state')
+@then('player should {opr} the playback from {source_type} to duration {duration} in {state} state{full_screen_msg:optional1}')
 @test_step
-def step_impl(context, opr, source_type, duration, state):
+def step_impl(context, opr, source_type, duration, state, full_screen_msg):
     """
     @args :
         opr         : operations - play / pause / resume / continue-playing /
@@ -218,9 +267,14 @@ def step_impl(context, opr, source_type, duration, state):
         source_type : Source of play - file / url / mediaId / media-tab
         duration    : Duration of play (min:sec)
         state       : State of the player - play / pause
+        full_screen_msg : with full-screen mode/with normal-screen mode
     """
     global LIME_LIGHT_OBJ
-    LIME_LIGHT_OBJ.check_player(opr, source_type, duration, state, ret_data)
+    chk_full_screen = False
+    if full_screen_msg and 'full-screen' in full_screen_msg.strip().lower():
+        chk_full_screen = True
+    LIME_LIGHT_OBJ.check_player(opr, source_type, duration, state, ret_data,
+                                chk_full_screen)
 
 @then('the player should send {notification_type} notification')
 @test_step
@@ -243,3 +297,48 @@ def step_impl(context):
     global LIME_LIGHT_OBJ
     LIME_LIGHT_OBJ.exit_app()
     LIME_LIGHT_OBJ = None
+
+@then('close the application')
+@test_step
+def step_impl(context):
+    """ This will close the application """
+    global LIME_LIGHT_OBJ
+    LIME_LIGHT_OBJ.close_app()
+
+@when('I {oper} the "{media_name}" video from play list with auto playlist {stat}')
+@test_step
+def step_impl(context, oper, media_name, stat):
+    """
+    @args :
+        opr : operations - play
+        media_name : name of the media
+        stat: on / off
+    """
+    global LIME_LIGHT_OBJ
+    tmp_dic = LIME_LIGHT_OBJ.perform_playlist_video_oper(oper, media_name, stat)
+    ret_data.update(tmp_dic)
+
+@then('player should {oper} the {which_media} media from play-list at duration {duration} in {state} state')
+@test_step
+def step_impl(context, oper, which_media, duration, state):
+    """
+    This will check playlist play
+    @args :
+        oper : play /
+        which_media : media-name /
+    """
+    global LIME_LIGHT_OBJ
+    LIME_LIGHT_OBJ.check_playlist_oper(oper, which_media, duration, state, ret_data)
+
+
+@when('I update "{new_val}" as value for "{param_name}" in "{media_name}" media')
+@test_step
+def step_impl(context, new_val, param_name, media_name):
+    """
+    @args :
+        new_val : new value
+        param_name : name of the parameter that need to update
+        media_name : media name
+    """
+    global LIME_LIGHT_OBJ
+    LIME_LIGHT_OBJ.update_media(media_name, param_name, new_val)

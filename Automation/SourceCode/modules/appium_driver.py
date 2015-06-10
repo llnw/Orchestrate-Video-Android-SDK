@@ -1,4 +1,4 @@
-# pylint: disable=W0703,W0612,W0621,W0614,C0301,C0103,R0914,R0912
+# pylint: disable=W0703,W0612,W0621,W0614,C0301,C0103,R0914,R0912,W0702,W0603
 """
 #-------------------------------------------------------------------------------
 # Name      :  appium_driver.py
@@ -17,8 +17,12 @@ import os
 from appium import webdriver
 from time import sleep
 import ConfigParser
+import datetime
 from modules.logger import info, warning
 from modules.OpenCvLib import OpenCvLibrary
+from modules.constant import *
+from appium.webdriver.connectiontype import ConnectionType
+
 
 class Driver(object):
     """
@@ -93,16 +97,21 @@ class Driver(object):
             file_name : provide name of the screen shot file to be saved
         """
         if not file_name:
-            screenshot_fnam = "screenshot%d.png" % self.screen_shot_file_num
-        else: screenshot_fnam = file_name
-        self.screen_shot_file_num += 1
-        return self.driver.save_screenshot(screenshot_fnam)
+            file_name = datetime.datetime.now().strftime("SS-%Y_%m_%d_%H_%M_%S.png")
+            file_name = os.path.join(SCREEN_SHOT_DIR, file_name)
+        self.driver.save_screenshot(file_name)
+        info("screen shot taken : %s" % file_name)
+        return file_name
 
     def take_screenshot_of_element(self, element_name, generic_param=(),
                                    file_name=""):
         """
         Take screen shot of the whole screen and crop out the element pic
         """
+        if not file_name:
+            file_name = datetime.datetime.now().strftime("SS-%Y_%m_%d_%H_%M_%S.png")
+            file_name = os.path.join(SCREEN_SHOT_DIR, file_name)
+
         ele_obj = self.get_element(element_name, generic_param=generic_param)
         ele_height = int(ele_obj.size['height'])
         ele_width = int(ele_obj.size['width'])
@@ -111,9 +120,7 @@ class Driver(object):
 
         ele_x1_val = ele_x_val + ele_width
         ele_y1_val = ele_y_val + ele_height
-
         self.take_screenshot(file_name)
-
         orientation_map = { 'LANDSCAPE': ( ele_x_val, ele_x1_val,
                                            ele_y_val, ele_y1_val),
                             'PORTRAIT': ( ele_y_val, ele_y1_val,
@@ -121,34 +128,41 @@ class Driver(object):
                           }
         current_orientation = self.get_current_orientation()
         OpenCvLibrary.crop_file(file_name,
-                                *orientation_map[str(current_orientation)])
+            *orientation_map[str(current_orientation)])
+        info("screen shot taken : %s" % file_name)
         return file_name
 
-    def value_should_contains(self, element, expected_value, generic_param=()):
+    def value_should_contains(self, element_name, expected_value, generic_param=()):
         """
         Check if the element value contains a particular value
         @args :
-            element        : name of element (whose entry is in element-path.cfg)
+            element_name   : name of the element
+                             (whose entry is in element-path.cfg)
                              or the element object
-            expected_value : expected value that the element value should contains
+            expected_value : expected value, that the element value should
+                             contains
             generic_param  : dynamic xpath/id variable
         """
-        ele_obj = self.get_element(element, generic_param=generic_param)
+        info("check element :: %s:%s :: should contains :: value=%s" % \
+                          (element_name, generic_param, expected_value))
+        ele_obj = self.get_element(element_name, generic_param=generic_param)
         if str(ele_obj.text).strip() not in str(expected_value).strip():
             msg = "element: %s::%s, actual value received: %s, value doesn't contains: %s"
-            raise Exception(msg % (element, generic_param,
+            raise Exception(msg % (element_name, generic_param,
                                    ele_obj.text, expected_value))
 
-    def value_should_be(self, element, expected_value, generic_param=()):
+    def value_should_be(self, element_name, expected_value, generic_param=()):
         """
         Check element has the same value that we provided
         @args :
-            element        : name of element (whose entry is in element-path.cfg)
+            element_name   : name of element (whose entry is in element-path.cfg)
                              or the element object
             expected_value : expected value
             generic_param  : dynamic xpath/id variable
         """
-        ele_obj = self.get_element(element, generic_param=generic_param)
+        info("checking exact value :: %s :: %s :::: value=%s" % \
+            (element_name, generic_param, expected_value))
+        ele_obj = self.get_element(element_name, generic_param=generic_param)
         if str(ele_obj.text).strip() != str(expected_value).strip():
             raise Exception("Expected value: %s, Got value: %s"%(expected_value,
                                                                  ele_obj.text))
@@ -394,7 +408,7 @@ class Driver(object):
         else:
             raise Exception("Element %s not found in config file" % ele)
 
-    def click_on(self, ele, generic_param=()):
+    def click_on(self, element, generic_param=()):
         """
         If you provide element name then:
            It will get the details entry for this element from element-path.cfg
@@ -402,12 +416,18 @@ class Driver(object):
         If you provide an element object then it will click on that element.
         If click successful then it will return the element object.
         @args :
-            ele           : name of the element (whose entry is in element-path.cfg)
-                            or the element object
+            element : name of the element (whose entry is in element-path.cfg)
+                      or the element object
             generic_param : dynamic xpath/id variable
         """
-        ele_obj = self.get_element(ele, generic_param=generic_param)
-        ele_obj.click()
+        info("clicking on : %s :: %s"%(element, generic_param))
+        if type(element) == str:
+            ele_obj = self.get_element(element, generic_param=generic_param)
+            ele_obj.click()
+        else:
+            element.click()
+            ele_obj = element
+        info("clicked on the element")
         return ele_obj
 
     @staticmethod
@@ -429,17 +449,21 @@ class Driver(object):
             except Exception as ex :
                 warning("Got exception while clear out value :: " + str(ex))
 
-    def set_value(self, ele, value, generic_param=()):
+    def set_value(self, element_name, value, generic_param=()):
         """
         Set a value to a GUI element, raise exception if the element
         does not present.
         @args :
-            ele   : name of the element (whose entry is in element-path.cfg)
-                  or the element object
-            value : value that need to set
+            element_name  : name of the element
+                            (whose entry is in element-path.cfg)
+                            or the element object
+            value : value to set for the GUI element
             generic_param : dynamic xpath/id variable
         """
-        ele_obj = self.get_element(ele, generic_param=generic_param)
+        info("setting value :: %s :: %s ::: value=%s" % (element_name,
+                                                         generic_param, value))
+        ele_obj = self.get_element(element_name,
+                                   generic_param=generic_param)
         self.clear_value(ele_obj)
         ele_obj.set_text(str(value))
 
@@ -480,17 +504,19 @@ class Driver(object):
                                                    "x": int(x_coordinate),
                                                    "y": int(y_coordinate)})
 
-    def should_visible(self, ele, generic_param=()):
+    def should_visible(self, element_name, generic_param=()):
         """
         Check if an element is visible, raise exception if it is not.
         @args :
-            ele : name of the element (whose entry is in element-path.cfg)
-                  or the element object
+            element_name : name of the element (whose entry is in
+                          element-path.cfg)
+                          or the element object
             generic_param  : dynamic xpath/id variable
         """
-        ele_obj = self.get_element(ele, generic_param=generic_param)
+        info("checking visibility :: %s :: %s" % (element_name, generic_param))
+        ele_obj = self.get_element(element_name, generic_param=generic_param)
         if not ele_obj.is_displayed():
-            raise Exception("Element %s is not visible"%ele)
+            raise Exception("Element %s is not visible"%element_name)
 
     def should_not_visible(self, ele, generic_param=()):
         """
@@ -506,6 +532,23 @@ class Driver(object):
                 raise Exception("Element %s is visible"%ele)
         except Exception as ex:
             info(str(ex))
+
+    def is_item_visible(self, element_name, generic_param=()):
+        """
+        Return True if item is visible else False
+        @args :
+            element_name  : name of element (whose entry is in element-path.cfg)
+                            or the element object
+            generic_param : dynamic xpath/id variable
+        """
+        info("is element :: %s::%s visible" % (element_name, generic_param))
+        visible = False
+        try:
+            self.should_visible(element_name, generic_param=generic_param)
+            visible = True
+        except Exception as ex :
+            info(str(ex))
+        return visible
 
     @staticmethod
     def wait_for(secs):
@@ -562,7 +605,7 @@ class Driver(object):
         ret_data = self.driver.execute('getScreenOrientation')
         return str(ret_data.get('value'))
 
-    def rorate_device(self):
+    def rotate_device(self, to_orientation=None):
         """
         Rotate the device:
         If the device is in horizontal then make it vertical and vice versa
@@ -572,14 +615,24 @@ class Driver(object):
             {u'status': 0, u'sessionId': u'53a017b6-3839-433e-a851-4ba1861b398e',
              u'value': u'PORTRAIT'}
         """
+        info("rotating the device")
         orientation_map = {'LANDSCAPE':'PORTRAIT', 'PORTRAIT':'LANDSCAPE'}
         change_from = self.get_current_orientation()
-        change_to = orientation_map[change_from]
-        out_put = self.driver.execute( 'setScreenOrientation',
-                                       {'orientation': change_to})
+        if to_orientation == None:
+            change_to = orientation_map[change_from]
+        else:
+            change_to = to_orientation.strip().upper()
+
+        if change_from.strip().upper() != change_to.strip().upper() :
+            out_put = self.driver.execute('setScreenOrientation',
+                                          {'orientation': change_to})
+        else:
+            out_put = {}
+        info(str(out_put))
+        info("orientation changed from %s to %s"%(change_from, change_to))
         return change_from, change_to, out_put
 
-    def scroll(self, scrol_typ, direction=None, frm_pt=(), to_pt=()):
+    def scroll(self, scrol_typ, direction=None, frm_pt=(), to_pt=(), duration_ms=2000):
         """Scroll horizontally or vertically in a particular direction from a
         point to another point
 
@@ -644,7 +697,7 @@ class Driver(object):
             end_x, end_y = 650, 242
 
 
-        self.driver.swipe(start_x, start_y, end_x, end_y, 2000)
+        self.driver.swipe(start_x, start_y, end_x, end_y, duration_ms)
 
     def show_current_activity(self):
         """Showing the current activity"""
@@ -695,9 +748,14 @@ class Driver(object):
             else:
                 to_pt = (to_pt[0], to_pt[1]+50)
 
+        if ret_all_data:
+            time_to_scroll = 2000
+        else:
+            time_to_scroll = 200
+
         tmp_retry = retry
         while tmp_retry > 0:
-            self.scroll('V', frm_pt=from_pt, to_pt=to_pt)
+            self.scroll('V', frm_pt=from_pt, to_pt=to_pt, duration_ms=time_to_scroll)
             ele_obj = self.get_element_by_xpath(ele)
             list_text_new = [ech_ele.text for ech_ele in ele_obj]
             if list_text_new[:3] == list_text_old[:3]:
@@ -975,3 +1033,36 @@ class Driver(object):
             self.scroll('H', frm_pt=left_pt, to_pt=right_pt)
         else:
             self.scroll('H', frm_pt=right_pt, to_pt=left_pt)
+
+    def disconnect_from_network(self):
+        """
+        Disconnected all network from the device
+        """
+        self.driver.set_network_connection(ConnectionType.NO_CONNECTION)
+        self.wait_for(6)
+
+    def reconnect_to_network(self):
+        """
+        Re-connect the network to the device
+        """
+        self.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
+        self.wait_for(6)
+
+'''
+if __name__ == "__main__":
+    from modules.constant import *
+    obj = Driver( APPIUM_SERVER, TEST_TARGET_CFG['os'],
+                 TEST_TARGET_CFG['os-version'],
+                 TEST_TARGET_CFG['device-name'])
+    obj.set_up()
+
+    #obj.driver.swipe(700, 20, 700, 200, 2000)
+
+    #ele = "//android.widget.FrameLayout[2]/android.widget.FrameLayout[1]/android.widget.ScrollView[1]/android.widget.FrameLayout[1]/android.widget.FrameLayout[4]/android.widget.RelativeLayout[1]/android.widget.TextView[1]"
+    #obj = obj.get_element_by_xpath(ele)
+    #obj.
+
+    obj.driver.set_network_connection(ConnectionType.NO_CONNECTION)
+    obj.wait_for(60)
+    obj.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
+'''

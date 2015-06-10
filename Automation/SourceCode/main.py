@@ -16,7 +16,8 @@ import os
 import webbrowser
 
 FILE_NAME_EXTN = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-CMD_OUT_FILE_NAME = "outputFile_%s.log" % FILE_NAME_EXTN
+CMD_OUT_FILE_NAME = os.path.join("consoleLog",
+                                 "outputFile_%s.log" % FILE_NAME_EXTN)
 JSON_OUT_FILE_NAME= "%s_json_out.json" % FILE_NAME_EXTN
 HTML_REPORT_FILE_NAME = "report-%s.html" % FILE_NAME_EXTN
 

@@ -1,0 +1,3 @@
+#!/bin/bash
+python main.py featureFiles\configuring-the-settings.feature featureFiles\analytics.feature featureFiles\play-media-content-using-player.feature featureFiles\play-media-content-using-player-1.feature featureFiles\player-control-bar.feature featureFiles\negative-scenario.feature featureFiles\fetching-library.feature featureFiles\play-list.feature featureFiles\check-icon.feature
+#python main.py featureFiles\configuring-the-settings.feature
