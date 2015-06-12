@@ -1183,9 +1183,12 @@ class Limelight(Driver):
         #bfr_elapsed_time = data['bfr_elapsed_time']
         aftr_elapsed_time = data['aftr_elapsed_time']
         if not aftr_elapsed_time:
-            if not self.is_item_visible("player-elapsed-time"):
-                self.click_on('player')
-            aftr_elapsed_time = self.get_value("player-elapsed-time")
+            for et in range(3):
+                try:
+                    aftr_elapsed_time = self.get_value("player-elapsed-time")
+                    break
+                except:
+                    self.click_on('player')
 
         if '1' not in skip_step:
             # Check pause button icon
@@ -1642,22 +1645,39 @@ class Limelight(Driver):
         If need to add all media:
          3. click on the "Add All To Playlist" button
         """
-        # Step 1
-        self.select_tab(tab_name)
-
-        # Step 2
-        if target == "all" and not media_names:
-            self.click_on("add-all-to-playlist-btn")
-        elif target == "following" and media_names:
-            for ech_media_name in media_names:
-                self.click_on("add-to-playlist-btn", (ech_media_name, ))
-                try:
-                    self.scrol_bottom_to_top(retry=3)
-                except Exception as exc:
-                    warning("While reset the scroll to top :%s"%str(exc))
-        else:
-            raise exception_mod.InvalidCombination(target=target,
-                                                   media_names=media_names)
+        for et in range(4):
+            # Step 1
+            self.select_tab(tab_name)
+            # Step 2
+            if target == "all" and not media_names:
+                self.click_on("add-all-to-playlist-btn")
+            elif target == "following" and media_names:
+                for ech_media_name in media_names:
+                    try:
+                        self.click_on("add-to-playlist-btn", (ech_media_name, ))
+                        if self.is_item_visible("popup-button", ("Cancel", )):
+                            self.click_on("popup-button", ("Cancel", ))
+                            info("encode popup shown so retry again")
+                            break  # Retry from outer loop
+                    except Exception as ex:
+                        info(str(ex))
+                        self.wait_for_alert_popup_close()
+                        break  # Retry from outer loop
+                    try:
+                        self.scrol_bottom_to_top(retry=3)
+                    except Exception as exc:
+                        warning("While reset the scroll to top :%s"%str(exc))
+                else:
+                    break
+                # Continue if anything goes wrong.
+                # if break out from inner loop
+                info("something went wrong so again retrying to perform the steps")
+                continue
+            else:
+                raise exception_mod.InvalidCombination(target=target,
+                                                       media_names=media_names)
+            # For normal case break out from retry
+            break
 
     def remove_from_playlist(self, target, media_names=None, tab_name=None):
         """
@@ -1681,9 +1701,12 @@ class Limelight(Driver):
         self.scrol_bottom_to_top(retry=8)
         # Step 2
         if target == "all" and not media_names:
-            self.scrol_bottom_to_top(retry=8)
-
             while True:
+                try:
+                    self.scrol_bottom_to_top(retry=8)
+                except:
+                    pass
+
                 try:
                     data = self.scrol_top_to_bottom(ret_all_data=True)
                 except Exception as ex:
@@ -1691,25 +1714,38 @@ class Limelight(Driver):
                     break
                 if not data:
                     break
+
                 info("resetting the scroll")
                 self.scrol_bottom_to_top(retry=8)
                 info("resetting the scroll done")
                 remove_item = []
-                for ech_media_name in data:
-                    if ech_media_name in remove_item:
-                        continue
-                    remove_item.append(ech_media_name)
-                    self.click_on("remove-from-playlist-btn",
-                                  (ech_media_name, ))
-                    try:
-                        self.scrol_bottom_to_top(retry=8)
-                    except:
-                        pass
-                info("Items removed: %s" % remove_item)
+                try:
+                    for ech_media_name in data:
+                        if ech_media_name in remove_item:
+                            continue
+                        remove_item.append(ech_media_name)
+                        self.click_on("remove-from-playlist-btn",
+                                      (ech_media_name, ))
+                        try:
+                            self.scrol_bottom_to_top(retry=8)
+                        except:
+                            pass
+                    info("items removed: %s" % remove_item)
+                except Exception as ex:
+                    info(str(ex))
+                    self.wait_for_alert_popup_close()
 
         elif target == "following" and media_names:
             for ech_media_name in media_names:
-                self.click_on("remove-from-playlist-btn", (ech_media_name, ))
+                for ech_try in range(4):
+                    self.click_on("remove-from-playlist-btn", (ech_media_name, ))
+                    if self.is_item_visible("remove-from-playlist-btn", (ech_media_name, )):
+                        continue
+                    if self.is_item_visible("alert-msg"):
+                        self.wait_for_alert_popup_close()  # For fetching
+                        self.wait_for_alert_popup_close()  # for downloading
+                        continue
+                    break
                 try:
                     self.scrol_bottom_to_top()
                 except:

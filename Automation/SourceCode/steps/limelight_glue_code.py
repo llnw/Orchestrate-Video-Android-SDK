@@ -57,8 +57,8 @@ def step_impl(context):
     else:
         info("APP IS RUNNING FROM PREVIOUS SCENARIO, SO RE-USING IT.")
 
-    LIME_LIGHT_OBJ.uncheck_delivery()
     LIME_LIGHT_OBJ.set_orientation()
+    LIME_LIGHT_OBJ.uncheck_delivery()
 
 
 @given('the application has launched with following ' + \
@@ -72,6 +72,7 @@ def step_impl(context, tab_name):
         LIME_LIGHT_OBJ = Limelight()
         LIME_LIGHT_OBJ.launch_app()
         LIME_LIGHT_OBJ.switch_internet_connection('on')
+        LIME_LIGHT_OBJ.set_orientation()
         LIME_LIGHT_OBJ.select_tab(tab_name)
         for row in context.table:
             LIME_LIGHT_OBJ.set_select_value( tab_name, str(row['name']),
@@ -81,8 +82,12 @@ def step_impl(context, tab_name):
     elif LIME_LIGHT_OBJ.need_to_relaunch_app:
         info("relaunching the app from menu")
         LIME_LIGHT_OBJ.relaunch_app_frm_menu()
+        LIME_LIGHT_OBJ.switch_internet_connection('on')
+        LIME_LIGHT_OBJ.set_orientation()
     else:
         info("APP IS RUNNING FROM PREVIOUS SCENARIO, SO RE-USING IT.")
+        LIME_LIGHT_OBJ.switch_internet_connection('on')
+        LIME_LIGHT_OBJ.set_orientation()
     LIME_LIGHT_OBJ.uncheck_delivery()
 
 

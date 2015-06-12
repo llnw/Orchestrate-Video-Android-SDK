@@ -8,24 +8,24 @@ Feature: Play list feature test
        | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      
      When I add following media in play list from ALL MEDIA tab -
-       | media name    |
-       | Fast Furious 6  |
+       | media name      |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
        | Inception       |
      Then following media from ALL MEDIA tab gets added in play list of PLAYER tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
        | Inception       |
      When I remove following media in play list from PLAYER tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
      Then following media from ALL MEDIA tab gets removed in play list of PLAYER tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
       And close the application
      
@@ -70,7 +70,7 @@ Feature: Play list feature test
        | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      When I add following media in play list from ALL MEDIA tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
      Then the PLAYER tab should not have following controls -
        | controls           |
@@ -112,12 +112,12 @@ Feature: Play list feature test
        | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      When I add following media in play list from ALL MEDIA tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
        | Inception       |
-     When I play the "Fast Furious 6" video from play list with auto playlist on
-      And I completed the "Fast Furious 6" video from PLAY-LIST with "automatic" encoding
+     When I play the "Adobe" video from play list with auto playlist on
+      And I completed the "Adobe" video from PLAY-LIST with "automatic" encoding
      Then player should play the IP MAN media from play-list at duration 00:00 in play state
       And close the application
      
@@ -129,8 +129,8 @@ Feature: Play list feature test
        | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
        | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      When I add following media in play list from ALL MEDIA tab -
-       | media name         |
-       | Fast Furious 6  |
+       | media name      |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
        | Inception       |
@@ -146,8 +146,8 @@ Feature: Play list feature test
        | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
        | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      When I add following media in play list from ALL MEDIA tab -
-       | media name         |
-       | Fast Furious 6  |
+       | media name      |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
        | Inception       |
@@ -166,7 +166,7 @@ Feature: Play list feature test
        | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      When I add following media in play list from ALL MEDIA tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
      When I play the "IP MAN" video from play list with auto playlist on
      When I add following media in play list from ALL MEDIA tab -
@@ -187,7 +187,7 @@ Feature: Play list feature test
        | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      When I add following media in play list from ALL MEDIA tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
        | Inception       |
@@ -217,7 +217,7 @@ Feature: Play list feature test
        | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      When I add following media in play list from ALL MEDIA tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
        | Inception       |
@@ -240,7 +240,7 @@ Feature: Play list feature test
        | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      When I add following media in play list from ALL MEDIA tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
       And I play the "IP MAN" video from play list with auto playlist off
@@ -257,22 +257,22 @@ Feature: Play list feature test
        | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      When I add following media in play list from ALL MEDIA tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
        | Inception       |
       And I play the "IP MAN" video from play list with auto playlist on
       And I apply screen orientation on the device
-     Then following media from ALL MEDIA tab gets added in play list of PLAYER tab -
+     Then following media from ALL MEDIA tab gets added in play list of CURRENT tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
        | Inception       |
      When I apply screen orientation on the device
      Then following media from ALL MEDIA tab gets added in play list of PLAYER tab -
        | media name      |
-       | Fast Furious 6  |
+       | Adobe           |
        | IP MAN          |
        | The Dark Knight |
        | Inception       |
