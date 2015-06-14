@@ -141,7 +141,7 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
             }
         }
     };
-    SpecificChannelCallback mediaCallback1 = new SpecificChannelCallback() {
+    SpecificChannelCallback specificChannelCallback = new SpecificChannelCallback() {
         @Override
         public void callback(String id, ContentService svc) {
             mChannelId = id;
@@ -196,7 +196,7 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
                 mMediaFragment = new MediaFragment(mediaCallback);
                 return mMediaFragment;
             case 5:
-                mSpecificChannelFragment = new SpecificChannelFragment(mediaCallback1,mChannelId);
+                mSpecificChannelFragment = new SpecificChannelFragment(specificChannelCallback,mChannelId);
                 return mSpecificChannelFragment;
             case 6:
                 mPlayerFragment = new PlayersFragment();
@@ -297,6 +297,20 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
             }
         }
     }
+    
+    @Override
+    public void playerPrepared(IPlayerControl control) {
+        mControl = control;
+        if (mPlayerFragment == null)
+            mPlayerFragment = (PlayersFragment) mRefer.get(0);
+        if (mPlayerFragment != null) {
+            mPlayerFragment.setControl(mControl);
+            mPlayerFragment.showProgress(false,null);
+            mPlayerFragment.show();
+            mPlayerFragment.showKeyboard(false);
+        }
+    }
+    
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
 
@@ -361,19 +375,6 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
             }
         }
         getActionBar().setSelectedNavigationItem(page);
-    }
-
-    @Override
-    public void playerPrepared(IPlayerControl control) {
-        mControl = control;
-        if (mPlayerFragment == null)
-            mPlayerFragment = (PlayersFragment) mRefer.get(0);
-        if (mPlayerFragment != null) {
-            mPlayerFragment.setControl(mControl);
-            mPlayerFragment.showProgress(false,null);
-            mPlayerFragment.show();
-            mPlayerFragment.showKeyboard(false);
-        }
     }
 
     @Override

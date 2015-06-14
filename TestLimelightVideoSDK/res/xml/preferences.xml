@@ -19,7 +19,7 @@
             android:summary="@string/SecKeyEditPrefSummary"
             android:title="@string/SecKeyEditPrefTitle" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="API END POINTS" >
+    <PreferenceCategory android:title="API END POINT" >
         <EditTextPreference
             android:defaultValue="@string/urlEditPrefDefValue"
             android:dialogTitle="@string/urlEditPrefDialogTitle"
@@ -47,6 +47,16 @@
             android:key="@string/logLevelListPrefKey"
             android:summary="@string/logLevelListPrefSummary"
             android:title="@string/logLevelListPrefTitle" />
+    </PreferenceCategory>
+    
+     <PreferenceCategory android:title="Analytics end Point" >
+        <EditTextPreference
+            android:defaultValue="@string/analyticsEditPrefDefValue"
+            android:dialogTitle="@string/analyticsEditPrefDialogTitle"
+            android:key="@string/analyticsEditPrefKey"
+            android:summary="@string/analyticsPrefSummary"
+            android:title="@string/analyticsEditPrefTitle" />
+        
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -52,6 +52,11 @@
     <string name="logLevelListPrefSummary">Click to pop up a field to select log level</string>
     <string name="logLevelListPrefKey">logLevelKey</string>
     <string name="logLevelListPrefDefValue">0</string>
+    <string name="analyticsEditPrefDefValue">https://staging-mcs.lvp.llnw.net/r/MetricsCollectionService/recordMetricsEvent</string>
+    <string name="analyticsEditPrefDialogTitle">Please Enter analytics url</string>
+    <string name="analyticsEditPrefKey">analyticsKey</string>
+    <string name="analyticsPrefSummary">Click to pop up a field to enter analytics url</string>
+    <string name="analyticsEditPrefTitle">Analytics URL</string>
     <string name="progressDlgEncodingMessage">Fetching Encodings From Server</string>
     <string name="progressDlgMediaMessage">Fetching Media From Server</string>
     <string name="choose_download_options">Choose Download Option</string>
