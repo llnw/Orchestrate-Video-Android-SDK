@@ -1,6 +1,7 @@
 package com.limelight.videosdk;
 
 import java.util.ArrayList;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import com.limelight.videosdk.Constants.PlayerState;
 import com.limelight.videosdk.ContentService.EncodingsCallback;
@@ -87,6 +88,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private IPlayerCallback mPlayerCallback;
     private Logger mLogger;
     private int mPosition;
+  //prevNextbuttonsSelected will have the following values passed from full screen player
+    // 0 - closing full screen normally
+    // 1 - previous button selected
+    // 2- next button selected
+    private int mprevNextbuttonsSelected;
     private PlayerControl mPlayerControl;
     private MediaControl mMediaController;
     private CountDownTimer mTimer;
@@ -101,6 +107,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private boolean isReporting = true;//dont send extra analytics data when switching from normal to full screen.
     private View.OnClickListener mPlayListNext;
     private View.OnClickListener mPlayListPrev;
+    private FullScreenCallback mFullScreenCallback;
 
     @Override
     public View onCreateView(final LayoutInflater inflater,final ViewGroup container,final Bundle savedInstanceState) {
@@ -120,7 +127,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         mMediaController = new MediaControl(getActivity(), true);
         mMediaController.setAnchorView(mPlayerView);//Not setting the media controller, setting media controller here results in issue when resumed back from home key press.
         final Toast toast = Toast.makeText(getActivity(), "Please Add FullScreenPlayer Activity In Manifest !", Toast.LENGTH_LONG);
-        mMediaController.setFullScreenCallback(new FullScreenCallback() {
+        mFullScreenCallback = new FullScreenCallback() {
             @Override
             public void fullScreen() {
                 final Intent intent = new Intent(getActivity(),FullScreenPlayer.class);
@@ -128,6 +135,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 intent.putExtra("POSITION",mPlayerView.getCurrentPosition());
                 intent.putExtra("STATE",mPlayerView.mPlayerState.name());
                 intent.putExtra("MEDIAID",mMediaId);
+                intent.putExtra("CHANNELPLAYLIST",isPlaylistPlaying);
                 try{
                     getActivity().startActivity(intent);
                     if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
@@ -148,7 +156,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             public void closeFullScreen() {
                 //Dont Do anything
             }
-        },true);
+        };
+        mMediaController.setFullScreenCallback(mFullScreenCallback,true);
         //This is to stretch the video to full screen
         final RelativeLayout.LayoutParams videoParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         videoParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
@@ -233,6 +242,14 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
+    private void sentSwithcToFullScreenMessage(){
+        final boolean isSwithcToFullScreen = true; 
+        final Intent intent = new Intent();
+        intent.setAction("limelight.intent.action.PLAY_FULLSCREEN");
+        intent.putExtra("SWITCHTOFULLSCREEN",isSwithcToFullScreen);
+        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+    }
+
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -255,11 +272,18 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(final Context context,final Intent intent) {
-                //sometimes playerview or state becomes null.
-                final String state = intent.getStringExtra("STATE");
-                mPosition  = intent.getIntExtra("POSITION",0);
-                if(mPlayerView != null){
-                    mPlayerView.mPlayerState = state == null?PlayerState.stopped:PlayerState.valueOf(state);
+                if(intent.getBooleanExtra("SWITCHTOFULLSCREEN", false)){
+                    if(mPlayerView != null && mPlayerView.mPlayerState == PlayerState.playing){
+                        mFullScreenCallback.fullScreen();
+                    }
+                }else {
+                    //sometimes playerview or state becomes null.
+                    final String state = intent.getStringExtra("STATE");
+                    mPosition  = intent.getIntExtra("POSITION",0);
+                    mprevNextbuttonsSelected = intent.getIntExtra("PREVNEXTBTNS",0);
+                    if(mPlayerView != null){
+                        mPlayerView.mPlayerState = state == null?PlayerState.stopped:PlayerState.valueOf(state);
+                    }
                 }
             }
         }, filter);
@@ -1036,10 +1060,66 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
         else{
-            if(mPlayerCallback!= null){
-                mPlayerCallback.playerPrepared(mPlayerControl);
+            if(mprevNextbuttonsSelected != 0){
+//                if(mPlayerView.getDuration() == -1){
+//                    mPlayerView.stopPlayback();
+//                }
+                if(mprevNextbuttonsSelected == 1){
+                    mprevNextbuttonsSelected = 3;//informing to switch top full screen later.
+//                    //switching to previous item
+                    if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
+                        if(mCurrentPlayPos > 0){
+                            if(mPlayerView != null && mPlayerView.getDuration() == -1){
+                                mPlayerView.stopPlayback();
+                                mPlayerView.mPlayerState = PlayerState.stopped;
+                            }
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+                            }
+                            mCurrentPlayPos--;
+                            mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
+                        }
+                    }
+                    if(mPlayerCallback!= null){
+                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                    }
+                }//end of if(mprevNextbuttonsSelected == 1){
+                else if(mprevNextbuttonsSelected == 2){
+                    mprevNextbuttonsSelected = 3;//informing to switch top full screen later.
+                    //switching to next item
+                    if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
+                        if(mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
+                            if(mPlayerView != null && mPlayerView.getDuration() == -1){
+                                mPlayerView.stopPlayback();
+                                mPlayerView.mPlayerState = PlayerState.stopped;
+                            }
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+                            }
+                            mCurrentPlayPos++;
+                            mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
+                        }
+                    }
+                    if(mPlayerCallback!= null){
+                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                    }
+                }//end of else if(mprevNextbuttonsSelected == 2){
+                else if(mprevNextbuttonsSelected == 3){
+                    mprevNextbuttonsSelected = 0;
+                    if(mPlayerCallback!= null){
+                        mPlayerCallback.playerPrepared(mPlayerControl);
+                    }
+                    mPlayerControl.play();
+                    sentSwithcToFullScreenMessage();
+                }
             }
-            mPlayerControl.play();
+            else
+            {
+                if(mPlayerCallback!= null){
+                    mPlayerCallback.playerPrepared(mPlayerControl);
+                }
+                mPlayerControl.play();
+            }
         }
         if (mLogger != null) {
             mLogger.debug(TAG+Constants.PLAYER_STATE+mPlayerView.mPlayerState.name());

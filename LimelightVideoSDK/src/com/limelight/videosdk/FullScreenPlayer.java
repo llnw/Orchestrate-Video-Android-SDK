@@ -34,6 +34,8 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
     private String mMediaId;
     private ProgressBar mProgress;
     private boolean isReporting;
+    private View.OnClickListener mPlayListNext;
+    private View.OnClickListener mPlayListPrev;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -53,7 +55,7 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
 
             @Override
             public void closeFullScreen() {
-                close(mPlayerView.getCurrentPosition());
+                close(mPlayerView.getCurrentPosition(), 0);
                 mPlayerView.stopPlayback();
             }
         },false);
@@ -75,11 +77,33 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         mPlayerView.setOnCompletionListener(this);
         mPlayerView.setMediaControllerCallback(this);
         mLogger = LoggerUtil.getLogger(this);
+        mPlayListNext = new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                close(mPlayerView.getCurrentPosition(), 2);
+                mPlayerView.stopPlayback();
+            }
+        };
+        mPlayListPrev = new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                close(mPlayerView.getCurrentPosition(), 1);
+                mPlayerView.stopPlayback();
+            }
+        };
         final Uri uri = Uri.parse(getIntent().getStringExtra("URI"));
         mPosition  = getIntent().getIntExtra("POSITION",0);
         final String state = getIntent().getStringExtra("STATE");
         mPlayerView.mPlayerState = PlayerState.valueOf(state);
         mMediaId = getIntent().getStringExtra("MEDIAID");
+        //Expecting to send true for CHANNELPLAYLIST when media is from channel playlist for all others it can be false.
+        if(getIntent().getBooleanExtra("CHANNELPLAYLIST", false)){
+            mediaController.setPrevNextListeners(mPlayListNext, mPlayListPrev);
+        }
+        else{
+            //CHANNELPLAYLIST is not true considering the current media is not from channel playlist.
+            mediaController.setPrevNextListeners(null, null);
+        }
         mPlayerView.setOnPreparedListener(this);
         mPlayerView.setVideoURI(uri);
         mReporter = new AnalyticsReporter(this);
@@ -116,14 +140,14 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         }
         mPlayerView.mPlayerState = PlayerState.completed;
         mediaPlayer.stop();
-        close(duration);
+        close(duration, 0);
     }
 
     @Override
     public void onPrepared(final MediaPlayer mediaPlayer) {
         if(mPlayerView.mPlayerState==PlayerState.stopped){
             mediaPlayer.stop();
-            close(mPosition);
+            close(mPosition, 0);
         }
         else{
             isReporting = false;
@@ -142,7 +166,7 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
     public boolean onError(final MediaPlayer mediaPlayer, final int what, final int extra) {
         mPlayerView.mPlayerState = PlayerState.stopped;
         mediaPlayer.stop();
-        close(0);
+        close(0,0);
         return true;
     }
 
@@ -150,11 +174,19 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
      * This is the method to close the FullScreenPlayer and send the current state to normal player.
      * @param position
      */
-    private void close(final int position){
+    private void close(final int position, final int prevNextbuttonsSelected){
+        final boolean isSwithcToFullScreen = false;
+        //prevNextbuttonsSelected will have the following values
+        // 0 - closing full screen normally
+        // 1 - previous button selected
+        // 2- next button selected
         final Intent intent = new Intent();
         intent.setAction("limelight.intent.action.PLAY_FULLSCREEN");
+        intent.putExtra("SWITCHTOFULLSCREEN", isSwithcToFullScreen);
         intent.putExtra("POSITION",position);
         intent.putExtra("STATE",mPlayerView.mPlayerState.name());
+        intent.putExtra("PREVNEXTBTNS",prevNextbuttonsSelected);
+
         LocalBroadcastManager.getInstance(FullScreenPlayer.this).sendBroadcast(intent);
         finish();
     }
@@ -172,6 +204,6 @@ public class FullScreenPlayer extends Activity implements OnErrorListener,OnPrep
         }else{
             mPosition = 0;
         }
-        close(mPosition);
+        close(mPosition, 0);
     }
 }
