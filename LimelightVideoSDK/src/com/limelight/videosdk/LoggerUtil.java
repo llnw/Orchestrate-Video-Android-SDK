@@ -34,7 +34,7 @@ import android.content.Context;
  * So this method maps Log4J level values to normal continuous integer values.<p>
  * Sample code for using LoggerUtil:<br>
  * LoggerUtil.configure( "LLVSDK.log" , "%d - [%p::%c::%t] - %m%n" , 5 , 1024);<br>
- * LoggerUtil.getLogger( “SDK” ).error( "XXXX" );
+ * LoggerUtil.getLogger( Â“SDKÂ” ).error( "XXXX" );
  */
 public final class LoggerUtil {
 
@@ -86,6 +86,29 @@ public final class LoggerUtil {
     public static void setLogLevel(final Level level) {
         if(level != null){
            sLogConfigurator.setLevel(LOGGER_NAME, level);
+        }
+    }
+    
+    public static void setLogLevelByString(final String levelName) {
+        if(levelName != null && !levelName.isEmpty()){
+            if(levelName.equalsIgnoreCase(Level.OFF.toString())){
+                setLogLevel(Level.OFF);
+            }
+            else if(levelName.equalsIgnoreCase(Level.FATAL.toString())){
+                setLogLevel(Level.FATAL);
+            }
+            else if(levelName.equalsIgnoreCase(Level.ERROR.toString())){
+                setLogLevel(Level.ERROR);
+            }
+            else if(levelName.equalsIgnoreCase(Level.WARN.toString())){
+                setLogLevel(Level.WARN);
+            }
+            else if(levelName.equalsIgnoreCase(Level.INFO.toString())){
+                setLogLevel(Level.INFO);
+            }
+            else if(levelName.equalsIgnoreCase(Level.DEBUG.toString())){
+                setLogLevel(Level.DEBUG);
+            }
         }
     }
 

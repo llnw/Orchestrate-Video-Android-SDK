@@ -127,6 +127,17 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                         R.string.logLevelListPrefDefValue));
             }
         }
+        EditTextPreference analyticsEditnPref = (EditTextPreference) findPreference(getResources()
+                .getString(R.string.analyticsEditPrefKey));
+        if (analyticsEditnPref != null) {
+            String analyticsPrefText = analyticsEditnPref.getText();
+            if (analyticsPrefText != null){
+                analyticsEditnPref.setSummary(analyticsPrefText);
+            } else {
+                analyticsEditnPref.setText(getResources().getString(R.string.analyticsEditPrefDefValue));
+                analyticsEditnPref.setSummary(getResources().getString(R.string.analyticsEditPrefDefValue));
+            }
+        }
         updateValues();
     }
 
@@ -159,6 +170,10 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 logLevelNum = Integer.parseInt(strLogListPrefText);
                 logListPref1.setSummary(mLogEntries[logLevelNum]);
             }
+            else if (key.equals(getResources().getString(R.string.analyticsEditPrefKey))) {
+                EditTextPreference analyticsEditPref = (EditTextPreference) findPreference(key);
+                analyticsEditPref.setSummary(sharedPreferences.getString(key, getResources().getString(R.string.analyticsEditPrefDefValue)));
+            }
             //update the values in SDK
             updateValues();
         }
@@ -180,5 +195,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         String portalKey = preferences.getString(getResources().getString(R.string.portalKeyEditPrefKey), null);
         String licenseProxy = preferences.getString(getResources().getString(R.string.licProxyEditPrefKey), null);
         Setting.configureLimelightSettings(apiEndPoint, licenseProxy, portalKey);
+        String logLevel = preferences.getString(getResources().getString(R.string.logLevelListPrefKey),null);
+        if(logLevel != null && !logLevel.isEmpty()){
+            int level = Integer.parseInt(logLevel);
+            LoggerUtil.setLogLevelByString(mLogEntries[level].toString());
+        }
+        String analyticsPrefText = preferences.getString(getResources().getString(R.string.analyticsEditPrefKey), null);
+        Setting.SetAnalyticsEndPoint(analyticsPrefText);
     }
 }
