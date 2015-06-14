@@ -358,8 +358,8 @@ public class ContentService {
      * @throws Exception
      */
     public ArrayList<Channel> getAllChannelOfGroup(final String channelGroupId,final boolean isLoadMore) throws Exception{
-
-        if (mOrgId == null || mOrgId.trim().isEmpty()) {
+        //Access key and secret key are not required, authentication not required
+        if (!Setting.isAccountConfigured(mOrgId)) {
             throw new Exception(Constants.ORG_ERROR);
         } else {
             if(!Connection.isConnected(mContext)){
@@ -435,8 +435,8 @@ public class ContentService {
      * @param callback ChannelCallback
      */
     public void getAllChannelOfGroupAsync(final String channelGroupId, final boolean isLoadMore,final ChannelCallback callback) {
-
-        if (mOrgId == null || mOrgId.trim().isEmpty()) {
+        //Access key and secret key are not required, authentication not required
+        if (!Setting.isAccountConfigured(mOrgId)) {
             if(callback != null){
                 callback.onError(new Throwable(Constants.ORG_ERROR));
             }
@@ -529,7 +529,6 @@ public class ContentService {
      * @throws Exception
      */
     public ArrayList<Channel> getAllChannel(boolean isLoadMore) throws Exception{
-
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
             throw new Exception(Constants.ACCOUNT_ERROR);
         } else {
@@ -716,8 +715,8 @@ public class ContentService {
      * @throws Exception
      */
     public ArrayList<Media> getAllMediaOfChannel(String channelId,boolean isLoadMore) throws Exception{
-
-        if (mOrgId == null || mOrgId.trim().isEmpty()) {
+        //Access key and secret key are not required, authentication not required
+        if (!Setting.isAccountConfigured(mOrgId)) {
             throw new Exception(Constants.ORG_ERROR);
         } else {
             if(!Connection.isConnected(mContext)){
@@ -796,8 +795,8 @@ public class ContentService {
      * @param callback MediaCallback
      */
     public void getAllMediaOfChannelAsync(final String channelId,final boolean isLoadMore,final MediaCallback callback) {
-
-        if (mOrgId == null || mOrgId.trim().isEmpty()) {
+        //Access key and secret key are not required, authentication not required
+        if (!Setting.isAccountConfigured(mOrgId)) {
             if(callback != null){
                 callback.onError(new Throwable(Constants.ORG_ERROR));
             }
@@ -1362,7 +1361,8 @@ public class ContentService {
      * @param callback ChannelCallback
      */
     public void getChannelAsync(final String channelId,final ChannelCallback callback) {
-        if (mOrgId == null || mOrgId.trim().isEmpty()) {
+        //Access key and secret key are not required, authentication not required
+        if (!Setting.isAccountConfigured(mOrgId)) {
             if(callback != null){
                 callback.onError(new Throwable(Constants.ORG_ERROR));
             }
@@ -1424,8 +1424,8 @@ public class ContentService {
      * @param callback MediaCallback
      */
     public void getMediaAsync(final String mediaId,final MediaCallback callback) {
-
-        if (mOrgId == null || mOrgId.trim().isEmpty()) {
+        //Access key and secret key are not required, authentication not required
+        if (!Setting.isAccountConfigured(mOrgId)) {
             if(callback != null){
                 callback.onError(new Throwable(Constants.ORG_ERROR));
             }
@@ -1485,8 +1485,6 @@ public class ContentService {
      * @param callback EncodingsCallback
      */
     public void getAllEncodingsForMediaId(final String mediaId,final EncodingsCallback callback) {
-        final TreeMap<String, String> params = new TreeMap<String, String>();
-        params.put(Constants.PRIMARY_USE, "all");
         if (!Setting.isAccountConfigured(mOrgId, mAccessKey, mSecret)) {
             if(callback != null){
                 callback.onError(new Throwable(Constants.ACCOUNT_ERROR));
@@ -1504,6 +1502,8 @@ public class ContentService {
                         }
                         return;
                     }
+                    final TreeMap<String, String> params = new TreeMap<String, String>();
+                    params.put(Constants.PRIMARY_USE, "all");
                     final String resourceUrl = Setting.getApiEndPoint() + String.format(Constants.ENCODING_PATH, mOrgId, mediaId);
                     mLogger.debug(TAG + " getAllEncodingsForMediaId " + " resourceUrl "+ resourceUrl);
                     final String url = URLAuthenticator.authenticateRequest(Constants.GET,resourceUrl, mAccessKey, mSecret, params);
@@ -1812,10 +1812,6 @@ public class ContentService {
             urlBuilder.append(URLEncoder.encode(entry.getKey(),Constants.ENCODING));
             urlBuilder = urlBuilder.append("=");
             urlBuilder.append(URLEncoder.encode(entry.getValue(),Constants.ENCODING));
-            urlBuilder = urlBuilder.append("&");
-            urlBuilder.append(entry.getKey());
-            urlBuilder = urlBuilder.append("=");
-            urlBuilder.append(entry.getValue());
             urlBuilder = urlBuilder.append("&");
         }
         // Removing trailing "&"
