@@ -294,7 +294,7 @@ private void ClearSearch(){
                         (mContentService.getSecret().equalsIgnoreCase(secret) == false)){
                     mContentService = new ContentService(mContext,orgId,accessKey,secret);
                 }
-                mContentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_DESC);
+                mContentService.setPagingParameters(50, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_DESC);
                 
                 if(mSearchParameter != null && !mSearchParameter.isEmpty())
                 {

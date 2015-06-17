@@ -550,7 +550,7 @@ public class PlayersFragment extends Fragment implements OnItemClickListener{
             String accessKey = preferences.getString(getActivity().getResources().getString(R.string.AccKeyEditPrefKey), null);
             String secret = preferences.getString(getActivity().getResources().getString(R.string.SecKeyEditPrefKey), null);
             ContentService contentService = new ContentService(getActivity(),orgId,accessKey,secret);
-            contentService.setPagingParameters(100, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_DESC);
+            contentService.setPagingParameters(50, Constants.SORT_BY_UPDATE_DATE, Constants.SORT_ORDER_DESC);
             mControl.setAutoPlay(mAutoPlayCheck.isChecked());
             mControl.playChannel(channelId, contentService,mCallback);
         }
