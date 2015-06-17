@@ -88,7 +88,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
             } else if (encoding.primaryUse.equals(PrimaryUse.Widevine)) {
                 try {
                     mLogger.debug(TAG + " Encoding is Widevine online ");
-                    requestRights(encoding.mEncodingUrl.toString(), encoding.mMediaID);
+                    requestRights(encoding.mEncodingUrl.toString(), encoding.mMediaID, false);
                 } catch (JSONException e) {
                     mLogger.error(TAG + " "+e == null ?"JSON Exception":e.getStackTrace());
                     if(mCallback!= null){
@@ -123,7 +123,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
             } else if (delivery.mProtected) {
                 try {
                     mLogger.debug(TAG + " Delivery is Widevine online ");
-                    requestRights(delivery.mRemoteURL.toString(),delivery.mMediaId);
+                    requestRights(delivery.mRemoteURL.toString(),delivery.mMediaId, false);
                 } catch (JSONException e) {
                     mLogger.error(TAG + " " +e == null ?"JSON Exception":e.getStackTrace());
                     if(mCallback!= null){
@@ -149,8 +149,9 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
             @Override
             public void onSuccess(final String path) {
                 mLogger.debug(TAG + " widevine downloaded file url : " + path);
+                
                 try {
-                    requestRights(path, mediaId);
+                    requestRights(path, mediaId, true);
                 } catch (JSONException e) {
                     mLogger.error(TAG + " "+e == null ?"JSON Exception":e.getStackTrace());
                     if(mCallback!= null){
@@ -181,7 +182,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * the rights.
      * @throws JSONException 
      */
-    private void requestRights(final String uri,final String mediaId) throws JSONException {
+    private void requestRights(final String uri,final String mediaId, boolean removeRights) throws JSONException {
         if(mCallback!= null){
             mCallback.onSendMessage("Processing Widevine Rights !");
         }
@@ -192,8 +193,60 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
             return;
         }
 
-        // get our license
-
+        if(removeRights){
+            //Test code commenting for now will delete later
+//            int rightStatus = mDrm.checkRightsStatus(uri);
+//            switch(rightStatus)
+//            {
+//            case DrmStore.RightsStatus.RIGHTS_EXPIRED:
+//                mLogger.debug(TAG + "RIGHTS_EXPIRED");
+//                break;
+//            case DrmStore.RightsStatus.RIGHTS_INVALID:
+//                mLogger.debug(TAG + "RIGHTS_INVALID");
+//                break;
+//            case DrmStore.RightsStatus.RIGHTS_NOT_ACQUIRED:
+//                mLogger.debug(TAG + "RIGHTS_NOT_ACQUIRED");
+//                break;
+//            case DrmStore.RightsStatus.RIGHTS_VALID:
+//                mLogger.debug(TAG + "RIGHTS_VALID");
+//                break;
+//            }
+            
+          //Removing existing rights if any, for widevine offline we had issue if we donot remove rights.
+            int errorNumber = mDrm.removeRights(uri);
+            if(errorNumber == DrmManagerClient.ERROR_NONE){
+                mLogger.debug(TAG + "Rights removed successfully.");
+                try {
+                    //Thread.sleep(1000);
+                    Thread.sleep(500);
+                } catch (InterruptedException e1) {
+                    mLogger.error(TAG + "Thread.sleep failed.");
+                }
+            }
+            else if(errorNumber == DrmManagerClient.ERROR_UNKNOWN){
+                mLogger.error(TAG + "Failed to remove rights");
+            }
+            
+            
+          //Test code commenting for now will delete later
+//            int rightStatusAfterRemove = mDrm.checkRightsStatus(uri);
+//            switch(rightStatusAfterRemove)
+//            {
+//            case DrmStore.RightsStatus.RIGHTS_EXPIRED:
+//                mLogger.debug(TAG + "RIGHTS_EXPIRED");
+//                break;
+//            case DrmStore.RightsStatus.RIGHTS_INVALID:
+//                mLogger.debug(TAG + "RIGHTS_INVALID");
+//                break;
+//            case DrmStore.RightsStatus.RIGHTS_NOT_ACQUIRED:
+//                mLogger.debug(TAG + "RIGHTS_NOT_ACQUIRED");
+//                break;
+//            case DrmStore.RightsStatus.RIGHTS_VALID:
+//                mLogger.debug(TAG + "RIGHTS_VALID");
+//                break;
+//            }
+        }
+     // get our license
         final int val = mDrm.acquireRights(mDrmInfoRequest);
         if(val != DrmManagerClient.ERROR_NONE){
             if(mCallback!= null)
