@@ -242,7 +242,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
-    private void sentSwithcToFullScreenMessage(){
+    private void sendSwitchToFullScreenMessage(){
         final boolean isSwithcToFullScreen = true; 
         final Intent intent = new Intent();
         intent.setAction("limelight.intent.action.PLAY_FULLSCREEN");
@@ -1065,7 +1065,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 //                    mPlayerView.stopPlayback();
 //                }
                 if(mprevNextbuttonsSelected == 1){
-                    mprevNextbuttonsSelected = 3;//informing to switch top full screen later.
 //                    //switching to previous item
                     if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
                         if(mCurrentPlayPos > 0){
@@ -1076,16 +1075,29 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             if (mLogger != null) {
                                 mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
                             }
+                            mprevNextbuttonsSelected = 3;//informing to switch top full screen later.
                             mCurrentPlayPos--;
                             mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
+
+                            if(mPlayerCallback!= null){
+                                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                            }
+                        }
+                        else {
+                            mprevNextbuttonsSelected = 0;
+                            if(mPlayerCallback!= null){
+                                mPlayerCallback.playerPrepared(mPlayerControl);
+                            }
+                            mPlayerControl.play();
+                            sendSwitchToFullScreenMessage();
                         }
                     }
-                    if(mPlayerCallback!= null){
-                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
-                    }
+//                    if(mPlayerCallback!= null){
+//                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+//                    }
                 }//end of if(mprevNextbuttonsSelected == 1){
                 else if(mprevNextbuttonsSelected == 2){
-                    mprevNextbuttonsSelected = 3;//informing to switch top full screen later.
+                    
                     //switching to next item
                     if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
                         if(mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
@@ -1096,13 +1108,26 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             if (mLogger != null) {
                                 mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
                             }
+                            mprevNextbuttonsSelected = 3;//informing to switch top full screen later.
                             mCurrentPlayPos++;
                             mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
+
+                            if(mPlayerCallback!= null){
+                                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                            }
+                        }
+                        else {
+                            mprevNextbuttonsSelected = 0;
+                            if(mPlayerCallback!= null){
+                                mPlayerCallback.playerPrepared(mPlayerControl);
+                            }
+                            mPlayerControl.play();
+                            sendSwitchToFullScreenMessage();
                         }
                     }
-                    if(mPlayerCallback!= null){
-                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
-                    }
+//                    if(mPlayerCallback!= null){
+//                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+//                    }
                 }//end of else if(mprevNextbuttonsSelected == 2){
                 else if(mprevNextbuttonsSelected == 3){
                     mprevNextbuttonsSelected = 0;
@@ -1110,7 +1135,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         mPlayerCallback.playerPrepared(mPlayerControl);
                     }
                     mPlayerControl.play();
-                    sentSwithcToFullScreenMessage();
+                    sendSwitchToFullScreenMessage();
                 }
             }
             else
