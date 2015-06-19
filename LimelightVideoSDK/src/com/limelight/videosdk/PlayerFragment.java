@@ -1,12 +1,16 @@
 package com.limelight.videosdk;
 
 import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 import com.limelight.videosdk.Constants.PlayerState;
+import com.limelight.videosdk.ContentService.ChannelCallback;
 import com.limelight.videosdk.ContentService.EncodingsCallback;
+import com.limelight.videosdk.ContentService.IndividualChannelCallback;
 import com.limelight.videosdk.ContentService.MediaCallback;
 import com.limelight.videosdk.MediaControl.FullScreenCallback;
 import com.limelight.videosdk.WidevineManager.WVCallback;
+import com.limelight.videosdk.model.Channel;
 import com.limelight.videosdk.model.Delivery;
 import com.limelight.videosdk.model.Encoding;
 import com.limelight.videosdk.model.Media;
@@ -87,6 +91,11 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     private IPlayerCallback mPlayerCallback;
     private Logger mLogger;
     private int mPosition;
+  //prevNextbuttonsSelected will have the following values passed from full screen player
+    // 0 - closing full screen normally
+    // 1 - previous button selected
+    // 2- next button selected
+    private int mprevNextbuttonsSelected;
     private PlayerControl mPlayerControl;
     private MediaControl mMediaController;
     private CountDownTimer mTimer;
@@ -101,6 +110,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     private boolean isReporting = true;//dont send extra analytics data when switching from normal to full screen.
     private View.OnClickListener mPlayListNext;
     private View.OnClickListener mPlayListPrev;
+    private FullScreenCallback mFullScreenCallback;
 
     @Override
     public View onCreateView(final LayoutInflater inflater,final ViewGroup container,final Bundle savedInstanceState) {
@@ -120,7 +130,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         mMediaController = new MediaControl(getActivity(), true);
         mMediaController.setAnchorView(mPlayerView);//Not setting the media controller, setting media controller here results in issue when resumed back from home key press.
         final Toast toast = Toast.makeText(getActivity(), "Please Add FullScreenPlayer Activity In Manifest !", Toast.LENGTH_LONG);
-        mMediaController.setFullScreenCallback(new FullScreenCallback() {
+        mFullScreenCallback = new FullScreenCallback() {
             @Override
             public void fullScreen() {
                 final Intent intent = new Intent(getActivity(),FullScreenPlayer.class);
@@ -128,6 +138,7 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 intent.putExtra("POSITION",mPlayerView.getCurrentPosition());
                 intent.putExtra("STATE",mPlayerView.mPlayerState.name());
                 intent.putExtra("MEDIAID",mMediaId);
+                intent.putExtra("CHANNELPLAYLIST",isPlaylistPlaying);
                 try{
                     getActivity().startActivity(intent);
                     if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
@@ -148,7 +159,8 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             public void closeFullScreen() {
                 //Dont Do anything
             }
-        },true);
+        };
+        mMediaController.setFullScreenCallback(mFullScreenCallback,true);
         //This is to stretch the video to full screen
         final RelativeLayout.LayoutParams videoParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         videoParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
@@ -233,6 +245,14 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         }
     }
 
+    private void sendSwitchToFullScreenMessage(){
+        final boolean isSwithcToFullScreen = true; 
+        final Intent intent = new Intent();
+        intent.setAction("limelight.intent.action.PLAY_FULLSCREEN");
+        intent.putExtra("SWITCHTOFULLSCREEN",isSwithcToFullScreen);
+        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+    }
+
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -243,20 +263,30 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                 if (mLogger != null) {
                     mLogger.error("Activity Not Started");
                 }
-                return;
+                //removed to provide a way to set mPlayerCallback later
+                //return;
             }
         }
         mReporter.sendStartSession();
-        mPlayerCallback.playerAttached(mPlayerControl);
+        if(mPlayerCallback != null){
+            mPlayerCallback.playerAttached(mPlayerControl);
+        }
         final IntentFilter filter = new IntentFilter("limelight.intent.action.PLAY_FULLSCREEN");
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(final Context context,final Intent intent) {
-                //sometimes playerview or state becomes null.
-                final String state = intent.getStringExtra("STATE");
-                mPosition  = intent.getIntExtra("POSITION",0);
-                if(mPlayerView != null){
-                    mPlayerView.mPlayerState = state == null?PlayerState.stopped:PlayerState.valueOf(state);
+                if(intent.getBooleanExtra("SWITCHTOFULLSCREEN", false)){
+                    if(mPlayerView != null && mPlayerView.mPlayerState == PlayerState.playing){
+                        mFullScreenCallback.fullScreen();
+                    }
+                }else {
+                    //sometimes playerview or state becomes null.
+                    final String state = intent.getStringExtra("STATE");
+                    mPosition  = intent.getIntExtra("POSITION",0);
+                    mprevNextbuttonsSelected = intent.getIntExtra("PREVNEXTBTNS",0);
+                    if(mPlayerView != null){
+                        mPlayerView.mPlayerState = state == null?PlayerState.stopped:PlayerState.valueOf(state);
+                    }
                 }
             }
         }, filter);
@@ -538,7 +568,17 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             if (mLogger != null) {
                 mLogger.debug(TAG+" 3gp media : " + rtspURL);
             }
-            setVideoPath(rtspURL);
+            try {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setVideoPath(rtspURL);
+                    }
+                });
+            } catch (Exception ex) {
+                playerError();
+                return;
+            }
         }
 
         /**
@@ -793,11 +833,12 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
          */
         private void fetchPlaylist(final String channelId,final IPlaylistCallback callback){
             //find for auto play in channel property
-            /*mPlaylistContentSvc.getChannelAsync(channelId, new ChannelCallback() {
+            /*
+            mPlaylistService.getChannelAsync(channelId, new IndividualChannelCallback() {
                 @Override
-                public void onSuccess(ArrayList<Channel> channel) {
-                    if(channel != null && !channel.isEmpty()){
-                        mIsAutoPlay = channel.get(0).mAutoPlayEnabled;
+                public void onSuccess(Channel channel) {
+                    if(channel != null){
+                        mIsAutoPlay = channel.mAutoPlayEnabled;
                     }else{
                         if (mLogger != null) {
                             mLogger.debug(TAG+" Error in getting auto play for Channel:"+channelId);
@@ -810,7 +851,8 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
                         mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
                     }
                 }
-            });*/
+            });
+            */
             mPlaylistService.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
                 @Override
                 public void onSuccess(final ArrayList<Media> list) {
@@ -1011,6 +1053,8 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             if(mPlayerView.getDuration() == -1){
                 mPlayerView.stopPlayback();
             }
+            //Control reaches here when play-back of an item is completed in full screen
+            //checking for mIsAutoPlay and playing the next item
             if(mIsAutoPlay && mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()
                     && mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
                 mCurrentPlayPos++;
@@ -1021,10 +1065,91 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             }
         }
         else{
-            if(mPlayerCallback!= null){
-                mPlayerCallback.playerPrepared(mPlayerControl);
+            if(mprevNextbuttonsSelected != 0){
+//                if(mPlayerView.getDuration() == -1){
+//                    mPlayerView.stopPlayback();
+//                }
+                if(mprevNextbuttonsSelected == 1){
+//                    //switching to previous item
+                    if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
+                        if(mCurrentPlayPos > 0){
+                            if(mPlayerView != null && mPlayerView.getDuration() == -1){
+                                mPlayerView.stopPlayback();
+                                mPlayerView.mPlayerState = PlayerState.stopped;
+                            }
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+                            }
+                            mprevNextbuttonsSelected = 3;//informing to switch top full screen later.
+                            mCurrentPlayPos--;
+                            mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
+
+                            if(mPlayerCallback!= null){
+                                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                            }
+                        }
+                        else {
+                            mprevNextbuttonsSelected = 0;
+                            if(mPlayerCallback!= null){
+                                mPlayerCallback.playerPrepared(mPlayerControl);
+                            }
+                            mPlayerControl.play();
+                            sendSwitchToFullScreenMessage();
+                        }
+                    }
+//                    if(mPlayerCallback!= null){
+//                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+//                    }
+                }//end of if(mprevNextbuttonsSelected == 1){
+                else if(mprevNextbuttonsSelected == 2){
+                    
+                    //switching to next item
+                    if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
+                        if(mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
+                            if(mPlayerView != null && mPlayerView.getDuration() == -1){
+                                mPlayerView.stopPlayback();
+                                mPlayerView.mPlayerState = PlayerState.stopped;
+                            }
+                            if (mLogger != null) {
+                                mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
+                            }
+                            mprevNextbuttonsSelected = 3;//informing to switch top full screen later.
+                            mCurrentPlayPos++;
+                            mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
+
+                            if(mPlayerCallback!= null){
+                                mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+                            }
+                        }
+                        else {
+                            mprevNextbuttonsSelected = 0;
+                            if(mPlayerCallback!= null){
+                                mPlayerCallback.playerPrepared(mPlayerControl);
+                            }
+                            mPlayerControl.play();
+                            sendSwitchToFullScreenMessage();
+                        }
+                    }
+//                    if(mPlayerCallback!= null){
+//                        mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), Constants.PlayerState.completed.ordinal(),null);
+//                    }
+                }//end of else if(mprevNextbuttonsSelected == 2){
+                else if(mprevNextbuttonsSelected == 3){
+                    mprevNextbuttonsSelected = 0;
+                    if(mPlayerCallback!= null){
+                        mPlayerCallback.playerPrepared(mPlayerControl);
+                    }
+                    mPlayerControl.play();
+                    sendSwitchToFullScreenMessage();
+                }
             }
-            mPlayerControl.play();
+            else
+            {
+                if(mPlayerCallback!= null){
+                    mPlayerCallback.playerPrepared(mPlayerControl);
+                }
+                mPlayerControl.play();
+            }
         }
         if (mLogger != null) {
             mLogger.debug(TAG+Constants.PLAYER_STATE+mPlayerView.mPlayerState.name());
