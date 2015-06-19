@@ -132,6 +132,15 @@ public class ContentService {
         void onSuccess(final ArrayList<Channel> list);
         void onError(final Throwable throwable);
     }
+    
+    /**
+     * A delegate for getting the response back from the call for fetching individual channel.
+     * Parameters are marked final, as the callback will be invoked on another thread.
+     */
+    public interface IndividualChannelCallback {
+        void onSuccess(final Channel singleChannle);
+        void onError(final Throwable throwable);
+    }
 
     /**
      * A delegate for getting the response back from the call for fetching Media.
@@ -139,6 +148,15 @@ public class ContentService {
      */
     public interface MediaCallback {
         void onSuccess(final ArrayList<Media> list);
+        void onError(final Throwable throwable);
+    }
+    
+    /**
+     * A delegate for getting the response back from the call for fetching individual Media.
+     * Parameters are marked final, as the callback will be invoked on another thread.
+     */
+    public interface IndividualMediaCallback {
+        void onSuccess(final Media singleMedia);
         void onError(final Throwable throwable);
     }
 
@@ -1360,7 +1378,7 @@ public class ContentService {
      * @param channelId ChannelId
      * @param callback ChannelCallback
      */
-    public void getChannelAsync(final String channelId,final ChannelCallback callback) {
+    public void getChannelAsync(final String channelId,final IndividualChannelCallback callback) {
         //Access key and secret key are not required, authentication not required
         if (!Setting.isAccountConfigured(mOrgId)) {
             if(callback != null){
@@ -1382,10 +1400,9 @@ public class ContentService {
                             urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
                             urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                             JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
-                            ArrayList<Channel> channelList = new ArrayList<Channel>();
-                            channelList.add(parseChannelProperty(reader));
+                            Channel singleChannel = parseChannelProperty(reader);
                             if(callback != null){
-                                callback.onSuccess(channelList);
+                                callback.onSuccess(singleChannel);
                             }
                         }
                         catch (MalformedURLException e) {
@@ -1423,7 +1440,7 @@ public class ContentService {
      * @param mediaId mediaId
      * @param callback MediaCallback
      */
-    public void getMediaAsync(final String mediaId,final MediaCallback callback) {
+    public void getMediaAsync(final String mediaId,final IndividualMediaCallback callback) {
         //Access key and secret key are not required, authentication not required
         if (!Setting.isAccountConfigured(mOrgId)) {
             if(callback != null){
@@ -1445,10 +1462,9 @@ public class ContentService {
                             urlConnection = (HttpURLConnection) new URL(resourceUrl).openConnection();
                             urlConnection.setConnectTimeout(Constants.PREPARING_TIMEOUT);
                             JsonReader reader = new JsonReader(new BufferedReader(new InputStreamReader(urlConnection.getInputStream())));
-                            ArrayList<Media> mediaList = new ArrayList<Media>();
-                            mediaList.add(parseMediaProperty(reader));
+                            Media singleMedia = parseMediaProperty(reader);
                             if(callback != null){
-                                callback.onSuccess(mediaList);
+                                callback.onSuccess(singleMedia);
                             }
                         }
                         catch (MalformedURLException e1) {

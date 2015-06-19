@@ -5,9 +5,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import com.limelight.videosdk.Constants.PlayerState;
 import com.limelight.videosdk.ContentService.EncodingsCallback;
+import com.limelight.videosdk.ContentService.IndividualChannelCallback;
 import com.limelight.videosdk.ContentService.MediaCallback;
 import com.limelight.videosdk.MediaControl.FullScreenCallback;
 import com.limelight.videosdk.WidevineManager.WVCallback;
+import com.limelight.videosdk.model.Channel;
 import com.limelight.videosdk.model.Delivery;
 import com.limelight.videosdk.model.Encoding;
 import com.limelight.videosdk.model.Media;
@@ -830,11 +832,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
          */
         private void fetchPlaylist(final String channelId,final IPlaylistCallback callback){
             //find for auto play in channel property
-            /*mPlaylistContentSvc.getChannelAsync(channelId, new ChannelCallback() {
+            /* mPlaylistService.getChannelAsync(channelId, new IndividualChannelCallback() {
                 @Override
-                public void onSuccess(ArrayList<Channel> channel) {
-                    if(channel != null && !channel.isEmpty()){
-                        mIsAutoPlay = channel.get(0).mAutoPlayEnabled;
+                public void onSuccess(Channel channel) {
+                    if(channel != null){
+                        mIsAutoPlay = channel.mAutoPlayEnabled;
                     }else{
                         if (mLogger != null) {
                             mLogger.debug(TAG+" Error in getting auto play for Channel:"+channelId);
@@ -847,7 +849,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         mPlayerCallback.playerMessage(Constants.Message.error.ordinal(), 0,throwable.getMessage());
                     }
                 }
-            });*/
+            });
+             */
             mPlaylistService.getAllMediaOfChannelAsync(channelId, false, new MediaCallback() {
                 @Override
                 public void onSuccess(final ArrayList<Media> list) {
@@ -1039,16 +1042,26 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see android.media.MediaPlayer.OnPreparedListener#onPrepared(android.media.MediaPlayer)
+     * Gets called when the media file is ready for playback.
+     * Alternatively control reaches here when we close the full screen.
+     * On switching to full screen OnPause is called and onclosing full screen OnResume gets called
+     * We use these methods to save the state and pass between normal and full screen players.
+     */
     @Override
     public void onPrepared(final MediaPlayer mediaPlayer) {
         stopTimerForPrepare();
+        //Checking the player state if paused the pausing thge player.
         if(mPlayerView.mPlayerState == PlayerState.paused){
             mPlayerView.pause();
         }else if(mPlayerView.mPlayerState == PlayerState.completed){
+            //based on playback state if it is complete we stop the plauback.
             if(mPlayerView.getDuration() == -1){
                 mPlayerView.stopPlayback();
             }
-            //Control reaches here when play-back of an item is completed in full screen
+            //Control also reaches here when play-back of an item is completed in full screen
             //checking for mIsAutoPlay and playing the next item
             if(mIsAutoPlay && mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()
                     && mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
