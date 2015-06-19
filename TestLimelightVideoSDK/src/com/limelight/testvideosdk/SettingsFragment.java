@@ -198,7 +198,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         String logLevel = preferences.getString(getResources().getString(R.string.logLevelListPrefKey),null);
         if(logLevel != null && !logLevel.isEmpty()){
             int level = Integer.parseInt(logLevel);
-            LoggerUtil.setLogLevelByString(mLogEntries[level].toString());
+            LoggerUtil.setLogLevelByString(mLogEntries[level].toString(),SettingsFragment.this.getActivity());
         }
         String analyticsPrefText = preferences.getString(getResources().getString(R.string.analyticsEditPrefKey), null);
         Setting.SetAnalyticsEndPoint(analyticsPrefText);

@@ -5,6 +5,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import android.content.Context;
+import android.os.Build;
+import android.os.Environment;
 
 /**
  * This class has methods to configure Logging and to Log the messages.
@@ -66,9 +68,18 @@ public final class LoggerUtil {
      */
     public static Logger getLogger(final Context context) {
         final String filePath = sLogConfigurator.getFileName();
+        File file=null;
         if(filePath == null && context != null){
-            final File file = new File(context.getFilesDir(), LoggerUtil.LOGGER_NAME + ".log");
-            LoggerUtil.configure(file.getAbsolutePath(),"%d - %p - %c - %t - %m%n", 5, 512 * 1024);
+            //generating file name under data folder 
+            //final File file = new File(context.getFilesDir(), LoggerUtil.LOGGER_NAME + ".log");
+            if(Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)
+                    && ! (Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED_READ_ONLY))){
+                //generating log file under documents folder, accessible to everyone.
+                file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), LoggerUtil.LOGGER_NAME + ".log");
+            }
+            if(file != null){
+                LoggerUtil.configure(file.getAbsolutePath(),"%d - %p - %c - %t - %m%n", 5, 512 * 1024);
+            }
         }
         return Logger.getLogger(LoggerUtil.LOGGER_NAME);
     }
@@ -83,31 +94,33 @@ public final class LoggerUtil {
      * 
      * @param level
      */
-    public static void setLogLevel(final Level level) {
+    public static void setLogLevel(final Level level, Context context) {
         if(level != null){
-           sLogConfigurator.setLevel(LOGGER_NAME, level);
+           //sLogConfigurator.setLevel(LOGGER_NAME, level);
+           getLogger(context).setLevel(level);
         }
     }
     
-    public static void setLogLevelByString(final String levelName) {
+    //passing the context, later if we want to write logs to data folder using context we can get the data folder path.
+    public static void setLogLevelByString(final String levelName, Context context) {
         if(levelName != null && !levelName.isEmpty()){
             if(levelName.equalsIgnoreCase(Level.OFF.toString())){
-                setLogLevel(Level.OFF);
+                setLogLevel(Level.OFF, context);
             }
             else if(levelName.equalsIgnoreCase(Level.FATAL.toString())){
-                setLogLevel(Level.FATAL);
+                setLogLevel(Level.FATAL, context);
             }
             else if(levelName.equalsIgnoreCase(Level.ERROR.toString())){
-                setLogLevel(Level.ERROR);
+                setLogLevel(Level.ERROR, context);
             }
             else if(levelName.equalsIgnoreCase(Level.WARN.toString())){
-                setLogLevel(Level.WARN);
+                setLogLevel(Level.WARN, context);
             }
             else if(levelName.equalsIgnoreCase(Level.INFO.toString())){
-                setLogLevel(Level.INFO);
+                setLogLevel(Level.INFO, context);
             }
             else if(levelName.equalsIgnoreCase(Level.DEBUG.toString())){
-                setLogLevel(Level.DEBUG);
+                setLogLevel(Level.DEBUG, context);
             }
         }
     }
