@@ -13,7 +13,7 @@ Feature: Check the update media
          | Avengers Age of Ultron  |
          | Adobe                   |
       When I update "new update description" as value for "description" in "Avengers Age of Ultron" media
-       And I update "new update description" as value for "description" in "Adobe" media
+       And I update "new update test description" as value for "description" in "Adobe" media
        And I refresh the ALL MEDIA tab
       Then the ALL MEDIA tab should have following media at top -
          | media                   |

@@ -100,9 +100,13 @@ def step_impl(context, opr, val, target_ele, tab_name):
         val : value that need to set
         target_ele : The element on which we are going to perform the operation
         tab_name : The tab where we need to go
+    For searching :
+        opr : search
+        val : value to be search
+        target_ele : search by
+        tab_name : search in tab
     """
     global LIME_LIGHT_OBJ
-    LIME_LIGHT_OBJ.select_tab(tab_name)
     LIME_LIGHT_OBJ.set_select_value(tab_name, target_ele, opr, val)
 
 @when('I {opr} the {tab_name} tab')
@@ -151,35 +155,54 @@ def step_impl(context, action_itm, perform, target):
             action_itm : internet
             perform    : on/off
             target     : device
-
+        For player next and previous button click: I apply player-next-button click on the player
+            action_itm : player-next-button/player-previous-button
+            perform    : click
+            target     : player
     """
     global LIME_LIGHT_OBJ
     if target.strip().lower() == "player":
         # Perform the actions on player
-        LIME_LIGHT_OBJ.perform_player_operation(action_itm.strip().lower(),
+        tmp_dic = LIME_LIGHT_OBJ.perform_player_operation(action_itm.strip().lower(),
                                                 perform.strip().lower())
+        ret_data.update(tmp_dic)
     else:
         LIME_LIGHT_OBJ.perform_device_operations(action_itm.strip(),
                                              perform.strip(),
                                              target.strip())
 
-@when('I {operation} {target} media in play list from {tab_name} tab{is_table:optional}')
+@when('I {operation} {target} {add_type} in play list from {tab_name} tab{is_table:optional}')
 @test_step
-def step_impl(context, operation, target, tab_name, is_table):
+def step_impl(context, operation, target, add_type, tab_name, is_table):
     """
     @args :
         operation : add / remove
         target    : following / all
+        add_type  : media/channel
         tab_name  : tab name of the app
         is_table  : "-"
     """
     global LIME_LIGHT_OBJ
-    media_name = []
-    if is_table and is_table.strip() == "-":
-        media_name = [str(row["media name"]) for row in context.table]
-    LIME_LIGHT_OBJ.add_delete_from_playlist( operation.lower().strip(),
-                                             target.lower().strip(),
-                                             tab_name, media_name)
+    if add_type.lower().strip() == 'media':
+        media_name = []
+        if is_table and is_table.strip() == "-":
+            media_name = [str(row["media name"]) for row in context.table]
+        LIME_LIGHT_OBJ.add_delete_from_playlist( operation.lower().strip(),
+                                                 target.lower().strip(),
+                                                 tab_name, media_name,
+                                                 add_type.lower().strip())
+    elif add_type.lower().strip() == 'channel':
+        channel_name = []
+        if is_table and is_table.strip() == "-":
+            channel_name_list = [str(row["channel name"]) for row in context.table]
+            if channel_name_list:
+                channel_name = [channel_name_list[0]]
+        LIME_LIGHT_OBJ.add_delete_from_playlist( operation.lower().strip(),
+                                                 target.lower().strip(),
+                                                 tab_name, channel_name,
+                                                 add_type.lower().strip())
+    else:
+        raise Exception('playlist add type should either media or channel')
 
 
 @then('{target} media from {source_tab_name} tab gets {operation} in ' + \

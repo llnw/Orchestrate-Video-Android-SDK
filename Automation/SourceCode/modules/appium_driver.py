@@ -815,6 +815,10 @@ class Driver(object):
             self.scroll('V', frm_pt=from_pt, to_pt=to_pt)
             ele_obj = self.get_element_by_xpath(ele)
             list_text_new = [ech_ele.text for ech_ele in ele_obj]
+            print "ELEMENT NEW::::::::", list_text_new,
+            print "::::ELEMENT OLD::::::", list_text_old,
+            print "::::total data::::::", list_text
+            print "tmp_retry ::::::::", tmp_retry, "retry ::::::::", retry
             if list_text_new[-3:] == list_text_old[-3:]:
                 tmp_retry -= 1
             else:

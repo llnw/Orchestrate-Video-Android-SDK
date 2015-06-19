@@ -88,7 +88,7 @@ class Limelight(Driver):
         """
         info("set orientation to potrait mode")
         change_from, change_to, out_put = self.rotate_device("PORTRAIT")
-        info("orientation changed from %s to %s" % (change_from, change_to))
+        #info("orientation changed from %s to %s" % (change_from, change_to))
 
     @exception_mod.handle_exception
     def select_tab(self, tab_name):
@@ -200,9 +200,16 @@ class Limelight(Driver):
             tel           : target element
             operation     : operation , set / select
             value            : set/select a value
+        For searching :
+            operation : search
+            value : value to be search
+            tel : search by
+            tab_name : search in tab
         """
-        info("SET/SELECT VALUE => %s value %s for %s ON %s" %
+        info("%s value %s for %s ON %s tab" %
              (operation, value, tel, tab_name))
+
+        self.select_tab(tab_name)
 
         # For settings page
         if "setting" in tab_name.lower():
@@ -227,6 +234,32 @@ class Limelight(Driver):
              "media" in tab_name.lower():
             if operation.lower().strip() == "select":
                 self.click_on("data-list-item", generic_param=(value,))
+            elif operation.lower().strip() == "search":
+                # Click on the search text box
+                self.click_on('search-input')
+                # Provide the search data
+                self.set_value('search-input', value)
+                # Clicking on the go button
+                self.click_on('search-go-btn')
+                # Select the option
+                self.click_on('search-options', generic_param=(tel,))
+                # Click on ok button
+                self.click_on('popup-button', generic_param=('Ok',))
+                # wait till the progress bar gets hidden
+                for ech_try in range(50):
+                    try:
+                        if self.is_item_visible('search-progress-bar') and \
+                            not self.is_item_visible("error-message-in-tab"):
+                            self.click_on('search-progress-bar')
+                            info("media is still loading. retrying-> %s time"
+                                 % ech_try)
+                            self.wait_for(LONG_WAIT)
+                        else:
+                            info("the media is loaded")
+                            break
+                    except Exception as excp:
+                        info(str(excp))
+                        break
             else:
                 raise exception_mod.InvalidKeyWordUsed(operation=operation)
 
@@ -461,7 +494,7 @@ class Limelight(Driver):
                     raise exception_mod.GlueCodeNotImplemented
 
         # If we checking the element of player
-        if check_ele.lower().strip() == "player":
+        elif check_ele.lower().strip() == "player":
             info("checking the player controls: %s" % ', '.join(verify_data))
             for ech_ele in verify_data:
                 info("chk :: %s" % ech_ele)
@@ -484,7 +517,7 @@ class Limelight(Driver):
                     raise Exception(msg)
 
         # If the checking the element of a popup
-        if check_ele.lower().strip() == "popup":
+        elif check_ele.lower().strip() == "popup":
             data_got = self.scrol_top_to_bottom(ret_all_data=True,
                                                 scroll_ele_typ="popup")
             data_got = [] if data_got is None else data_got
@@ -503,6 +536,34 @@ class Limelight(Driver):
                                                             data_got))
             else:
                 raise exception_mod.GlueCodeNotImplemented
+
+        # Checking the playlist
+        elif check_ele.lower().strip() == "play-list":
+            if "control" in table_header:
+                # search the ui element in the play-list
+                visible_element = []
+                not_visible_element = []
+                for each_element in verify_data:
+                    if self.is_item_visible(each_element):
+                        visible_element.append(each_element)
+                    else:
+                        not_visible_element.append(each_element)
+
+                if should_equal:
+                    # All elements should visible
+                    if not_visible_element:
+                        raise Exception("Elements not visible: %s" \
+                                        % ', '.join(not_visible_element))
+                    else:
+                        info("visible : %s" % ', '.join(visible_element))
+                else:
+                    # All elements should not visible
+                    if visible_element:
+                        raise Exception("Elements visible: %s" %
+                                        ', '.join(visible_element))
+                    else:
+                        info("not visible : %s" % ', '.join(not_visible_element))
+
 
     def go_to_tab_and_select_media(self, tab_name, media_name):
         """
@@ -1755,38 +1816,54 @@ class Limelight(Driver):
                                                    media_names=media_names)
 
     @exception_mod.handle_exception
-    def add_delete_from_playlist(self, operation, target, tab_name, media_name):
+    def add_delete_from_playlist(self, operation, target, tab_name, add_item_name, add_type):
         """
         @args :
         operation : add / remove
         target    : following / all
         tab_name  : tab name of the app
         media_name  : [] -> a list of media name
+        add_type : media/channel
         """
-        if operation == "add" and target == "all":
-            # perform steps to add all media in playlist
+        if operation == "add" and target == "all" and add_type == 'media':
+            # perform steps to add all media in playlist, only for media
             self.add_to_playlist(target, tab_name=tab_name)
         elif operation == "add" and target == "following":
             # perform steps to add following media from feature file in playlist
-            if not media_name:
+            if not add_item_name:
                 raise exception_mod.InvalidCombination(target=target,
-                                                       media_name=media_name)
-            self.add_to_playlist(target, media_name, tab_name)
+                                                       media_name=add_item_name)
+            if add_type == 'channel':
+                # Click on the channel
+                self.select_tab(tab_name)
+                self.click_on("data-list-item", generic_param=(add_item_name[0],))
+
+            self.add_to_playlist(target, add_item_name, tab_name)
+            if add_type == 'channel':
+                # Click on the channel auto play
+                for i in range(30):
+                    try:
+                        self.click_on("autoplay-checkbox")
+                        break
+                    except Exception as exc:
+                        info(str(exc))
+                        self.wait_for(LONG_WAIT)
+
         elif operation == "remove" and target == "all":
             # perform steps to remove all media in playlist
             self.remove_from_playlist(target, tab_name=tab_name)
         elif operation == "remove" and target == "following":
             # perform steps to remove provided media from feature file to
             # playlist
-            if not media_name:
+            if not add_item_name:
                 raise exception_mod.InvalidCombination(target=target,
-                                                       media_name=media_name)
-            self.remove_from_playlist(target, media_name, tab_name)
+                                                       media_name=add_item_name)
+            self.remove_from_playlist(target, add_item_name, tab_name)
         else:
             raise exception_mod.InvalidCombination(operation=operation,
                                                     target=target,
                                                     tab_name=tab_name,
-                                                    media_name=media_name)
+                                                    media_name=add_item_name)
 
     @exception_mod.handle_exception
     def verify_add_delete_from_playlist(self, operation, target,
@@ -1946,7 +2023,7 @@ class Limelight(Driver):
             info("elapse time :: %s" % elapsed_time)
             info("video duration ::> previous = %s :: current = %s" %
                  (ret_data['total_duration'], tot_duration))
-            if 15 > elapsed_time >= 0 and \
+            if 70 > elapsed_time >= 0 and \
               tot_duration != ret_data['total_duration']:
                 info("player start playing from begning")
                 info("player playing different duration video")
@@ -2077,11 +2154,56 @@ class Limelight(Driver):
             For full screen:
             action_itm : full-screen
             perform    : on/off
+            For player next and previous button click:
+            action_itm : player-next-button/player-previous-button
+            perform    : click
+
         """
+        ret_data = {}
+
         if action_itm == "full-screen":
             self.switch_full_screen(full_screen_state=perform)
+        elif perform == "click":
+            ret_data = {'bfr_elapsed_time': None,
+                    'aftr_elapsed_time': None,
+                    'encoding_type': 'automatic',
+                    'total_duration': None}
+            for ei in range(4):
+                try:
+                    if not ret_data['bfr_elapsed_time']:
+                        ret_data['bfr_elapsed_time'] = \
+                          self.get_value('player-elapsed-time')
+
+                    if not ret_data['total_duration']:
+                        ret_data['total_duration'] = \
+                          self.get_value('player-video-duration')
+                    break
+                except Exception as ex:
+                    self.click_on("player")
+
+            for ech_try in range(5):
+                try:
+                    self.click_on(str(action_itm))
+                    break
+                except Exception as exc:
+                    info("While click on "+action_itm+"::"+str(exc))
+                    self.click_on('player')
+            else:
+                raise Exception("not able to click on %s"% action_itm)
+
+            self.wait_for_alert_popup_close()
+
+            for ei in range(4):
+                try:
+                    ret_data['aftr_elapsed_time'] = \
+                      self.get_value('player-elapsed-time')
+                    break
+                except Exception as ex:
+                    self.click_on("player")
         else:
             raise exception_mod.GlueCodeNotImplemented
+
+        return ret_data
 
     @exception_mod.handle_exception
     def update_media(self, media_name, param_name, new_val):
