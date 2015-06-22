@@ -41,6 +41,10 @@ import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.Media;
 import com.limelight.videosdk.model.Media.MediaThumbnail;
 
+/**
+ * This class represents the media fragment page, which lists all the media.
+ *
+ */
 public class MediaFragment extends Fragment implements LoaderManager.LoaderCallbacks<ModelHolder>,OnItemClickListener,OnRefreshListener,OnScrollListener{
 
     private ModelAdapter mAdapter;
@@ -59,23 +63,39 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
     private String mSearchValueString;
     private Button mAddAllPlaylist;
 
+    /**
+     * Constructor
+     * @param callback
+     */
     public MediaFragment(MediaCallback callback) {
         mCallback = callback;
         mAdapter= null;
         mListView= null;
     }
 
+    /**
+     * This is callback to communicate with the activity.
+     *
+     */
     public interface MediaCallback{
         void callback(String id,ContentService svc);
         void addToPlaylist(Media media);
         void removeFromPlaylist(Media media);
     }
 
+    /**
+     * This is calback to add or remove items from the playlist
+     *
+     */
     public interface PlaylistCallback{
         void addToPlaylist(int position);
         void removeFromPlaylist(int position);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+     */
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_media, container,false);
@@ -158,7 +178,10 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
         
         return view;
     }
-    
+    /**
+     * Method to show or hide the keyboard
+     * @param show flag indicates whether to show or hide the keyboard
+     */
     private void showKeyboard(boolean show) {   
         // Check if no view has focus:
         View view = getActivity().getCurrentFocus();
@@ -172,7 +195,10 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
             }
         }
     }
-    
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -184,6 +210,10 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
                 mCallback.addToPlaylist(mMedias.get(position));
             }
 
+            /*
+             * (non-Javadoc)
+             * @see com.limelight.testvideosdk.MediaFragment.PlaylistCallback#removeFromPlaylist(int)
+             */
             @Override
             public void removeFromPlaylist(int position) {
                 mCallback.removeFromPlaylist(mMedias.get(position));
@@ -194,6 +224,9 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
         getActivity().getSupportLoaderManager().initLoader(12, null, this);
     }
 
+    /**
+     * Method to show or hide the list control
+     */
     private void setListShown(boolean b) {
         mProgressLoad.setVisibility(View.GONE);
         if(b){
@@ -218,6 +251,10 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
         }
     }
 
+    /**
+     * Method to set the list adapter
+     * @param adapter the ModelAdapter
+     */
     private void setListAdapter(ModelAdapter adapter) {
         mListView.setAdapter(adapter);
     }
@@ -225,7 +262,9 @@ public class MediaFragment extends Fragment implements LoaderManager.LoaderCallb
     private void setEmptyText(String string) {
         mTextView.setText(string);
     }
-
+/**
+ * Method to clear the search string
+ */
 private void ClearSearch(){
     mSearchParamString = null;
     mSearchValueString = null;
@@ -234,6 +273,9 @@ private void ClearSearch(){
     mSearchControl.clearFocus();
     }
 
+/**
+ * Method to restart the async task loader
+ */
     private void restartLoader(){
         mPreviousTotalCount = 0;
         ClearSearch();
@@ -241,6 +283,9 @@ private void ClearSearch(){
         getActivity().getSupportLoaderManager().restartLoader(12, null, this);
     }
 
+    /**
+     * Method to load next set of data by fetching the next page data.
+     */
     private void loadMore(){
         mProgressLoad.setVisibility(View.VISIBLE);
         Bundle b = new Bundle();
@@ -253,6 +298,10 @@ private void ClearSearch(){
         getActivity().getSupportLoaderManager().restartLoader(12, b, this);
     }
 
+    /**
+     * This class is to fetch all the data for all media asynchronously.
+     *
+     */
     private static class MediaLoader extends AsyncTaskLoader<ModelHolder> {
 
         private ModelHolder mHolder;
@@ -279,6 +328,11 @@ private void ClearSearch(){
             }
         }
 
+        /**
+         * (non-Javadoc)
+         * @see android.support.v4.content.AsyncTaskLoader#loadInBackground()
+         * Communicating with the SDK and fetching the media data.
+         */
         @Override
         public ModelHolder loadInBackground() {
             ArrayList<String> titleList = new ArrayList<String>();
@@ -339,7 +393,10 @@ private void ClearSearch(){
             super.deliverResult(data);
         }
     }
-    
+    /*
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onCreateLoader(int, android.os.Bundle)
+     */
     @Override
     public Loader<ModelHolder> onCreateLoader(int arg0, Bundle arg1) {
         MediaLoader loader = new MediaLoader(MediaFragment.this.getActivity(),arg1);
@@ -347,6 +404,11 @@ private void ClearSearch(){
         return loader;
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoadFinished(android.support.v4.content.Loader, java.lang.Object)
+     * Setting the data to Media Fragment.
+     */
     @Override
     public void onLoadFinished(Loader<ModelHolder> arg0, ModelHolder arg1) {
         if(mMedias == null){
@@ -363,12 +425,20 @@ private void ClearSearch(){
         mSwipeLayout.setRefreshing(false);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoaderReset(android.support.v4.content.Loader)
+     */
     @Override
     public void onLoaderReset(Loader<ModelHolder> arg0) {
         mAdapter.setData(null, null, null);
         mListView.setAdapter(null);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.widget.AdapterView.OnItemClickListener#onItemClick(android.widget.AdapterView, android.view.View, int, long)
+     */
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
         //Always checking whether there is any change in settings, there could be situation where settings changed and fragment page not refreshed.
@@ -386,18 +456,28 @@ private void ClearSearch(){
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener#onRefresh()
+     */
     @Override
     public void onRefresh() {
         restartLoader();
         mSwipeLayout.setRefreshing(true);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.widget.AbsListView.OnScrollListener#onScroll(android.widget.AbsListView, int, int, int)
+     * Along with scrolling allowing to do refresh the list and fetch the next page data.
+     */
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem,
             int visibleItemCount, int totalItemCount) {
         if(mSwipeLayout != null){
             if (firstVisibleItem == 0)
             {
+              //Only if the first cell is visible then only allowing to do a refresh
                 View v = mListView.getChildAt(0);
                 int offset = (v == null) ? 0 : v.getTop();
                 if (offset == 0) {
@@ -421,15 +501,24 @@ private void ClearSearch(){
         }
         boolean loadMore = (firstVisibleItem + visibleItemCount >= totalItemCount);
         if (loadMore){
+          //Fetching next page data
             mPreviousTotalCount  = totalItemCount;
             loadMore();
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.widget.AbsListView.OnScrollListener#onScrollStateChanged(android.widget.AbsListView, int)
+     */
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onDestroyView()
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

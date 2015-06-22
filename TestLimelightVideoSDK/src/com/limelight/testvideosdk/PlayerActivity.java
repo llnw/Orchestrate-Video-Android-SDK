@@ -31,6 +31,10 @@ import com.limelight.videosdk.IPlayerCallback;
 import com.limelight.videosdk.IPlayerControl;
 import com.limelight.videosdk.model.Media;
 
+/**
+ * The main activity class
+ *
+ */
 public class PlayerActivity extends FragmentActivity implements IPlayerCallback, OnPageChangeListener,ActionBar.TabListener {
 
     private static final int READ_REQUEST_CODE = 50;
@@ -49,6 +53,10 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
     private String mGroupId = null;
     private String mChannelId = null;
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +77,9 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
         actionBar.addTab(actionBar.newTab().setText(mPlayerTestAdapter.getPageTitle(6)).setTabListener(this));
     }
 
+    /**
+     * Implementing ChannelGroupCallback
+     */
     ChannelGroupCallback channelGroupCallback = new ChannelGroupCallback() {
         @Override
         public void callback(String id) {
@@ -79,6 +90,9 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
         }
     };
 
+    /**
+     * Implementing ChannelCallback
+     */
     ChannelCallback channelCallback = new ChannelCallback() {
         @Override
         public void callback(String id) {
@@ -97,6 +111,9 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
         }
     };
 
+    /**
+     * Implementing SpecificChannelGroupCallback
+     */
     SpecificChannelGroupCallback specificChannelGroupCallback = new SpecificChannelGroupCallback() {
         @Override
         public void callback(String id) {
@@ -114,7 +131,10 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
             mViewPager.setCurrentItem(6);
         }
     };
-    
+
+    /**
+     * Implementing MediaCallback
+     */
     MediaCallback mediaCallback = new MediaCallback() {
         @Override
         public void callback(String id, ContentService svc) {
@@ -141,6 +161,10 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
             }
         }
     };
+
+    /**
+     * Implementing SpecificChannelCallback
+     */
     SpecificChannelCallback specificChannelCallback = new SpecificChannelCallback() {
         @Override
         public void callback(String id, ContentService svc) {
@@ -177,6 +201,11 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
             count = val;
         }
 
+        /**
+         * (non-Javadoc)
+         * @see android.support.v4.app.FragmentPagerAdapter#getItem(int)
+         * Creating fragments and returning the objects.
+         */
         @Override
         public Fragment getItem(int i) {
             switch (i) {
@@ -212,6 +241,11 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
             return count;
         }
 
+        /**
+         * (non-Javadoc)
+         * @see android.support.v4.view.PagerAdapter#getPageTitle(int)
+         * returning the page title
+         */
         @Override
         public CharSequence getPageTitle(int position) {
             String title = "";
@@ -242,6 +276,10 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see com.limelight.videosdk.IPlayerCallback#playerAttached(com.limelight.videosdk.IPlayerControl)
+     */
     @Override
     public void playerAttached(IPlayerControl control) {
         mControl = control;
@@ -256,6 +294,10 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
         //mPlayerFragment.setEditText("28ed28ffc8e7438783732dc19fae6bbc");
     }
 
+    /**
+     * (non-Javadoc)
+     * @see com.limelight.videosdk.IPlayerCallback#playerMessage(int, int, java.lang.String)
+     */
     @Override
     public void playerMessage(int messageType,int value,String message) {
         if (mPlayerFragment == null) {
@@ -297,7 +339,11 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
             }
         }
     }
-    
+
+    /**
+     * (non-Javadoc)
+     * @see com.limelight.videosdk.IPlayerCallback#playerPrepared(com.limelight.videosdk.IPlayerControl)
+     */
     @Override
     public void playerPrepared(IPlayerControl control) {
         mControl = control;
@@ -310,7 +356,11 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
             mPlayerFragment.showKeyboard(false);
         }
     }
-    
+
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int, android.content.Intent)
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
 
@@ -347,6 +397,10 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.FragmentActivity#onConfigurationChanged(android.content.res.Configuration)
+     */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -358,6 +412,11 @@ public class PlayerActivity extends FragmentActivity implements IPlayerCallback,
     @Override
     public void onPageScrolled(int page, float arg1, int arg2) {}
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.view.ViewPager.OnPageChangeListener#onPageSelected(int)
+     * Stopping the player when moved away from player fragment.
+     */
     @Override
     public void onPageSelected(int page) {
         if (mPlayerFragment == null) {

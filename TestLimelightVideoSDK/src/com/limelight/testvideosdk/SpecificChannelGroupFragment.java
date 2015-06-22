@@ -49,11 +49,20 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
         mListView= null;
     }
 
+    /**
+     * This is callback to communicate with the activity.
+     * @author rebaca
+     *
+     */
     public interface SpecificChannelGroupCallback{
         void callback(String id);
         void playChannel(String channelId);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+     */
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_model, container,false);
@@ -71,6 +80,10 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
         return view;
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -100,6 +113,9 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
         }
     }
 
+    /**
+     * Method to show or hide the list control
+     */
     private void setListShown(boolean b) {
         mProgressLoad.setVisibility(View.GONE);
         if(b){
@@ -121,6 +137,10 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
         }
     }
 
+    /**
+     * Method to set the list adapter
+     * @param adapter the ModelAdapter
+     */
     private void setListAdapter(ModelAdapter adapter) {
         mListView.setAdapter(adapter);
     }
@@ -129,6 +149,9 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
         mTextView.setText(string);
     }
 
+    /**
+     * Method to restart the async task loader
+     */
     public void restartLoader(String groupId){
         mPreviousTotalCount = 0;
         mGroupId = groupId;
@@ -147,6 +170,9 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
         }
     }
 
+    /**
+     * Method to load next set of data by fetching the next page data.
+     */
     private void loadMore(){
         mProgressLoad.setVisibility(View.VISIBLE);
         Bundle b = new Bundle();
@@ -154,6 +180,10 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
         getActivity().getSupportLoaderManager().restartLoader(16, b, this);
     }
 
+    /**
+     * This class is to fetch all the data for specific channel group asynchronously.
+     *
+     */
     private static class SpecificChannelLoader extends AsyncTaskLoader<ModelHolder> {
 
         private ModelHolder mHolder;
@@ -177,6 +207,11 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
             }
         }
 
+        /**
+         * (non-Javadoc)
+         * @see android.support.v4.content.AsyncTaskLoader#loadInBackground()
+         * Communicating with the SDK and fetching the channel data for a specific channel group.
+         */
         @Override
         public ModelHolder loadInBackground() {
             ArrayList<String> titleList = new ArrayList<String>();
@@ -230,6 +265,11 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
         return loader;
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoadFinished(android.support.v4.content.Loader, java.lang.Object)
+     * Setting the data to specific channel group Fragment.
+     */
     @Override
     public void onLoadFinished(Loader<ModelHolder> arg0, ModelHolder arg1) {
         if(mChannelList == null){
@@ -263,17 +303,26 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener#onRefresh()
+     */
     @Override
     public void onRefresh() {
         restartLoader(mGroupId);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.widget.AbsListView.OnScrollListener#onScroll(android.widget.AbsListView, int, int, int)
+     */
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem,
             int visibleItemCount, int totalItemCount) {
         if(mSwipeLayout != null){
             if (firstVisibleItem == 0)
             {
+              //Only if the first cell is visible then only allowing to do a refresh
                 View v = mListView.getChildAt(0);
                 int offset = (v == null) ? 0 : v.getTop();
                 if (offset == 0) {
@@ -291,6 +340,7 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
             return;
         boolean loadMore = (firstVisibleItem + visibleItemCount >= totalItemCount);
         if (loadMore){
+          //Fetching next page data
             mPreviousTotalCount  = totalItemCount;
             loadMore();
         }
@@ -300,6 +350,10 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
     public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onDestroyView()
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

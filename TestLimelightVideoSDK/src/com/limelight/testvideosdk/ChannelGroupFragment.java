@@ -28,6 +28,10 @@ import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.ChannelGroup;
 
+/**
+ * This class represents the channel group fragment page, which lists all the available channel groups.
+ *
+ */
 public class ChannelGroupFragment extends Fragment implements LoaderManager.LoaderCallbacks<ModelHolder>,OnItemClickListener,OnRefreshListener,OnScrollListener{
 
     private ModelAdapter mAdapter;
@@ -41,16 +45,27 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
     private SwipeRefreshLayout mSwipeLayout;
     private int mPreviousTotalCount = 0;
 
+/**
+ * Constructor
+ * @param channelGroupCallback object to preserve ChannelGroupCallback set by activity.
+ */
     public ChannelGroupFragment(ChannelGroupCallback channelGroupCallback) {
         mCallback = channelGroupCallback;
         mAdapter= null;
         mListView= null;
     }
 
+    /**
+     * This is callback to communicate with the activity.
+     *
+     */
     public interface ChannelGroupCallback{
         void callback(String id);
     }
-
+/**
+ * (non-Javadoc)
+ * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+ */
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_model, container,false);
@@ -67,7 +82,10 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
         mSwipeLayout.setEnabled(false);
         return view;
     }
-    
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -78,6 +96,9 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
         getActivity().getSupportLoaderManager().initLoader(10, null, this);
     }
 
+    /**
+     * Method to show or hide the list control
+     */
     private void setListShown(boolean b) {
         mProgressLoad.setVisibility(View.GONE);
         if(b){
@@ -99,20 +120,34 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
         }
     }
 
+    /**
+     * Method to set the list adapter
+     * @param adapter the ModelAdapter
+     */
     private void setListAdapter(ModelAdapter adapter) {
         mListView.setAdapter(adapter);
     }
 
+    /**
+     * Method to set the text view text.
+     * @param string Holds the string data to set to text view.
+     */
     private void setEmptyText(String string) {
         mTextView.setText(string);
     }
 
+    /**
+     * Method to restart the async task loader
+     */
     private void restartLoader(){
         mPreviousTotalCount = 0;
         setListShown(false);
         getActivity().getSupportLoaderManager().restartLoader(10, null, this);
     }
 
+    /**
+     * Method to load next set of data by fetching the next page data.
+     */
     private void loadMore(){
         mProgressLoad.setVisibility(View.VISIBLE);
         Bundle b = new Bundle();
@@ -120,6 +155,10 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
         getActivity().getSupportLoaderManager().restartLoader(10, b, this);
     }
 
+    /**
+     * This class is to fetch all the data for channel group asynchronously.
+     *
+     */
     private static class ChannelGroupLoader extends AsyncTaskLoader<ModelHolder> {
 
         private ModelHolder mHolder;
@@ -143,6 +182,11 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
             }
         }
 
+        /**
+         * (non-Javadoc)
+         * @see android.support.v4.content.AsyncTaskLoader#loadInBackground()
+         *  Communicating with the SDK and fetching the channel group data.
+         */
         @Override
         public ModelHolder loadInBackground() {
             ArrayList<String> titleList = new ArrayList<String>();
@@ -182,6 +226,10 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onCreateLoader(int, android.os.Bundle)
+     */
     @Override
     public Loader<ModelHolder> onCreateLoader(int arg0, Bundle arg1) {
         ChannelGroupLoader channelGroupLoader = new ChannelGroupLoader(ChannelGroupFragment.this.getActivity(),arg1);
@@ -189,6 +237,11 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
         return channelGroupLoader;
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoadFinished(android.support.v4.content.Loader, java.lang.Object)
+     * Setting the data to Channel Group Fragment.
+     */
     @Override
     public void onLoadFinished(Loader<ModelHolder> arg0, ModelHolder arg1) {
         if(mGroups == null){
@@ -205,12 +258,20 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
         mSwipeLayout.setRefreshing(false);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoaderReset(android.support.v4.content.Loader)
+     */
     @Override
     public void onLoaderReset(Loader<ModelHolder> arg0) {
         mAdapter.setData(null,null,null);
         mListView.setAdapter(null);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.widget.AdapterView.OnItemClickListener#onItemClick(android.widget.AdapterView, android.view.View, int, long)
+     */
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
         if(mGroups!= null && !mGroups.isEmpty()){
@@ -218,18 +279,28 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener#onRefresh()
+     */
     @Override
     public void onRefresh() {
         restartLoader();
         mSwipeLayout.setRefreshing(true);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.widget.AbsListView.OnScrollListener#onScroll(android.widget.AbsListView, int, int, int)
+     * Along with scrolling allowing to do refresh the list and fetch the next page data.
+     */
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem,
             int visibleItemCount, int totalItemCount) {
         if(mSwipeLayout != null){
             if (firstVisibleItem == 0)
             {
+              //Only if the first cell is visible then only allowing to do a refresh
                 View v = mListView.getChildAt(0);
                 int offset = (v == null) ? 0 : v.getTop();
                 if (offset == 0) {
@@ -249,15 +320,24 @@ public class ChannelGroupFragment extends Fragment implements LoaderManager.Load
             return;
         boolean loadMore = (firstVisibleItem + visibleItemCount >= totalItemCount);
         if (loadMore){
+          //Fetching next page data
             mPreviousTotalCount  = totalItemCount;
             loadMore();
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.widget.AbsListView.OnScrollListener#onScrollStateChanged(android.widget.AbsListView, int)
+     */
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onDestroyView()
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

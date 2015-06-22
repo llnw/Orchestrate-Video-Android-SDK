@@ -16,8 +16,19 @@ import android.widget.MediaController;
  */
 class MediaControl extends MediaController{
 
+    /*
+     * Holds the context object.
+     */
     private final Context mContext;
+    
+    /*
+     * Holds the FullScreenCallback implementation, playerSupportFragment and FullScreenPlayer implements this interface. 
+     */
     private FullScreenCallback mCallback;
+    
+    /*
+     * Used to determine whether to switch to full screen or return from full screen to normal player. 
+     */
     private boolean mIsFullScreen;
 
     MediaControl(final Context context, final boolean useFastForward) {
@@ -35,6 +46,11 @@ class MediaControl extends MediaController{
         mContext = context;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see android.widget.MediaController#setAnchorView(android.view.View)
+     * Creating full screen button and setting the onclick listener.
+     */
     @Override 
     public void setAnchorView(final View view) {
         super.setAnchorView(view);
@@ -98,6 +114,17 @@ class MediaControl extends MediaController{
         mIsFullScreen = fullScreen;
     }
 
+    /*
+     *  This is the callback to be sent to activity from Player. This is the 
+ * communication mechanism between activity in application and player in SDK.
+ * Once Activity holding the player fragment gets created, callback is sent to 
+ * activity. Activity can then use playerAttached() to start interacting with Player.
+ * The rationale behind this approach is that customer application should start 
+ * using Player only after activity holding the player fragment gets created.
+ * Player can also send error information or some status message back to the 
+ * activity in Application.Activity then can use these informations.
+     * 
+     */
     interface FullScreenCallback{
         void fullScreen();
         void closeFullScreen();

@@ -194,7 +194,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
         }
 
         if(removeRights){
-            //Test code commenting for now will delete later
+            //Test code enable this to check the rights status.
 //            int rightStatus = mDrm.checkRightsStatus(uri);
 //            switch(rightStatus)
 //            {
@@ -228,7 +228,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
             }
             
             
-          //Test code commenting for now will delete later
+          //Test code enable this to check the rights status.
 //            int rightStatusAfterRemove = mDrm.checkRightsStatus(uri);
 //            switch(rightStatusAfterRemove)
 //            {

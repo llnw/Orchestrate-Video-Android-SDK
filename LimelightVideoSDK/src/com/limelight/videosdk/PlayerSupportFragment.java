@@ -111,6 +111,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     private View.OnClickListener mPlayListPrev;
     private FullScreenCallback mFullScreenCallback;
 
+    /*
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+     */
     @Override
     public View onCreateView(final LayoutInflater inflater,final ViewGroup container,final Bundle savedInstanceState) {
         /*
@@ -129,7 +133,12 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         mMediaController = new MediaControl(getActivity(), true);
         mMediaController.setAnchorView(mPlayerView);//Not setting the media controller, setting media controller here results in issue when resumed back from home key press.
         final Toast toast = Toast.makeText(getActivity(), "Please Add FullScreenPlayer Activity In Manifest !", Toast.LENGTH_LONG);
+        //declaring full screen callback, from here full screen will be invoked. 
         mFullScreenCallback = new FullScreenCallback() {
+            /*
+             * (non-Javadoc)
+             * @see com.limelight.videosdk.MediaControl.FullScreenCallback#fullScreen()
+             */
             @Override
             public void fullScreen() {
                 final Intent intent = new Intent(getActivity(),FullScreenPlayer.class);
@@ -182,6 +191,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         });
 
+        //Next button click handler.
         mPlayListNext = new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -206,6 +216,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         };
 
+        //Previous button click handler.
         mPlayListPrev = new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -266,6 +277,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 //return;
             }
         }
+        //Analytics to send start session
         mReporter.sendStartSession();
         if(mPlayerCallback != null){
             mPlayerCallback.playerAttached(mPlayerControl);
@@ -274,6 +286,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(final Context context,final Intent intent) {
+                //Control reaches here when need to switches to full screen automatically, in case of full screen previous next click.
                 if(intent.getBooleanExtra("SWITCHTOFULLSCREEN", false)){
                     if(mPlayerView != null && mPlayerView.mPlayerState == PlayerState.playing){
                         mFullScreenCallback.fullScreen();
@@ -290,7 +303,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }, filter);
     }
-
+/**
+ * (non-Javadoc)
+ * @see android.support.v4.app.Fragment#onPause()
+ */
     @Override
     public void onPause() {
         super.onPause();
@@ -303,6 +319,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onResume()
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -321,6 +341,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         mPlayerCallback = listener;
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.media.MediaPlayer.OnErrorListener#onError(android.media.MediaPlayer, int, int)
+     */
     @Override
     public boolean onError(final MediaPlayer mediaPlayer, final int what, final int extra) {
         if (mLogger != null) {
@@ -937,6 +961,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
 
+        /**
+         * (non-Javadoc)
+         * @see com.limelight.videosdk.IPlayerControl#pause()
+         * Implementing IPlayerControl pause, application can pause the video playback using this method.
+         */
         @Override
         public void pause() {
             if (mUri == null) {
@@ -958,6 +987,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
 
+        /**
+         * (non-Javadoc)
+         * @see com.limelight.videosdk.IPlayerControl#stop()
+         * Implementing IPlayerControl pause, application can stop the video playback using this method.
+         */
         @Override
         public void stop() {
             if (mPlayerView == null){
@@ -1042,7 +1076,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
-    /*
+    /**
      * (non-Javadoc)
      * @see android.media.MediaPlayer.OnPreparedListener#onPrepared(android.media.MediaPlayer)
      * Gets called when the media file is ready for playback.
@@ -1073,12 +1107,15 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
         else{
+            //Verifying the state of mprevNextbuttonsSelected to decide whether control reached here from full screen player or not.
             if(mprevNextbuttonsSelected != 0){
 //                if(mPlayerView.getDuration() == -1){
 //                    mPlayerView.stopPlayback();
 //                }
+                //control enters the following block when previous button is selected in channel playlist from full screen player.
                 if(mprevNextbuttonsSelected == 1){
-//                    //switching to previous item
+//                  //switching to previous item
+                    //Verifying if there are media in channel playlist
                     if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
                         if(mCurrentPlayPos > 0){
                             if(mPlayerView != null && mPlayerView.getDuration() == -1){
@@ -1088,7 +1125,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             if (mLogger != null) {
                                 mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
                             }
-                            mprevNextbuttonsSelected = 3;//informing to switch top full screen later.
+                            //setting the following to 3 so that playMedia will fetch the media and control reaches onprepared just before playing the item
+                            //using the flag to start the playback and to swithch to full screen automatically.
+                            mprevNextbuttonsSelected = 3;
                             mCurrentPlayPos--;
                             mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
 
@@ -1097,6 +1136,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             }
                         }
                         else {
+                            //the current playing item is the first item and we cannot move to previous item, playing the same 
+                            //and switching back to full screen automatically
                             mprevNextbuttonsSelected = 0;
                             if(mPlayerCallback!= null){
                                 mPlayerCallback.playerPrepared(mPlayerControl);
@@ -1110,8 +1151,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 //                    }
                 }//end of if(mprevNextbuttonsSelected == 1){
                 else if(mprevNextbuttonsSelected == 2){
-                    
-                    //switching to next item
+                  //switching to next item
+                    //Verifying if there are media in channel playlist
                     if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
                         if(mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
                             if(mPlayerView != null && mPlayerView.getDuration() == -1){
@@ -1121,7 +1162,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             if (mLogger != null) {
                                 mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
                             }
-                            mprevNextbuttonsSelected = 3;//informing to switch top full screen later.
+                            //setting the following to 3 so that playMedia will fetch the media and control onprepared just before playing the item
+                            //using the flag to start the playback and to switch to full screen automatically.
+                            mprevNextbuttonsSelected = 3;
                             mCurrentPlayPos++;
                             mPlayerControl.playMediaID(mPlaylistService.getMediaList().get(mCurrentPlayPos).mMediaID, mPlaylistService);
 
@@ -1130,6 +1173,8 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                             }
                         }
                         else {
+                            //the current playing item is the last item and we cannot move to next item, playing the same 
+                            //and switching back to full screen automatically
                             mprevNextbuttonsSelected = 0;
                             if(mPlayerCallback!= null){
                                 mPlayerCallback.playerPrepared(mPlayerControl);
@@ -1143,11 +1188,14 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 //                    }
                 }//end of else if(mprevNextbuttonsSelected == 2){
                 else if(mprevNextbuttonsSelected == 3){
+                    //control reaches here just before playing the item
+                    //using the flag to start the playback and to switch to full screen automatically.
                     mprevNextbuttonsSelected = 0;
                     if(mPlayerCallback!= null){
                         mPlayerCallback.playerPrepared(mPlayerControl);
                     }
                     mPlayerControl.play();
+                    //calling method to send message to automatically switch to full screen.
                     sendSwitchToFullScreenMessage();
                 }
             }
@@ -1166,6 +1214,13 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         isReporting = true;
     }
 
+/**
+ * (non-Javadoc)
+ * @see android.media.MediaPlayer.OnCompletionListener#onCompletion(android.media.MediaPlayer)
+ * Gets invoked when playback of a media source has completed
+ * Using the method to get notified when palyback is completed to play the next item when auto play is turned on.
+ * 
+ */
     @Override
     public void onCompletion(final MediaPlayer player) {
         if(mPlayerView.mPlayerState != PlayerState.completed){
@@ -1174,9 +1229,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mLogger.debug(TAG+" PlayerState:"+mPlayerView.mPlayerState.name());
             }
             if (mMediaId != null) {
+                //Analytics reporting media completed.
                 mReporter.sendMediaComplete(mMediaId, null);
             }
 
+            //Auto play is turned on and media playback completed proceeding to play net media.
             if(mIsAutoPlay){
                 if(mPlaylistService!= null && !mPlaylistService.getMediaList().isEmpty()){
                     if(mPlaylistService.getMediaList().size() > mCurrentPlayPos+1){
@@ -1268,6 +1325,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see com.limelight.videosdk.IMediaControllerCallback#onMediaControllerPlay(long)
+     */
     @Override
     public void onMediaControllerPlay(final long position) {
         if(isReporting){
@@ -1275,6 +1336,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
+/**
+ * (non-Javadoc)
+ * @see com.limelight.videosdk.IMediaControllerCallback#onMediaControllerPause(long)
+ */
     @Override
     public void onMediaControllerPause(final long position) {
         if(isReporting){
@@ -1282,6 +1347,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see com.limelight.videosdk.IMediaControllerCallback#onMediaControllerSeek(long, long)
+     * Handled this method to send analytics on seek
+     */
     @Override
     public void onMediaControllerSeek(final long positionBefore,final long positionAfter) {
         if(isReporting){
@@ -1289,6 +1359,11 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onDestroyView()
+     * Unregistering reporter
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

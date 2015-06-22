@@ -27,7 +27,10 @@ import com.limelight.videosdk.Constants;
 import com.limelight.videosdk.ContentService;
 import com.limelight.videosdk.model.Channel;
 import com.limelight.testvideosdk.MediaFragment.PlaylistCallback;
-
+/**
+ * This class represents the channel fragment page which lists all the available channels.
+ *
+ */
 public class ChannelFragment extends Fragment implements LoaderManager.LoaderCallbacks<ModelHolder>,OnItemClickListener,OnRefreshListener,OnScrollListener{
 
     private ModelAdapter mAdapter;
@@ -40,18 +43,30 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
     private ProgressBar mProgressLoad;
     private SwipeRefreshLayout mSwipeLayout;
     private int mPreviousTotalCount = 0;
-
+    
+/**
+ * Constructor.
+ * @param channelCallback object to preserve ChannelCallback set by activity.
+ */
     public ChannelFragment(ChannelCallback channelCallback) {
         mCallback = channelCallback;
         mAdapter= null;
         mListView= null;
     }
 
+    /**
+     * This is callback to communicate with the activity.
+     *
+     */
     public interface ChannelCallback{
         void callback(String id); 
         void playChannel(String channelId);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+     */
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_model, container,false);
@@ -69,6 +84,10 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
         return view;
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -90,6 +109,9 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
         getActivity().getSupportLoaderManager().initLoader(11, null, this);
     }
 
+    /**
+     * Method to show or hide the list control
+     */
     private void setListShown(boolean b) {
         mProgressLoad.setVisibility(View.GONE);
         if(b){
@@ -110,7 +132,10 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
             mProgress.setVisibility(View.VISIBLE);
         }
     }
-
+/**
+ * Method to set the list adapter
+ * @param adapter the ModelAdapter
+ */
     private void setListAdapter(ModelAdapter adapter) {
         mListView.setAdapter(adapter);
     }
@@ -119,19 +144,28 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
         mTextView.setText(string);
     }
 
+    /**
+     * Method to restart the async task loader
+     */
     private void restartLoader(){
         mPreviousTotalCount = 0;
         setListShown(false);
         getActivity().getSupportLoaderManager().restartLoader(11, null, this);
     }
 
+    /**
+     * Method to load next set of data by fetching the next page data.
+     */
     private void loadMore(){
         mProgressLoad.setVisibility(View.VISIBLE);
         Bundle b = new Bundle();
         b.putBoolean("Refresh", true);
         getActivity().getSupportLoaderManager().restartLoader(11, b, this);
     }
-
+/**
+ * This class is to fetch all the data for channel asynchronously.
+ *
+ */
     private static class ChannelLoader extends AsyncTaskLoader<ModelHolder> {
 
         private ModelHolder mHolder;
@@ -155,6 +189,11 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
             }
         }
 
+        /**
+         * (non-Javadoc)
+         * @see android.support.v4.content.AsyncTaskLoader#loadInBackground()
+         * Communicating with the SDK and fetching the channel data.
+         */
         @Override
         public ModelHolder loadInBackground() {
             ArrayList<String> titles = new ArrayList<String>();
@@ -194,6 +233,10 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onCreateLoader(int, android.os.Bundle)
+     */
     @Override
     public Loader<ModelHolder> onCreateLoader(int arg0, Bundle arg1) {
         ChannelLoader loader = new ChannelLoader(ChannelFragment.this.getActivity(),arg1);
@@ -201,6 +244,11 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
         return loader;
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoadFinished(android.support.v4.content.Loader, java.lang.Object)
+     * Setting the data to Channel Fragment.
+     */
     @Override
     public void onLoadFinished(Loader<ModelHolder> arg0, ModelHolder arg1) {
         if(mChannels == null){
@@ -217,12 +265,20 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
         mSwipeLayout.setRefreshing(false);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.LoaderManager.LoaderCallbacks#onLoaderReset(android.support.v4.content.Loader)
+     */
     @Override
     public void onLoaderReset(Loader<ModelHolder> arg0) {
         mAdapter.setData(null,null,null);
         mListView.setAdapter(null);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.widget.AdapterView.OnItemClickListener#onItemClick(android.widget.AdapterView, android.view.View, int, long)
+     */
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
         if(mChannels!= null && !mChannels.isEmpty()){
@@ -230,18 +286,28 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener#onRefresh()
+     */
     @Override
     public void onRefresh() {
         restartLoader();
         mSwipeLayout.setRefreshing(true);
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.widget.AbsListView.OnScrollListener#onScroll(android.widget.AbsListView, int, int, int)
+     * Along with scrolling allowing to do refresh the list and fetch the next page data.
+     */
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem,
             int visibleItemCount, int totalItemCount) {
         if(mSwipeLayout != null){
             if (firstVisibleItem == 0)
             {
+                //Only if the first cell is visible then only allowing to do a refresh
                 View v = mListView.getChildAt(0);
                 int offset = (v == null) ? 0 : v.getTop();
                 if (offset == 0) {
@@ -261,15 +327,24 @@ public class ChannelFragment extends Fragment implements LoaderManager.LoaderCal
             return;
         boolean loadMore = (firstVisibleItem + visibleItemCount >= totalItemCount);
         if (loadMore){
+            //Fetching next page data
             mPreviousTotalCount  = totalItemCount;
             loadMore();
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.widget.AbsListView.OnScrollListener#onScrollStateChanged(android.widget.AbsListView, int)
+     */
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
 
+    /**
+     * (non-Javadoc)
+     * @see android.support.v4.app.Fragment#onDestroyView()
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
