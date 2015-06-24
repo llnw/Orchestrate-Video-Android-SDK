@@ -51,7 +51,6 @@ public class SpecificChannelGroupFragment extends Fragment implements LoaderMana
 
     /**
      * This is callback to communicate with the activity.
-     * @author rebaca
      *
      */
     public interface SpecificChannelGroupCallback{
