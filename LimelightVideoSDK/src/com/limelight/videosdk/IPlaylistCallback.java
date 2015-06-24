@@ -5,7 +5,6 @@ import com.limelight.videosdk.model.Media;
 
 /**
  * This interface is the callback for playlist.
- * @author kanchan
  *
  */
 public interface IPlaylistCallback {

@@ -15,7 +15,6 @@ import android.net.Uri;
  * The list of Media's will be stored in media list in ContentService.
  * Media contains attributes like media id, title, summary, media type, duration, date created, 
  * date updated, closed captions Uri, thumbnail Uri, and poster Uri etc.
- * @author Nagaraju
  */
 public class Media {
 

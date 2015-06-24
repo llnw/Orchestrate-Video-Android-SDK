@@ -6,7 +6,6 @@ package com.limelight.videosdk;
  * which requested for the Player.
  * It is used to control the player like playing,pausing etc.
  * It also sets the video content for player.
- * @author kanchan
  *
  */
 public interface IPlayerControl {

@@ -19,7 +19,6 @@ import android.util.Base64;
 
 /**
  * This class helps in signing the URL requests using developer secret and access key.
- * @author kanchan
  *
  */
 final class URLAuthenticator {

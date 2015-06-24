@@ -11,7 +11,6 @@ import android.net.Uri;
  * For a media there will be different encodings,
  * the delivery represents a collection of one-to-n encodings that are packaged together.
  * Delivery contains attributes like delivery id, delivery type, media id, remote URL and group etc.
- * @author Nagaraju
  */
 public class Delivery {
 

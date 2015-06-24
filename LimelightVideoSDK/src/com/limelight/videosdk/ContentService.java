@@ -51,7 +51,6 @@ import com.limelight.videosdk.utility.Setting;
  * using developer details stored in setting.It stores the list of channel 
  * groups, channels, media, encodings and delivery.
  * This class stores the organization account details like organization id, access key and secret.
- * @author kanchan
  */
 public class ContentService {
 

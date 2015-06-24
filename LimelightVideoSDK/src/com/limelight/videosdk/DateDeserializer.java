@@ -11,7 +11,6 @@ import com.google.gson.JsonSerializer;
 
 /**
  * This class is the Deserializer for date data received in JSON response.
- * @author Nagaraju
  *
  */
 class DateDeserializer implements JsonDeserializer<Date>, JsonSerializer<Date> {

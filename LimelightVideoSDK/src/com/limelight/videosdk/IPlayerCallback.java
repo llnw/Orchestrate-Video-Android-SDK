@@ -9,7 +9,6 @@ package com.limelight.videosdk;
  * using Player only after activity holding the player fragment gets created.
  * Player can also send error information or some status message back to the 
  * activity in Application.Activity then can use these informations.
- * @author kanchan
  * 
  */
 public interface IPlayerCallback {

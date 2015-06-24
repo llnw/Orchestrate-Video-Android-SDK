@@ -16,7 +16,6 @@ import com.google.gson.JsonSyntaxException;
 import com.limelight.videosdk.model.Media.MediaThumbnail;
 /**
  * This class is the Deserializer for thumbnail data received in JSON response.
- * @author Nagaraju
  *
  */
 class ThumbnailDeserializer implements JsonDeserializer<MediaThumbnail>,JsonSerializer<MediaThumbnail> {

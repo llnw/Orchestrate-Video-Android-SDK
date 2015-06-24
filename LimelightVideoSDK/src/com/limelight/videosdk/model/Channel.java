@@ -13,7 +13,6 @@ import android.net.Uri;
  * The response received will be processed and properties information will be stored in this class.
  * The list of channels will be stored in channel list in ContentService.
  * Channel contains attributes like channel id, title, description, media id and thumbnail Uri etc.
- * @author Nagaraju
  */
 public class Channel {
 

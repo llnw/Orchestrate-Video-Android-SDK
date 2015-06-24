@@ -13,7 +13,6 @@ import android.net.Uri;
  * The response received will be processed and properties information will be stored in this class.
  * The list of channel groups will be stored in channel group list in ContentService.
  * Channel group contains attributes like channel group id, title, date created and date updated etc.
- * @author Nagaraju
  */
 public class ChannelGroup {
 

@@ -2,7 +2,6 @@ package com.limelight.videosdk.model;
 
 /**
  * Primary use of an encoding.
- * @author kanchan
  *
  */
 public enum PrimaryUse {

@@ -13,7 +13,6 @@ import android.net.Uri;
  * The list of Encodings will be stored in encoding list in ContentService.
  * Encoding contains attributes like media id, audio bit rate, video bit rate, size in bytes,
  * primary use, play list Uri and encoding Uri etc.
- * @author Nagaraju
  */
 public class Encoding {
 

@@ -2,7 +2,6 @@ package com.limelight.videosdk;
 
 /**
  * This class contains the constants being used in LimelightVideoSDK
- * @author kanchan
  *
  */
 public class Constants {
@@ -114,7 +113,6 @@ public class Constants {
      * status 0<br>
      * error 1<br>
      * progress 2<br>
-     * @author kanchan
      */
     public enum Message{
         status,
@@ -136,7 +134,6 @@ public class Constants {
     }
     /**
      * Various Widevine status values
-     * @author kanchan
      */
     enum WidevineStatus {
         OK,

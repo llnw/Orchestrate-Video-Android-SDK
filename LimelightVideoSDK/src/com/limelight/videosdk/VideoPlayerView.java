@@ -10,7 +10,6 @@ import com.limelight.videosdk.Constants.PlayerState;
  * It has the overridden methods for pause, start and seeks,
  * so that these events information can be sent to Player via IMediaControllerCallback object.
  * This information is used for Analytical Reporting.
- * @author kanchan
  */
 class VideoPlayerView extends VideoView{
 

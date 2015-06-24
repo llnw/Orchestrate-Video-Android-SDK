@@ -34,7 +34,6 @@ import com.limelight.videosdk.utility.Setting;
  * requests drm engine to fetch license from Limelight server for rights 
  * associated with the media.It then requests DRM engine to validate the rights.
  * It also allows toregister and deregister the DRM engine with organization details.
- * @author kanchan
  */
 class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
     private Downloader mDownloader;

@@ -80,7 +80,6 @@ import android.widget.Toast;
  * getFragmentManager().beginTransaction().add(R.id.container,
  * player).commit();// Embeds the player into container layout.<br>
  * player.setPlayerCallback(IPlayerCallback);<br>
- * @author kanchan
  * 
  */
 public class PlayerSupportFragment extends Fragment implements OnErrorListener,OnPreparedListener, OnCompletionListener,IMediaControllerCallback{
@@ -383,8 +382,6 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 
     /**
      * Implementation of {@link IPlayerControl}
-     * 
-     * @author kanchan
      * 
      */
     private class PlayerControl implements IPlayerControl {

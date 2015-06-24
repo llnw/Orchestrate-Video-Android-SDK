@@ -21,7 +21,6 @@ import com.limelight.videosdk.Constants;
 
 /**
  * This class facilitates downloading of widevine offline content and thumbnails associated with media and channels.
- * @author kanchan
  */
 public class Downloader {
 
@@ -33,7 +32,6 @@ public class Downloader {
      * OnSuccess return the path of downloaded file<br>
      * OnError return the error message<br>
      * OnProgress return the progress percentage.<br>
-     * @author kanchan
      *
      */
     public interface DownLoadCallback {

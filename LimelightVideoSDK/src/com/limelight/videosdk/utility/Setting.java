@@ -10,7 +10,6 @@ import android.preference.PreferenceManager;
  * This class initializes and stores device id.
  * This class also manages widevine specific settings and Limelight API end points.
  * Developer can access the APIs exposed to set the values.
- * @author kanchan
  *
  */
 public final class Setting{

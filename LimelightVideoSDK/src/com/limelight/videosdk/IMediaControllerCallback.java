@@ -3,7 +3,6 @@ package com.limelight.videosdk;
  * This acts as an interface between PlayerFragment and VideoPlayerView.
  * The VideoPlayerView gets invoked for controller play, pause and seek events.
  * The VideoPlayerView will have the IMediaControllerCallback object using which it will pass the notification to PlayerSupportFragment.
- * @author kanchan
  *
  */
 interface IMediaControllerCallback {

@@ -12,7 +12,6 @@ import android.widget.FrameLayout;
 import android.widget.MediaController;
 /**
  * This class is custom MediaController to support Full Screen and also to add a full screen button to the default MediaController.
- * @author kanchan
  */
 class MediaControl extends MediaController{
 

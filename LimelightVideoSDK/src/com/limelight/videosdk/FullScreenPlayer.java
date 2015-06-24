@@ -22,7 +22,6 @@ import com.limelight.videosdk.MediaControl.FullScreenCallback;
 
 /**
  * This class will play the video in full screen.
- * @author kanchan
  *
  */
 public class FullScreenPlayer extends Activity implements OnErrorListener,OnPreparedListener, OnCompletionListener,IMediaControllerCallback{

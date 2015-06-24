@@ -2,7 +2,6 @@ package com.limelight.videosdk.model;
 
 /**
  * The types of media.
- * @author kanchan
  */
 public enum MediaType {
 

@@ -8,7 +8,6 @@ import android.net.NetworkInfo;
  * This class helps in finding the current network status of device.<br>
  * If the device is connected, then only ContentService, WidevineManager 
  * and Downloader will send requests to Limelight server.
- * @author kanchan
  *
  */
 final public class Connection {

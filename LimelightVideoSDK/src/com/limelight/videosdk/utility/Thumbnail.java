@@ -13,7 +13,6 @@ import android.widget.ImageView;
  * This class helps in loading thumbnails associated with the channels and media.
  * It decodes and loads the images in background as decoding bitmaps in UI thread causes OutOfMenory.
  * It also has method to scale an image as per the requested height and width.
- * @author kanchan
  */
 public class Thumbnail {
 
