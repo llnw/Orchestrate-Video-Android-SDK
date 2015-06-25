@@ -302,7 +302,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }, filter);
     }
-/**
+/*
  * (non-Javadoc)
  * @see android.support.v4.app.Fragment#onPause()
  */
@@ -318,7 +318,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * @see android.support.v4.app.Fragment#onResume()
      */
@@ -334,13 +334,13 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
 
     /**
      * To set the {@link IPlayerCallback} implementation.
-     * @param listener
+     * @param listener The IPlayerCallback object, using this the SDK communicates with application.
      */
     public void setPlayerCallback(final IPlayerCallback listener) {
         mPlayerCallback = listener;
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * @see android.media.MediaPlayer.OnErrorListener#onError(android.media.MediaPlayer, int, int)
      */
@@ -958,7 +958,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
 
-        /**
+        /*
          * (non-Javadoc)
          * @see com.limelight.videosdk.IPlayerControl#pause()
          * Implementing IPlayerControl pause, application can pause the video playback using this method.
@@ -984,7 +984,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
             }
         }
 
-        /**
+        /*
          * (non-Javadoc)
          * @see com.limelight.videosdk.IPlayerControl#stop()
          * Implementing IPlayerControl pause, application can stop the video playback using this method.
@@ -1073,7 +1073,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * @see android.media.MediaPlayer.OnPreparedListener#onPrepared(android.media.MediaPlayer)
      * Gets called when the media file is ready for playback.
@@ -1211,7 +1211,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         isReporting = true;
     }
 
-/**
+/*
  * (non-Javadoc)
  * @see android.media.MediaPlayer.OnCompletionListener#onCompletion(android.media.MediaPlayer)
  * Gets invoked when playback of a media source has completed
@@ -1322,7 +1322,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * @see com.limelight.videosdk.IMediaControllerCallback#onMediaControllerPlay(long)
      */
@@ -1333,7 +1333,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
-/**
+/*
  * (non-Javadoc)
  * @see com.limelight.videosdk.IMediaControllerCallback#onMediaControllerPause(long)
  */
@@ -1344,7 +1344,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
-    /**
+    /*
      * (non-Javadoc)
      * @see com.limelight.videosdk.IMediaControllerCallback#onMediaControllerSeek(long, long)
      * Handled this method to send analytics on seek
@@ -1356,10 +1356,10 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         }
     }
 
-    /**
+    /*
+     * Unregistering reporter
      * (non-Javadoc)
      * @see android.support.v4.app.Fragment#onDestroyView()
-     * Unregistering reporter
      */
     @Override
     public void onDestroyView() {

@@ -1374,8 +1374,8 @@ public class ContentService {
      * This method fetches the properties of a specific channel.
      * It does not require authentication.
      * This is an asynchronous call and a single channel is returned in callback.
-     * @param channelId ChannelId
-     * @param callback IndividualChannelCallback
+     * @param channelId The channel identifier string.
+     * @param callback IndividualChannelCallback object.
      */
     public void getChannelAsync(final String channelId,final IndividualChannelCallback callback) {
         //Access key and secret key are not required, authentication not required
@@ -1436,8 +1436,8 @@ public class ContentService {
      * To fetch the properties of a specific media.
      * It does not require authentication.
      * This is an asynchronous call and a single media is returned in callback.
-     * @param mediaId mediaId
-     * @param callback IndividualMediaCallback
+     * @param mediaId The media identifier as string.
+     * @param callback The IndividualMediaCallback object.
      */
     public void getMediaAsync(final String mediaId,final IndividualMediaCallback callback) {
         //Access key and secret key are not required, authentication not required
@@ -1496,7 +1496,7 @@ public class ContentService {
 
     /**
      * This method fetches all the available encodings for the media.
-     * @param mediaId media Id
+     * @param mediaId The media identifier string.
      * @param callback EncodingsCallback
      */
     public void getAllEncodingsForMediaId(final String mediaId,final EncodingsCallback callback) {
@@ -1629,7 +1629,7 @@ public class ContentService {
     /**
      * This method parses channel properties from JSON data.
      * @param reader JsonReader object with data to parse and get single Channel object.
-     * @return Channel Returns the channel object.
+     * @return The channel object.
      */
     private Channel parseChannelProperty(final JsonReader reader){
         Channel channel = new Channel();
@@ -1648,7 +1648,7 @@ public class ContentService {
     /**
      * This method parses media properties from JSON data.
      * @param reader JsonReader object with data to parse and get single Media object.
-     * @return Media Returns the Media object.
+     * @return The Media object.
      */
     private Media parseMediaProperty(final JsonReader reader){
         Media media = new Media();
@@ -1765,8 +1765,8 @@ public class ContentService {
 
     /**
      * This method parses the error information from error stream of response.
-     * @param reader
-     * @return String Returns the string with error message or null.
+     * @param reader JsonReader object with error message information.
+     * @return The string with error message or null.
      */
     private String parseError(final JsonReader reader){
         final JsonParser parser = new JsonParser();
@@ -1780,7 +1780,7 @@ public class ContentService {
     /**
      * This method returns the encoding associated with encoding url.
      * @param encodingUrl The encoding URL string.
-     * @return Encoding Returns the encoding object or null.
+     * @return The encoding object or null.
      */
     Encoding getEncodingFromUrl(final String encodingUrl) {
         synchronized (mEncodingList) {
@@ -1817,7 +1817,7 @@ public class ContentService {
      * This method appends the paging parameters to the request URL.
      * @param url Request URL
      * @param params Paging Parameters
-     * @return String Returns string with paging parameters appended to URL
+     * @return The string with paging parameters appended to URL
      * @throws UnsupportedEncodingException
      */
     private String appendPagingParameters(final String url,final Map<String, String> params) throws UnsupportedEncodingException{
@@ -1909,7 +1909,7 @@ public class ContentService {
      * This method has the logic to find the suitable delivery from a list of deliveries.
      * This is based on the priority of primary use of the deliveries.
      * @param deliveryList The array list of delivery objects.
-     * @return Delivery Returns the suitable delivery object.
+     * @return The suitable delivery object.
      */
     private Delivery getSuitableDelivery(final ArrayList<Delivery> deliveryList){
         DeliveryType cur = DeliveryType.LVKDeliveryTypeNone;

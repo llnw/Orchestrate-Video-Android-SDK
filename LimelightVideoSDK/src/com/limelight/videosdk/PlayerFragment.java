@@ -111,6 +111,10 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
     private View.OnClickListener mPlayListPrev;
     private FullScreenCallback mFullScreenCallback;
 
+    /*
+     * (non-Javadoc)
+     * @see android.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+     */
     @Override
     public View onCreateView(final LayoutInflater inflater,final ViewGroup container,final Bundle savedInstanceState) {
         /*
@@ -252,6 +256,10 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see android.app.Fragment#onActivityCreated(android.os.Bundle)
+     */
     @Override
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -291,6 +299,10 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         }, filter);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see android.app.Fragment#onPause()
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -303,6 +315,10 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see android.app.Fragment#onResume()
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -321,6 +337,10 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         mPlayerCallback = listener;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see android.media.MediaPlayer.OnErrorListener#onError(android.media.MediaPlayer, int, int)
+     */
     @Override
     public boolean onError(final MediaPlayer mediaPlayer, final int what, final int extra) {
         if (mLogger != null) {
@@ -762,11 +782,19 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
             //clearing out playlist informations end
         }
 
+        /*
+         * (non-Javadoc)
+         * @see com.limelight.videosdk.IPlayerControl#setAutoPlay(boolean)
+         */
         @Override
         public void setAutoPlay(final boolean isAutoPlay){
             mIsAutoPlay = isAutoPlay;
         }
 
+        /*
+         * (non-Javadoc)
+         * @see com.limelight.videosdk.IPlayerControl#getPlaylistPosition()
+         */
         @Override
         public int getPlaylistPosition(){
             return mCurrentPlayPos;
