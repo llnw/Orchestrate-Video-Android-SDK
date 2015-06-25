@@ -211,8 +211,6 @@ class AnalyticsReporter {
      * This method adds the specific events data to final data being sent to server.
      * @param eventType Event type like play, pause, seek.
      * @param data  Event specific data
-     * @param mediaId Media ID for media which is being played
-     * @param channelId Channel ID for the media being played.
      */
     private void addAnalyticsData(final String eventType,final JsonObject data){
         mAnalyticsData = new JsonObject();
@@ -243,7 +241,6 @@ class AnalyticsReporter {
      * This method posts the analytics data to server after checking the Internet availability.
      * It queues the request to be sent in request executor.
      * If Internet is not there, it pauses sending of data.
-     * @param obj
      */
     private void post(){
         if(!Connection.isConnected(mContext)){

@@ -137,7 +137,7 @@ public class ContentService {
      * Parameters are marked final, as the callback will be invoked on another thread.
      */
     public interface IndividualChannelCallback {
-        void onSuccess(final Channel singleChannle);
+        void onSuccess(final Channel singleChannel);
         void onError(final Throwable throwable);
     }
 
@@ -264,7 +264,7 @@ public class ContentService {
 
     /**
      * This method will fetch all the channel groups on server.
-     * This is as asynchronous call and list of channel groups is returned in callback.
+     * This is an asynchronous call and list of channel groups is returned in callback.
      * @param isLoadMore True if load more called else false.
      * @param callback ChannelGroupCallback
      */
@@ -446,7 +446,7 @@ public class ContentService {
     /**
      * This method will fetch all the channels of a particular channel group.
      * This method does not requires authentication.
-     * This is as asynchronous call and list of channels is returned in callback.
+     * This is an asynchronous call and list of channels is returned in callback.
      * @param channelGroupId ChannelGroupId
      * @param isLoadMore True if load more called else false.
      * @param callback ChannelCallback
@@ -621,7 +621,7 @@ public class ContentService {
 
     /**
      * This method fetches all the channels from server.
-     * This is as asynchronous call and list of channels is returned in callback.
+     * This is an asynchronous call and list of channels is returned in callback.
      * @param isLoadMore True if load more called else false.
      * @param callback ChannelCallback
      */
@@ -987,7 +987,7 @@ public class ContentService {
 
     /**
      * This method will fetch all the media on server.
-     * This is as asynchronous call and list of media is returned in callback.
+     * This is an asynchronous call and list of media is returned in callback.
      * @param isLoadMore True if load more called else false.
      * @param callback MediaCallback
      */
@@ -1220,7 +1220,7 @@ public class ContentService {
 
     /**
      * This method searches for media on server as per the search parameters supplied.
-     * This is as asynchronous call and list of media is returned in callback.
+     * This is an asynchronous call and list of media is returned in callback.
      * @param isLoadMore true if load next page
      * @param operator And / OR - Optional
      * @param title Title of Media - Optional
@@ -1230,9 +1230,9 @@ public class ContentService {
      * @param state state of Media(published/unpublished) - Optional
      * @param mediaType Type of media {@link MediaType}- Optional
      * @param channelId channel id for the medias - Optional
-     * @param created_after String holding the Date the media is created after, date should be in unix format - Optional
-     * @param updated_after String holding the Date the media is updated after, date should be in unix format - Optional
-     * @param published_after String holding the Date the media is published after, date should be in unix format - Optional
+     * @param createdAfter String holding the Date the media is created after, date should be in unix format - Optional
+     * @param updatedAfter String holding the Date the media is updated after, date should be in unix format - Optional
+     * @param publishedAfter String holding the Date the media is published after, date should be in unix format - Optional
      * @param callback MediaCallback
      * @throws Exception
      */
@@ -1373,9 +1373,9 @@ public class ContentService {
     /**
      * This method fetches the properties of a specific channel.
      * It does not require authentication.
-     * This is as asynchronous call and channel list with a single channel is returned in callback.
+     * This is an asynchronous call and a single channel is returned in callback.
      * @param channelId ChannelId
-     * @param callback ChannelCallback
+     * @param callback IndividualChannelCallback
      */
     public void getChannelAsync(final String channelId,final IndividualChannelCallback callback) {
         //Access key and secret key are not required, authentication not required
@@ -1435,9 +1435,9 @@ public class ContentService {
     /**
      * To fetch the properties of a specific media.
      * It does not require authentication.
-     * This is as asynchronous call and list of a single media is returned in callback.
+     * This is an asynchronous call and a single media is returned in callback.
      * @param mediaId mediaId
-     * @param callback MediaCallback
+     * @param callback IndividualMediaCallback
      */
     public void getMediaAsync(final String mediaId,final IndividualMediaCallback callback) {
         //Access key and secret key are not required, authentication not required
@@ -1582,7 +1582,7 @@ public class ContentService {
 
     /**
      * This method parses channel groups from JSON data.
-     * @param channelGroups channel group JSON array
+     * @param reader JsonReader object with data to parse and get ChannelGroup objects.
      */
     private void parseChannelGroups(final JsonReader reader){
         final GsonBuilder builder = new GsonBuilder();
@@ -1605,8 +1605,7 @@ public class ContentService {
 
     /**
      * This method parses channels from JSON data.
-     * @param channels channels JSON array
-     * @throws JSONException
+     * @param reader JsonReader object with data to parse and get Channel objects.
      */
     private void parseChannels(final JsonReader reader){
         final GsonBuilder builder = new GsonBuilder();
@@ -1628,9 +1627,9 @@ public class ContentService {
     }
 
     /**
-     * This method parses channels properties from JSON data.
-     * @param channels channels JSON array
-     * @throws JSONException
+     * This method parses channel properties from JSON data.
+     * @param reader JsonReader object with data to parse and get single Channel object.
+     * @return Channel Returns the channel object.
      */
     private Channel parseChannelProperty(final JsonReader reader){
         Channel channel = new Channel();
@@ -1648,7 +1647,8 @@ public class ContentService {
 
     /**
      * This method parses media properties from JSON data.
-     * @param medias JSON array
+     * @param reader JsonReader object with data to parse and get single Media object.
+     * @return Media Returns the Media object.
      */
     private Media parseMediaProperty(final JsonReader reader){
         Media media = new Media();
@@ -1668,7 +1668,7 @@ public class ContentService {
 
     /**
      * This method parses media from JSON data.
-     * @param medias JSON array
+     * @param reader JsonReader object with data to parse and get Media objects.
      */
     private void parseMedias(final JsonReader reader){
         final GsonBuilder builder = new GsonBuilder();
@@ -1694,7 +1694,7 @@ public class ContentService {
     /**
      * This method parses encodings from JSON data.
      * @param reader JsonReader object of encodings
-     * @param mediaId
+     * @param mediaId The string with media ID
      * @throws JSONException
      */
     private void parseEncodings(final JsonReader reader, final String mediaId) throws JSONException{
@@ -1766,7 +1766,7 @@ public class ContentService {
     /**
      * This method parses the error information from error stream of response.
      * @param reader
-     * @return Error message
+     * @return String Returns the string with error message or null.
      */
     private String parseError(final JsonReader reader){
         final JsonParser parser = new JsonParser();
@@ -1779,8 +1779,8 @@ public class ContentService {
 
     /**
      * This method returns the encoding associated with encoding url.
-     * @param encodingUrl
-     * @return Encoding
+     * @param encodingUrl The encoding URL string.
+     * @return Encoding Returns the encoding object or null.
      */
     Encoding getEncodingFromUrl(final String encodingUrl) {
         synchronized (mEncodingList) {
@@ -1795,7 +1795,7 @@ public class ContentService {
 
     /**
      * Method to set the paging parameters.
-     * @param pageSize The number of results to return per page. The default and maximum page size is 500.Min is 50.
+     * @param pageSize The number of results to return per page. The default and maximum page size supported by server is 500. Minimum is 50.
      * Example: page_size=100<br>
      * @param sortBy The field by which the results should be sorted. It has values like publish_date, create_date, update_date<br>
      * @param sortOrder The order in which the results should display. It has values like asc or  desc<br>
@@ -1817,7 +1817,7 @@ public class ContentService {
      * This method appends the paging parameters to the request URL.
      * @param url Request URL
      * @param params Paging Parameters
-     * @return Paging Parameters appended URL
+     * @return String Returns string with paging parameters appended to URL
      * @throws UnsupportedEncodingException
      */
     private String appendPagingParameters(final String url,final Map<String, String> params) throws UnsupportedEncodingException{
@@ -1840,8 +1840,8 @@ public class ContentService {
      * Then it creates a list of deliveries from this map.
      * Then it finds the suitable delivery from this list of deliveries.
      * This is based on the priority of primary use of the deliveries.
-     * @param encodings
-     * @return Delivery
+     * @param encodingList the list of encodings
+     * @return Delivery The delivery object or null in case of provided encoding list is null or empty.
      */
     Delivery getDeliveryForMedia(final ArrayList<Encoding> encodingList) {
         if(encodingList!= null && !encodingList.isEmpty()){
@@ -1886,7 +1886,7 @@ public class ContentService {
 
     /**
      * This method creates a map of unique encodings URLs as key and the corresponding encodings list as value.
-     * @param encodingList
+     * @param encodingList The array list of encodings.
      * @return Map of Encoding Uri and Encoding List
      */
     private Map<Uri,ArrayList<Encoding>> getEncodingsByUrl(final ArrayList<Encoding> encodingList){
@@ -1908,8 +1908,8 @@ public class ContentService {
     /**
      * This method has the logic to find the suitable delivery from a list of deliveries.
      * This is based on the priority of primary use of the deliveries.
-     * @param deliveryList
-     * @return Delivery
+     * @param deliveryList The array list of delivery objects.
+     * @return Delivery Returns the suitable delivery object.
      */
     private Delivery getSuitableDelivery(final ArrayList<Delivery> deliveryList){
         DeliveryType cur = DeliveryType.LVKDeliveryTypeNone;
