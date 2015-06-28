@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">LLSDKTest</string>
+
+
+    <string name="title_media_of_channel">MediaOfChannel</string>
+    <string name="title_player">Player</string>
+
+
+</resources>
