@@ -1052,6 +1052,10 @@ class Driver(object):
         self.driver.set_network_connection(ConnectionType.ALL_NETWORK_ON)
         self.wait_for(6)
 
+    def hide_keyboard(self):
+        self.driver.hide_keyboard()
+        self.wait_for(1)
+
 '''
 if __name__ == "__main__":
     from modules.constant import *

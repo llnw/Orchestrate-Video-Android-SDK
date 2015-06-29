@@ -7,6 +7,7 @@ Feature: Configuring the Settings
          And value of URL in CURRENT tab should be https://staging-api.lvp.llnw.net/rest
          And value of License Proxy in CURRENT tab should be https://staging-wlp.lvp.llnw.net/license
          And value of Portal Key in CURRENT tab should be limelight
+
         
     Scenario: I should be able to specify the organization id, Access key and Secret key on the settings tab.
         Given the application has launched with following configuration in SETTINGS tab -
@@ -29,7 +30,7 @@ Feature: Configuring the Settings
         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
         When I set https://staging-api.lvp.llnw.net/rest as value for URL in SETTINGS tab
         Then value of URL in CURRENT tab should be https://staging-api.lvp.llnw.net/rest
-  
+
     Scenario: Should be able to set Widevine service license proxy URL and portal key
         Given the application has launched with following configuration in SETTINGS tab -
         |  name             |  value                            |
@@ -40,7 +41,7 @@ Feature: Configuring the Settings
         Then value of License Proxy in CURRENT tab should be https://staging-wlp.lvp.llnw.net/license
         When I set limelight as value for Portal Key in SETTINGS tab
         Then value of Portal Key in CURRENT tab should be limelight
-     
+
     Scenario: I should be able to set the log level in the settings tab.
         Given the application has launched with following configuration in SETTINGS tab -
         |  name             |  value                            |
@@ -49,3 +50,4 @@ Feature: Configuring the Settings
         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
         When I select INFO as value for Log level in SETTINGS tab
         Then value of Log level in CURRENT tab should be INFO
+        And exit from the application

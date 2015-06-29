@@ -301,6 +301,11 @@ class Limelight(Driver):
             oper        :   operations - select / refresh / scroll-down
         """
         self.select_tab(tab_name)
+        try:
+            self.hide_keyboard()
+            info("hide the android keyboard")
+        except Exception as ex:
+            info("cannot hide keyboard :: " + str(ex))
         if oper.strip().lower() == "select":
             pass
         elif oper.strip().lower() == "refresh":
@@ -499,9 +504,10 @@ class Limelight(Driver):
             for ech_ele in verify_data:
                 info("chk :: %s" % ech_ele)
                 is_present = False
-                for ech_try in range(2):
+                for ech_try in range(4):
                     is_present = self.is_item_visible(ech_ele)
                     if not is_present:
+                        self.wait_for(5)
                         self.click_on("player")
                     else:
                         break
@@ -563,7 +569,6 @@ class Limelight(Driver):
                                         ', '.join(visible_element))
                     else:
                         info("not visible : %s" % ', '.join(not_visible_element))
-
 
     def go_to_tab_and_select_media(self, tab_name, media_name):
         """
@@ -670,7 +675,7 @@ class Limelight(Driver):
 
         # For other cases we don't need to check this
         if strict_check is not None:
-            for i in xrange(30):
+            for i in xrange(100):
                 try:
                     if self.is_item_visible("alert-msg") and \
                        self.get_value("alert-msg") == \
@@ -781,7 +786,7 @@ class Limelight(Driver):
                 self.select_tab("PLAYER")
                 info("Set url/media-id=%s" % media_source)
                 # Set url/ media id
-                self.set_select_value("player", "media-id-text-box",
+                self.set_select_value("PLAYER", "media-id-text-box",
                                       "set", media_source)
                 # Click on the play button
                 self.click_on("play-button")
@@ -926,12 +931,12 @@ class Limelight(Driver):
                     # Tap on video player, if rewind button is not visible
                     self.click_on("player")
                 try:
-                    if not is_btn_clieked:
-                        ret_data['bfr_elapsed_time'] = \
-                          self.get_value('player-elapsed-time')
-                        # Click on the rewind button
-                        self.click_on("player-rewind-button")
-                        is_btn_clieked = True
+                    #if not is_btn_clieked:
+                    ret_data['bfr_elapsed_time'] = \
+                      self.get_value('player-elapsed-time')
+                    # Click on the rewind button
+                    self.click_on("player-rewind-button")
+                    is_btn_clieked = True
                     ret_data['aftr_elapsed_time'] = \
                       self.get_value('player-elapsed-time')
                     ret_data['total_duration'] = \
@@ -978,8 +983,56 @@ class Limelight(Driver):
                     warning(str(ex))
                     warning("seek bar get invisible so quick")
                     continue
+        elif opr.strip().lower() == "completed": # TODO
+            # Got the total video duration
+            for ech_trn in range(4):
+                try:
+                    ret_data['total_duration'] = self.get_value("player-video-duration")
+                    break
+                except Exception as exc:
+                    self.click_on("player")
 
-        elif opr.strip().lower() == "completed":
+            # Redefined the seeking duration
+            dur = [int(ei) for ei in ret_data['total_duration'].split(':')]
+            dur[0] -= 1
+            seek_to = ('%2d:%2d'%(dur[0], dur[1])).replace(' ', '0')
+
+            seek_to_dur = seek_to.split(':')
+            seek_to_sec = int(seek_to_dur[0]) * 60 + int(seek_to_dur[1])
+
+            tot_vdo_dur = ret_data['total_duration'].split(':')
+            tot_vdo_sec = int(tot_vdo_dur[0]) * 60 + int(tot_vdo_dur[1])
+
+            for ech_try in range(10):
+
+                try:
+                    ele_details = self.get_element_details("player-seekbar")
+                    x_cal = (float(ele_details['width']) / tot_vdo_sec) * seek_to_sec
+                    go_to_x = ele_details['x-coordinate'] + x_cal
+                    go_to_x = int(round(go_to_x))
+                    go_to_y = ele_details['y-coordinate']
+                    ret_data['bfr_elapsed_time'] = self.get_value('player-elapsed-time')
+                    # Seek the value
+                    self.tap_on(go_to_x, go_to_y)
+                    break
+                except Exception as ex:
+                    warning(str(ex))
+                    warning("seek bar get invisible so quick")
+
+            for ei in range(4):
+                try:
+                    ret_data['aftr_elapsed_time'] = self.get_value('player-elapsed-time')
+                    break
+                except:
+                    self.click_on("player")
+
+            elapse_vdo_dur = ret_data['aftr_elapsed_time'].split(':')
+            elapse_vdo_sec = int(elapse_vdo_dur[0]) * 60 + int(elapse_vdo_dur[1])
+            info("total : %s, current : %s" %(tot_vdo_sec, elapse_vdo_sec))
+            self.wait_for(tot_vdo_sec - elapse_vdo_sec)
+            info("completed the video")
+
+        elif opr.strip().lower() == "oldcompleted":
             num_of_retry = 10
             while num_of_retry > 0:
                 try:
@@ -1066,7 +1119,7 @@ class Limelight(Driver):
 
             elif media_type.strip().lower() == "remote":
                 # Set url/ media id
-                self.set_select_value("player", "media-id-text-box",
+                self.set_select_value("PLAYER", "media-id-text-box",
                                       "set", media_source)
                 # Click on the play button
                 self.click_on("play-button")
@@ -1158,7 +1211,7 @@ class Limelight(Driver):
                 info("elapse-time: prev=%s, now=%s" % (duration, elapse_time))
 
         else:
-            if -5 <= (elapse_time_sec - duration_sec) < 10:
+            if -5 <= (elapse_time_sec - duration_sec) < 30:
                 info("got elapse time=%s, passed %s" % (elapse_time,
                                                         duration))
             else:

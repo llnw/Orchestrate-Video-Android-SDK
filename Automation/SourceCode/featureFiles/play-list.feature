@@ -43,7 +43,6 @@ Feature: Play list feature test
      Then all media from MEDIA tab gets removed in play list of PLAYER tab
       And close the application
      
-     
     Scenario: I should be able to add media of selected channel that are displayed in media tab to play-list.
      Given the application has launched with following configuration in SETTINGS tab -
        |  name             |  value                            |
@@ -61,8 +60,7 @@ Feature: Play list feature test
        | Nadals Quest  |
       And close the application
 
-     
-    Scenario: After adding some media to play list, play button and media id text box should not visible but play-list should be visible 
+    Scenario: After adding some media to play list, play button and media id text box should not visible but play-list should be visible
      Given the application has launched with following configuration in SETTINGS tab -
        |  name             |  value                            |
        | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
@@ -80,7 +78,6 @@ Feature: Play list feature test
        | controls           |
        | playlist-container |
       And close the application
-     
      
     Scenario: I should be able to play media from play-list with autoplay on and off
      Given the application has launched with following configuration in SETTINGS tab -
@@ -120,7 +117,6 @@ Feature: Play list feature test
       And I completed the "Adobe" video from PLAY-LIST with "automatic" encoding
      Then player should play the IP MAN media from play-list at duration 00:00 in play state
       And close the application
-     
      
     Scenario: The media should be played sequentially from current selected item when autoplay is checked.
      Given the application has launched with following configuration in SETTINGS tab -

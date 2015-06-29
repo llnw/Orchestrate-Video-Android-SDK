@@ -7,7 +7,7 @@ Feature: Fetching Library
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      
      When I select the CHANNEL GROUPS tab
-     Then the CURRENT tab should have following channel group -
+     Then the CHANNEL GROUPS tab should have following channel group -
      | channel group     |
      | ENTERTAINMENT     |
      | MY GROUP          |
@@ -20,7 +20,7 @@ Feature: Fetching Library
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      
      When I select the ALL CHANNELS tab
-     Then the CURRENT tab should have following channel(s) -
+     Then the ALL CHANNELS tab should have following channel(s) -
      | channel(s)  |
      | Cartoon     |
      | Education   |
@@ -35,7 +35,7 @@ Feature: Fetching Library
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      
      When I select the ALL MEDIA tab
-     Then the CURRENT tab should have following media -
+     Then the ALL MEDIA tab should have following media -
      | media                  |
      | Avengers Age of Ultron |
      | Underwater Marine Life |
@@ -50,7 +50,7 @@ Feature: Fetching Library
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
 
      When I select ENTERTAINMENT as value for channel-group in CHANNEL GROUPS tab
-     Then the CURRENT tab should have following channel(s) -
+     Then the CHANNELS tab should have following channel(s) -
      | channel(s)   |
      | Cartoon      |
      | Education    |
@@ -61,9 +61,9 @@ Feature: Fetching Library
      | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
      | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
-     
-     When I select Cartoon as value for channel in CHANNELS tab
-     Then the CURRENT tab should have following media -
+     When I select ENTERTAINMENT as value for channel-group in CHANNEL GROUPS tab
+      And I select Cartoon as value for channel in CHANNELS tab
+     Then the MEDIA tab should have following media -
      | media          |
      | Toy Story      |
      | The Chipettes  |
@@ -79,7 +79,7 @@ Feature: Fetching Library
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
 
      When I refresh the ALL MEDIA tab
-     Then the CURRENT tab should have following media -
+     Then the ALL MEDIA tab should have following media -
      | media                  |
      | Avengers Age of Ultron |
      | Underwater Marine Life |
@@ -94,7 +94,7 @@ Feature: Fetching Library
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
 
      When I refresh the ALL CHANNELS tab
-     Then the CURRENT tab should have following channel(s) -
+     Then the ALL CHANNELS tab should have following channel(s) -
      | channel(s) |
      | Cartoon    |
      | Education  |
@@ -109,7 +109,7 @@ Feature: Fetching Library
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      
      When I refresh the CHANNEL GROUPS tab
-     Then the CURRENT tab should have following channel group -
+     Then the CHANNEL GROUPS tab should have following channel group -
      | channel group     |
      | ENTERTAINMENT     |
      | MY GROUP          |
@@ -123,7 +123,7 @@ Feature: Fetching Library
      
      When I select ENTERTAINMENT as value for channel-group in CHANNEL GROUPS tab
      And I refresh the CHANNELS tab
-     Then the CURRENT tab should have following channel(s) -
+     Then the CHANNELS tab should have following channel(s) -
      | channel(s)   |
      | Cartoon      |
      | Education    |
@@ -137,7 +137,7 @@ Feature: Fetching Library
 
      When I select Cartoon as value for channel in ALL CHANNELS tab
      And I refresh the MEDIA tab       
-     Then the CURRENT tab should have following media -
+     Then the MEDIA tab should have following media -
      | media          |
      | Toy Story      |
      | The Chipettes  |
@@ -153,7 +153,7 @@ Feature: Fetching Library
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
 
      When I scroll-down the ALL MEDIA tab
-     Then the CURRENT tab should have following media -
+     Then the ALL MEDIA tab should have following media -
      | media                   |
      | Now You See Me          |
      | Act Of Caring           |
@@ -170,7 +170,7 @@ Feature: Fetching Library
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
      
      When I scroll-down the ALL CHANNELS tab
-     Then the CURRENT tab should have following media -
+     Then the ALL CHANNELS tab should have following media -
      | media      |
      | Cartoon    |
      | Education  |
@@ -185,7 +185,7 @@ Feature: Fetching Library
      | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
 
      When I scroll-down the CHANNEL GROUPS tab
-     Then the CURRENT tab should have following channel group -
+     Then the CHANNEL GROUPS tab should have following channel group -
      | channel group  |
      | ENTERTAINMENT  |
      | MY GROUP       |
@@ -199,7 +199,7 @@ Feature: Fetching Library
      
      When I select MY GROUP as value for channel-group in CHANNEL GROUPS tab
      And I scroll-down the CHANNELS tab
-     Then the CURRENT tab should have following channel(s) -
+     Then the CHANNELS tab should have following channel(s) -
      | channel(s) |
      | News       |
      | TV         |
@@ -214,7 +214,7 @@ Feature: Fetching Library
      
      When I select TV as value for channel in ALL CHANNELS tab
      And I scroll-down the MEDIA tab
-     Then the CURRENT tab should have following media -
+     Then the MEDIA tab should have following media -
      | media          |
      | IP MAN         |
      | Jack Reacher   |
