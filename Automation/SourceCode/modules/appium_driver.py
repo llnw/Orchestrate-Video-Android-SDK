@@ -855,6 +855,8 @@ class Driver(object):
                 break
             except Exception as excp:
                 warning(str(excp))
+                if self.is_item_visible("setting-popup-title") and self.is_item_visible("setting-popup-cancel-btn"):
+                    self.click_on("setting-popup-cancel-btn")
                 self.wait_for(1)
         else:
             raise Exception("not able to access the horizontal scroll element")
