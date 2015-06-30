@@ -575,7 +575,14 @@ class Driver(object):
         @arg :
             app_display_name : Application name that is displaying in menu
         """
-        self.click_on("phone-menu")
+        try:
+            self.click_on("phone-menu")
+        except Exception as ex:
+            info("while using phone-menu xpath got error: %s "%str(ex))
+            info("using the phone-menu-samsung xpath")
+            self.wait_for(3)
+            self.click_on("phone-menu-samsung")
+
         from_point, to_point = None, None
         app_icn = "android.widget.TextView"
         set_coordinate = True
@@ -632,7 +639,7 @@ class Driver(object):
         info("orientation changed from %s to %s"%(change_from, change_to))
         return change_from, change_to, out_put
 
-    def scroll(self, scrol_typ, direction=None, frm_pt=(), to_pt=(), duration_ms=1000):
+    def scroll(self, scrol_typ, direction=None, frm_pt=(), to_pt=(), duration_ms=2000):
         """Scroll horizontally or vertically in a particular direction from a
         point to another point
 
@@ -648,6 +655,7 @@ class Driver(object):
             frm_pt : Coordinate of scroll from point
             to_pt : Coordinate of scroll to point
         """
+        info("Scrolling from -> %s to -> %s " % (frm_pt, to_pt))
         def x_y_correction(point):
             """ x, y coordinate correction """
             _x, _y = point
@@ -735,6 +743,10 @@ class Driver(object):
         ele_obj = self.get_element_by_xpath(ele)
         list_text = list_text_old = [ech_ele.text for ech_ele in ele_obj]
 
+        ele_height = 0
+        if ele_obj:
+            ele_height = int(ele_obj[0].size['height'])
+
         to_pt = ele_obj[-1].location
         to_pt = (int(to_pt['x']) + 20, int(to_pt['y']))
         indx = - len(ele_obj)/2 if indx == None else indx
@@ -746,21 +758,24 @@ class Driver(object):
             if indx == 0:
                 to_pt = (to_pt[0], to_pt[1]+200)
             else:
-                to_pt = (to_pt[0], to_pt[1]+50)
+                info("adding the height to the co-ordinate")
+                to_pt = (to_pt[0], to_pt[1]+ ele_height + 20) #TODO
 
         if ret_all_data:
-            time_to_scroll = 1000
+            time_to_scroll = 2000
         else:
             time_to_scroll = 200
 
         tmp_retry = retry
         while tmp_retry > 0:
             self.scroll('V', frm_pt=from_pt, to_pt=to_pt, duration_ms=time_to_scroll)
+            self.wait_for(6)
             ele_obj = self.get_element_by_xpath(ele)
             list_text_new = [ech_ele.text for ech_ele in ele_obj]
             if list_text_new[:3] == list_text_old[:3] or list_text_new == []:
                 tmp_retry -= 1
             else:
+                #info("%s ######## %s " % (list_text_new[:3], list_text_old[:3]))
                 if ret_all_data:
                     output = self.contains(list_text_old[:3], list_text_new)
                     if output == False:
