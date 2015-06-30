@@ -1,10 +1,6 @@
 Feature: This will test all scenarios for search api
     Scenario: I should able to search by "Media Title" and reset the search
-     Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     Given the application has launched
      When I search the as value for Media Title in ALL MEDIA tab
      Then the CURRENT tab should have following media -
          | media           |
@@ -21,11 +17,7 @@ Feature: This will test all scenarios for search api
          | The Cars               |
 
     Scenario: I should able to search by "Description" and reset the search
-     Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     Given the application has launched
      When I search test as value for Description in ALL MEDIA tab
      Then the CURRENT tab should have following media -
          | media           |
@@ -40,11 +32,7 @@ Feature: This will test all scenarios for search api
          | Underwater Marine Life |
 
     Scenario: I should able to search by "Channel ID" and reset the search
-     Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     Given the application has launched
      When I search 821e89bb507346408a as value for Channel ID in ALL MEDIA tab
      Then the CURRENT tab should have following media -
          | media           |
@@ -65,11 +53,7 @@ Feature: This will test all scenarios for search api
          | Underwater Marine Life |
 
     Scenario: I should see error message if no data found during search by "Media Title" and on reset the search message should disappear
-     Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     Given the application has launched
      When I search XXXX as value for Media Title in ALL MEDIA tab
      Then the CURRENT tab should have following error message -
          | error message    |
@@ -88,11 +72,7 @@ Feature: This will test all scenarios for search api
          | No Media Found   |
 
     Scenario: I should see error message if no data found during search by "Description" and on reset the search message should disappear
-     Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     Given the application has launched
      When I search XXXX as value for Description in ALL MEDIA tab
      Then the CURRENT tab should have following error message -
          | error message    |
@@ -111,11 +91,7 @@ Feature: This will test all scenarios for search api
          | No Media Found   |
 
     Scenario: I should see error message if no data found during search by "Channel ID" and on reset the search message should disappear
-     Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+     Given the application has launched
      When I search XXXX as value for Channel ID in ALL MEDIA tab
      Then the CURRENT tab should have following error message -
          | error message    |

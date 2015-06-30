@@ -855,7 +855,8 @@ class Driver(object):
                 break
             except Exception as excp:
                 warning(str(excp))
-                if self.is_item_visible("setting-popup-title") and self.is_item_visible("setting-popup-cancel-btn"):
+                if self.is_item_visible("setting-popup-cancel-btn"):
+                    info("cancel button shown up, clicking on it")
                     self.click_on("setting-popup-cancel-btn")
                 self.wait_for(1)
         else:

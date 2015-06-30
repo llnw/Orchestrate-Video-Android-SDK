@@ -1544,7 +1544,7 @@ class Limelight(Driver):
         aftr_elapsed_time_sec = int(aftr_elapsed_time_sec[0]) * 60 + \
                                 int(aftr_elapsed_time_sec[1])
         ## Reverse cause move back
-        if abs(aftr_elapsed_time_sec - duration_sec) < 20:
+        if abs(aftr_elapsed_time_sec - duration_sec) < 50:
             msg = "verify elapsed time is seek to time." + \
                   " elapsed time: %s, duration: %s"
             info(msg % (aftr_elapsed_time, duration))

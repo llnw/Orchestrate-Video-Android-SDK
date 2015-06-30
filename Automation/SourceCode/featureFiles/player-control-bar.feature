@@ -1,33 +1,21 @@
 Feature: Player Control Bar
 
     Scenario: The player should display the elapsed time.      
-        Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+        Given the application has launched
         When I play the "Flash_HLS" video from ALL MEDIA with "automatic" encoding
         Then  the player should have following controls -
             | controls             |
             | player-elapsed-time  |
 
     Scenario: The player should display the video duration for VOD videos.            
-        Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+        Given the application has launched
         When I play the "Flash_HLS" video from ALL MEDIA with "automatic" encoding
         Then  the player should have following controls -
             | controls              |
             | player-video-duration |
 
     Scenario: Player Control-bar support with Streaming Video Content in normal and device rotation
-        Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+        Given the application has launched
         When I play the "Flash_HLS" video from ALL MEDIA with "automatic" encoding
         Then  the player should have following controls -
             | controls              |
@@ -57,11 +45,7 @@ Feature: Player Control Bar
             | player-video-duration |
         
     Scenario: Player Control-bar support with Streaming Video Content and Home button Handling
-        Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+        Given the application has launched
         When I play the "Flash_HLS" video from ALL MEDIA with "automatic" encoding
          And I apply home-button press on the application
          And I apply app-icon press on the device
@@ -75,11 +59,7 @@ Feature: Player Control Bar
             | player-video-duration |
         
     Scenario: Player Control-bar support with Local Video Content in normal and device rotation
-        Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+        Given the application has launched
         When I play the "local" video from Videos/Download/testLocalMedia.mp4 with "local" encoding
         Then  the player should have following controls -
             | controls              |
@@ -109,11 +89,7 @@ Feature: Player Control Bar
             | player-video-duration |
             
     Scenario: Player Control-bar support with Local Video Content and Home button Handling
-        Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+        Given the application has launched
         When I play the "local" video from Videos/Download/testLocalMedia.mp4 with "local" encoding
          And I apply home-button press on the application
          And I apply app-icon press on the device
@@ -127,11 +103,7 @@ Feature: Player Control Bar
             | player-video-duration |
         
     Scenario: Player Control-bar support with Widevine Offline Video Content in normal and device rotation
-        Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+        Given the application has launched
         When I play the "Widewine_Offline_SD_HD" video from ALL MEDIA with "WidevineOffline 10 X50kbps 240X320" encoding
         Then  the player should have following controls -
             | controls              |
@@ -161,11 +133,7 @@ Feature: Player Control Bar
             | player-video-duration |
         
     Scenario: On relaunch the application, video playback should remain in play/pause state as it was when application moved to background.
-        Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+        Given the application has launched
         When I play the "local" video from Videos/Download/testLocalMedia.mp4 with "local" encoding
          And I seek-2:00 the "local" video from Videos/Download/testLocalMedia.mp4 with "local" encoding
          And I apply home-button press on the application
@@ -177,11 +145,7 @@ Feature: Player Control Bar
         Then player should remain-pause the playback from file to duration xx:xx in pause state
 
     Scenario: The video player should display the entire video and as per the aspect ratio settings in all orientations.
-        Given the application has launched with following configuration in SETTINGS tab -
-         |  name             |  value                            |
-         | Organization ID   | a851c50193064ed6be08c7e75f8f4910  |
-         | Access Key        | 6QDyPljwRS8L2w7Q7AnRo3sYIoQ=      |
-         | Secret Key        | +d62cBI73hxWcRPpput4RR7a8v8=      |
+        Given the application has launched
         When I play the "local" video from Videos/Download/testLocalMedia.mp4 with "local" encoding
          And I seek-2:00 the "local" video from Videos/Download/testLocalMedia.mp4 with "local" encoding
          And I apply screen orientation on the device
