@@ -632,7 +632,7 @@ class Driver(object):
         info("orientation changed from %s to %s"%(change_from, change_to))
         return change_from, change_to, out_put
 
-    def scroll(self, scrol_typ, direction=None, frm_pt=(), to_pt=(), duration_ms=2000):
+    def scroll(self, scrol_typ, direction=None, frm_pt=(), to_pt=(), duration_ms=1000):
         """Scroll horizontally or vertically in a particular direction from a
         point to another point
 
@@ -749,7 +749,7 @@ class Driver(object):
                 to_pt = (to_pt[0], to_pt[1]+50)
 
         if ret_all_data:
-            time_to_scroll = 2000
+            time_to_scroll = 1000
         else:
             time_to_scroll = 200
 
@@ -758,7 +758,7 @@ class Driver(object):
             self.scroll('V', frm_pt=from_pt, to_pt=to_pt, duration_ms=time_to_scroll)
             ele_obj = self.get_element_by_xpath(ele)
             list_text_new = [ech_ele.text for ech_ele in ele_obj]
-            if list_text_new[:3] == list_text_old[:3]:
+            if list_text_new[:3] == list_text_old[:3] or list_text_new == []:
                 tmp_retry -= 1
             else:
                 if ret_all_data:
@@ -813,8 +813,16 @@ class Driver(object):
         tmp_retry = retry
         while tmp_retry > 0:
             self.scroll('V', frm_pt=from_pt, to_pt=to_pt)
-            ele_obj = self.get_element_by_xpath(ele)
-            list_text_new = [ech_ele.text for ech_ele in ele_obj]
+            for echtry in range(4):
+                ele_obj = self.get_element_by_xpath(ele)
+                try:
+                    list_text_new = [ech_ele.text for ech_ele in ele_obj]
+                    break
+                except Exception as excp_ret:
+                    info("while fetching the text : %s" % str(excp_ret))
+            else:
+                raise Exception("appium is not able to fetch data from GUI")
+
             print "ELEMENT NEW::::::::", list_text_new,
             print "::::ELEMENT OLD::::::", list_text_old,
             print "::::total data::::::", list_text

@@ -97,25 +97,30 @@ class Limelight(Driver):
         @arg:
             tab_name : display name of the tab
         """
-        info("SELECT TAB => %s" % tab_name)
+        for ech_try in range(4):
+            info("SELECT TAB => %s" % tab_name)
+            if tab_name.lower().strip() == "current":
+                pass
+            else:
+                # First move to the left most tab then start search
+                if not self.is_item_visible(MAPPER[tab_name.lower()],
+                                            generic_param=(tab_name, )) and \
+                   not self.is_item_visible(MAPPER[LEFT_MOST_TAB.lower()],
+                                            generic_param=(LEFT_MOST_TAB, )):
+                    self.scrol_right_to_left(retry=1)
+                # Now go to targeted tab
+                self.click_on(MAPPER[tab_name.lower()], generic_param=(tab_name, ))
 
-        if tab_name.lower().strip() == "current":
-            pass
-        else:
-            # First move to the left most tab then start search
-            if not self.is_item_visible(MAPPER[tab_name.lower()],
-                                        generic_param=(tab_name, )) and \
-               not self.is_item_visible(MAPPER[LEFT_MOST_TAB.lower()],
-                                        generic_param=(LEFT_MOST_TAB, )):
-                self.scrol_right_to_left(retry=1)
-            # Now go to targeted tab
-            self.click_on(MAPPER[tab_name.lower()], generic_param=(tab_name, ))
-
-        info("SELECTED TAB => %s" % tab_name)
-        try:
-            self.scrol_bottom_to_top(retry=3)
-        except Exception as exc:
-            warning("While reset the scroll to top :%s" %  str(exc))
+            info("SELECTED TAB => %s" % tab_name)
+            try:
+                self.scrol_bottom_to_top(retry=3)
+            except Exception as exc:
+                warning("While reset the scroll to top :%s" %  str(exc))
+                if self.is_item_visible("setting-popup-cancel-btn"):
+                    info("cancel button shown up, clicking on it")
+                    self.click_on("setting-popup-cancel-btn")
+                    continue
+            break
 
     def get_element_details(self, element_name, generic_param=()):
         """
