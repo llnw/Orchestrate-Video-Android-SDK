@@ -759,16 +759,39 @@ class Limelight(Driver):
                 # Click on browse button
                 self.click_on("browse-button")
                 # Check on toggle menu button
-                self.click_on("toggle-menu-button")
+                for tog_btn_entry in ["toggle-menu-button",
+                                      "toggle-menu-button1",
+                                      "toggle-menu-button2"]:
+                    if self.is_item_visible(tog_btn_entry):
+                        self.click_on(tog_btn_entry)
+                        break
+                    else:
+                        info("%s not visible" % tog_btn_entry)
+                else:
+                    raise Exception("Not find the toggle button element," +
+                                    "that specified in element config file")
                 # Click on Downloads link
-                self.click_on("toggle-menu-left-side-links",
-                              generic_param=(menue_link[0],))
+                for ech_side_link_entry in ["toggle-menu-left-side-links",
+                                  "toggle-menu-left-side-links1"]:
+                    if self.is_item_visible(ech_side_link_entry, generic_param=(menue_link[0],)):
+                        self.click_on(ech_side_link_entry,
+                                      generic_param=(menue_link[0],))
+                        break
+                else:
+                    raise Exception("side menu not found")
                 # Check alert title bar has text Downloads
-                self.value_should_be("local-file-browse-title", menue_link[0])
-
+                #self.value_should_be("local-file-browse-title", menue_link[0])
+                self.wait_for(5)
                 for ech_link in menue_link[1:]:
                     # Open the view menu on the right side
-                    self.click_on("local-video-view-menu-open-btn")
+
+                    for ech_entry in ["local-video-view-menu-open-btn",
+                                  "local-video-view-menu-open-btn1"]:
+                        if self.is_item_visible(ech_entry):
+                            self.click_on(ech_entry)
+                            break
+                    else:
+                        raise Exception("right side menu for grid/list view not found")
 
                     if self.is_item_visible("local-video-view-menu-option-link",
                                             generic_param=("List view",)):
@@ -778,11 +801,23 @@ class Limelight(Driver):
                     else:
                         # back so that the menu disappear
                         self.driver.back()
-                    self.click_on("file-link-in-menu",
-                                  generic_param=(ech_link,))
+
+
+                    for ech_entry in ["file-link-in-menu", "file-link-in-menu1"]:
+                        if self.is_item_visible(ech_entry, generic_param=(ech_link,)):
+                            self.click_on(ech_entry, generic_param=(ech_link,))
+                            break
+                    else:
+                        raise Exception("Not able to get the file link menu from GUI")
 
                 # Click on the file
-                self.click_on("file-link-in-menu", generic_param=(file_name,))
+                for ech_entry in ["file-link-in-menu", "file-link-in-menu1"]:
+                    if self.is_item_visible(ech_entry, generic_param=(file_name,)):
+                        self.click_on(ech_entry, generic_param=(file_name,))
+                        break
+                else:
+                    raise Exception("local video %s :: not found in expected path" % file_name)
+                
                 # Click The file name is came in search text box
                 #self.value_should_contains("media-id-text-box", file_name)
                 # failure
