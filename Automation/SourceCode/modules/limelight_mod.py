@@ -786,7 +786,8 @@ class Limelight(Driver):
                     # Open the view menu on the right side
 
                     for ech_entry in ["local-video-view-menu-open-btn",
-                                  "local-video-view-menu-open-btn1"]:
+                                  "local-video-view-menu-open-btn1", 
+                                  "local-video-view-menu-open-btn2"]:
                         if self.is_item_visible(ech_entry):
                             self.click_on(ech_entry)
                             break
