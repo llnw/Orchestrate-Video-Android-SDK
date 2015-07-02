@@ -966,27 +966,57 @@ class Limelight(Driver):
 
         elif opr.strip().lower() == "reversed":
             is_btn_clieked = False
-            for ech_try in range(10):
-                # Check if the rewind button is visible
-                if not self.is_item_visible("player-rewind-button"):
-                    # Tap on video player, if rewind button is not visible
-                    self.click_on("player")
+            info('collecting the elapse time before clicking reverse button')
+            for i in range(4):
                 try:
-                    #if not is_btn_clieked:
                     ret_data['bfr_elapsed_time'] = \
-                      self.get_value('player-elapsed-time')
-                    # Click on the rewind button
+                        self.get_value('player-elapsed-time')
+                    break
+                except Exception as excp:
+                    info(str(excp))
+                    self.click_on('player')
+            else:
+                raise Exception("not able to collect the elapse time before clicking reverse button")
+            info('collected elapse time as : %s' % ret_data['bfr_elapsed_time'])
+
+            info("clicking reverse button")
+            for i in range(4):
+                try:
                     self.click_on("player-rewind-button")
-                    is_btn_clieked = True
+                    break
+                except Exception as excp:
+                    info(str(excp))
+                    self.click_on('player')
+            else:
+                raise Exception("not able to click reverse button")
+            info("clicked reverse button")
+            self.wait_for(2)
+
+            info('collecting the elapse time after clicking reverse button')
+            for i in range(4):
+                try:
                     ret_data['aftr_elapsed_time'] = \
-                      self.get_value('player-elapsed-time')
+                        self.get_value('player-elapsed-time')
+                    break
+                except Exception as excp:
+                    info(str(excp))
+                    self.click_on('player')
+            else:
+                raise Exception("not able to collect the elapse time after clicking reverse button")
+            info('collected elapse time as : %s' % ret_data['aftr_elapsed_time'])
+
+            info('collecting the total duration of video')
+            for i in range(4):
+                try:
                     ret_data['total_duration'] = \
                           self.get_value('player-video-duration')
                     break
-                except Exception as ex:
-                    warning(str(ex))
-                    warning("rewind button get invisible so quick")
-                    continue
+                except Exception as excp:
+                    info(str(excp))
+                    self.click_on('player')
+            else:
+                warning("not able to collect the total duration after clicking reverse button")
+            info('collected total duration : %s' % ret_data['total_duration'])
 
         elif re.search(r"^seek-\d+:\d+$", opr.strip().lower()):
             is_btn_clieked = False
@@ -1070,7 +1100,8 @@ class Limelight(Driver):
             elapse_vdo_dur = ret_data['aftr_elapsed_time'].split(':')
             elapse_vdo_sec = int(elapse_vdo_dur[0]) * 60 + int(elapse_vdo_dur[1])
             info("total : %s, current : %s" %(tot_vdo_sec, elapse_vdo_sec))
-            self.wait_for(tot_vdo_sec - elapse_vdo_sec)
+            self.wait_for(tot_vdo_sec - elapse_vdo_sec + 50)
+
             info("completed the video")
 
         elif opr.strip().lower() == "oldcompleted":
