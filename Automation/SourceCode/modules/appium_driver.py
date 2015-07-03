@@ -465,7 +465,10 @@ class Driver(object):
         ele_obj = self.get_element(element_name,
                                    generic_param=generic_param)
         self.clear_value(ele_obj)
-        ele_obj.set_text(str(value))
+
+        #ele_obj.set_text(str(value))
+        info("setting the value")
+        ele_obj.send_keys(str(value))
 
     def get_value(self, ele, generic_param=()):
         """

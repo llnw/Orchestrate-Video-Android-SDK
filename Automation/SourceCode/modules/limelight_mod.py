@@ -913,6 +913,8 @@ class Limelight(Driver):
                     warning(str(ex))
                     warning("pause button get invisible so quick")
                     continue
+            else:
+                raise Exception("not able to click on the pause button")
 
         elif opr.strip().lower() == "resume":
             is_btn_clieked = False
@@ -1574,7 +1576,7 @@ class Limelight(Driver):
                                 int(aftr_elapsed_time_sec[1])
         ## Reverse cause move back
         if -REVERSE_SEC <= (aftr_elapsed_time_sec - bfr_elapsed_time_sec) < \
-           -REVERSE_SEC + 5:
+           -REVERSE_SEC + 15:
             msg = "on click reverse btn elapse time change as expect." + \
                   " prev: %s, after: %s"
             info(msg % (bfr_elapsed_time, aftr_elapsed_time))
