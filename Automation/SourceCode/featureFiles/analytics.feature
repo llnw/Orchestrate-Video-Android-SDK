@@ -25,24 +25,24 @@ Feature: This will test all scenarios for analytic
      
     Scenario: On playing Widevine online encoded video, events should get generated on player load, play, pause, seek, resume and on-complete play
      Given the application has launched
-     When I play the "Widewine_Online_SD" video from ALL MEDIA with "Widevine 40 X286kbps 360X640" encoding
-     And I pause the "Widewine_Online_SD" video from ALL MEDIA with "Widevine 40 X286kbps 360X640" encoding
-     And I resume the "Widewine_Online_SD" video from ALL MEDIA with "Widevine 40 X286kbps 360X640" encoding
-     And I seek-2:00 the "Widewine_Online_SD" video from ALL MEDIA with "Widevine 40 X286kbps 360X640" encoding
-     And I pause the "Widewine_Online_SD" video from ALL MEDIA with "Widevine 40 X286kbps 360X640" encoding
-     And I resume the "Widewine_Online_SD" video from ALL MEDIA with "Widevine 40 X286kbps 360X640" encoding
-     And I completed the "Widewine_Online_SD" video from ALL MEDIA with "Widevine 40 X286kbps 360X640" encoding
+     When I play the "Widewine_Online_SD" video from ALL MEDIA with "automatic" encoding
+     And I pause the "Widewine_Online_SD" video from ALL MEDIA with "automatic" encoding
+     And I resume the "Widewine_Online_SD" video from ALL MEDIA with "automatic" encoding
+     And I seek-2:00 the "Widewine_Online_SD" video from ALL MEDIA with "automatic" encoding
+     And I pause the "Widewine_Online_SD" video from ALL MEDIA with "automatic" encoding
+     And I resume the "Widewine_Online_SD" video from ALL MEDIA with "automatic" encoding
+     And I completed the "Widewine_Online_SD" video from ALL MEDIA with "automatic" encoding
      Then the player should send expected notification
      
      
     Scenario: On playing Widevine offline encoded video, events should get generated on player load, play, pause, seek, resume and on-complete play
      Given the application has launched
-     When I play the "Widewine_Offline" video from ALL MEDIA with "WidevineOffline 128 X500kbps 268X640" encoding
-     And I pause the "Widewine_Offline" video from ALL MEDIA with "WidevineOffline 128 X500kbps 268X640" encoding
-     And I resume the "Widewine_Offline" video from ALL MEDIA with "WidevineOffline 128 X500kbps 268X640" encoding
-     And I seek-2:00 the "Widewine_Offline" video from ALL MEDIA with "WidevineOffline 128 X500kbps 268X640" encoding
-     And I pause the "Widewine_Offline" video from ALL MEDIA with "WidevineOffline 128 X500kbps 268X640" encoding
-     And I resume the "Widewine_Offline" video from ALL MEDIA with "WidevineOffline 128 X500kbps 268X640" encoding
-     And I completed the "Widewine_Offline" video from ALL MEDIA with "WidevineOffline 128 X500kbps 268X640" encoding
+     When I play the "Widewine_Offline" video from ALL MEDIA with "automatic" encoding
+     And I pause the "Widewine_Offline" video from ALL MEDIA with "automatic" encoding
+     And I resume the "Widewine_Offline" video from ALL MEDIA with "automatic" encoding
+     And I seek-2:00 the "Widewine_Offline" video from ALL MEDIA with "automatic" encoding
+     And I pause the "Widewine_Offline" video from ALL MEDIA with "automatic" encoding
+     And I resume the "Widewine_Offline" video from ALL MEDIA with "automatic" encoding
+     And I completed the "Widewine_Offline" video from ALL MEDIA with "automatic" encoding
      Then the player should send expected notification
      
