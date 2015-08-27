@@ -740,7 +740,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mLogger.debug(TAG+" Media play:"+ media);
             }
             mMediaController.setPrevNextListeners(null, null);
-            mPlayerView.setMediaControllerCallback(null);
+            mPlayerView.setMediaControllerCallback(PlayerSupportFragment.this);
             if(media!= null && !media.trim().isEmpty()){
                 if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
                     mPlayerView.stopPlayback();
