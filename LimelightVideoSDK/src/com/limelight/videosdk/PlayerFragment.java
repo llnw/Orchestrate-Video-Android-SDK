@@ -1290,12 +1290,18 @@ public class PlayerFragment extends Fragment implements OnErrorListener,OnPrepar
         if(isReporting){
             mReporter.sendPlayWithPosition(position,mMediaId,null);
         }
+        if (mPlayerCallback != null) {
+            mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), PlayerState.playing.ordinal(), "" + position);
+        }
     }
-
+    
     @Override
     public void onMediaControllerPause(final long position) {
         if(isReporting){
             mReporter.sendPauseWithPosition(position,mMediaId,null);
+        }
+        if (mPlayerCallback != null) {
+            mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), PlayerState.paused.ordinal(), "" + position);
         }
     }
 
