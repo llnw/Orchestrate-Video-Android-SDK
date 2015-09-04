@@ -83,7 +83,8 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
             mLogger.debug(TAG + " encoding mediaID : " + encoding.mMediaID + " mEncodingUrl :" +encoding.mEncodingUrl);
             if (PrimaryUse.WidevineOffline.equals(encoding.primaryUse)) {
                 mLogger.debug(TAG + " Encoding is Widevine download ");
-                downloadWidevine(encoding.mEncodingUrl.toString(),encoding.mMediaID,null);
+                String uniqueId = "" + encoding.mHeight + encoding.mWidth + encoding.mVideoBitRate + encoding.mAudioBitRate;
+                downloadWidevine(encoding.mEncodingUrl.toString(),encoding.mMediaID,null,uniqueId);
             } else if (encoding.primaryUse.equals(PrimaryUse.Widevine)) {
                 try {
                     mLogger.debug(TAG + " Encoding is Widevine online ");
@@ -118,7 +119,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
             mLogger.debug(TAG + " delivery mediaId : " + delivery.mMediaId + " mRemoteURL :" +delivery.mRemoteURL);
             if (delivery.mDownloadable && delivery.mProtected) {
                 mLogger.debug(TAG + " Delivery is Widevine download ");
-                downloadWidevine(delivery.mRemoteURL.toString(),delivery.mMediaId,null);
+                downloadWidevine(delivery.mRemoteURL.toString(),delivery.mMediaId,null,"");
             } else if (delivery.mProtected) {
                 try {
                     mLogger.debug(TAG + " Delivery is Widevine online ");
@@ -139,11 +140,11 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param mediaId
      * @param saveDirLocation
      */
-    private void downloadWidevine(final String url, final String mediaId,final String saveDirLocation) {
+    private void downloadWidevine(final String url, final String mediaId,final String saveDirLocation,final String uniqueId) {
         mLogger.debug(TAG + " widevine download url : " + url + " saveDirLocation :" + saveDirLocation + " mediaId :" + mediaId);
         mDownloadingUrl = url;
         mDownloader = new Downloader((Activity) mContext);
-        mDownloader.startDownload(url, "video/wvm", saveDirLocation, mediaId,new DownLoadCallback(){
+        mDownloader.startDownload(url, "video/wvm", saveDirLocation, mediaId, uniqueId, new DownLoadCallback(){
 
             @Override
             public void onSuccess(final String path) {
