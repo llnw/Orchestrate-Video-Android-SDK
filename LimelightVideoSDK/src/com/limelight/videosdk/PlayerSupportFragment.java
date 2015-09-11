@@ -423,7 +423,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     mMediaId = encoding.mMediaID;
                     if (PrimaryUse.WidevineOffline.equals(encoding.primaryUse)||PrimaryUse.Widevine.equals(encoding.primaryUse)) {
                         mWidevineManager = new WidevineManager(getActivity(),contentService);
-                        mWidevineManager.playWidewineEncodedContent(encoding, new WVCallback() {
+                        mWidevineManager.playWidevineEncodedContent(encoding, new WVCallback() {
                             @Override
                             public void onSuccess(final String path) {
                                 if (mLogger != null) {
@@ -503,7 +503,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         }
                         delivery.mProtected = true;
                         mWidevineManager = new WidevineManager(getActivity(),contentService);
-                        mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
+                        mWidevineManager.playWidevineDeliveryContent(delivery,new WVCallback() {
                             @Override
                             public void onSuccess(final String path) {
                                 if (mLogger != null) {
@@ -651,7 +651,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                 mLogger.debug(TAG+" Delivery is widevine" + mediaID);
                             }
                             mWidevineManager = new WidevineManager(getActivity(),contentService);
-                            mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
+                            mWidevineManager.playWidevineDeliveryContent(delivery,new WVCallback() {
                                 @Override
                                 public void onSuccess(final String path) {
                                     if (mLogger != null) {

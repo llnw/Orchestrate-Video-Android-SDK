@@ -72,7 +72,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param encoding Encoding
      * @param callback WVCallback
      */
-    void playWidewineEncodedContent(final Encoding encoding,final WVCallback callback){
+    void playWidevineEncodedContent(final Encoding encoding,final WVCallback callback){
         mCallback = callback;
         if(encoding == null || encoding.primaryUse == null || encoding.mEncodingUrl == null || encoding.mMediaID == null){
             if(mCallback!= null){
@@ -109,7 +109,7 @@ class WidevineManager implements OnInfoListener,OnEventListener,OnErrorListener{
      * @param delivery Delivery
      * @param callback WVCallback
      */
-    void playWidewineDeliveryContent(final Delivery delivery,final WVCallback callback){
+    void playWidevineDeliveryContent(final Delivery delivery,final WVCallback callback){
         mCallback = callback;
         if(delivery == null || delivery.mRemoteURL == null || delivery.mMediaId == null){
             if(mCallback!= null){
