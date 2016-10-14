@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SampleApplication</string>
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+
+    <string name="title_media_of_channel">MediaOfChannel</string>
+    <string name="title_player">Player</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
+

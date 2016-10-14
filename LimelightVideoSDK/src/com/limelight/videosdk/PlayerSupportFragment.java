@@ -423,7 +423,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                     mMediaId = encoding.mMediaID;
                     if (PrimaryUse.WidevineOffline.equals(encoding.primaryUse)||PrimaryUse.Widevine.equals(encoding.primaryUse)) {
                         mWidevineManager = new WidevineManager(getActivity(),contentService);
-                        mWidevineManager.playWidewineEncodedContent(encoding, new WVCallback() {
+                        mWidevineManager.playWidevineEncodedContent(encoding, new WVCallback() {
                             @Override
                             public void onSuccess(final String path) {
                                 if (mLogger != null) {
@@ -503,7 +503,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                         }
                         delivery.mProtected = true;
                         mWidevineManager = new WidevineManager(getActivity(),contentService);
-                        mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
+                        mWidevineManager.playWidevineDeliveryContent(delivery,new WVCallback() {
                             @Override
                             public void onSuccess(final String path) {
                                 if (mLogger != null) {
@@ -651,7 +651,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                                 mLogger.debug(TAG+" Delivery is widevine" + mediaID);
                             }
                             mWidevineManager = new WidevineManager(getActivity(),contentService);
-                            mWidevineManager.playWidewineDeliveryContent(delivery,new WVCallback() {
+                            mWidevineManager.playWidevineDeliveryContent(delivery,new WVCallback() {
                                 @Override
                                 public void onSuccess(final String path) {
                                     if (mLogger != null) {
@@ -740,7 +740,7 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
                 mLogger.debug(TAG+" Media play:"+ media);
             }
             mMediaController.setPrevNextListeners(null, null);
-            mPlayerView.setMediaControllerCallback(null);
+            mPlayerView.setMediaControllerCallback(PlayerSupportFragment.this);
             if(media!= null && !media.trim().isEmpty()){
                 if(mPlayerView != null && mPlayerView.mPlayerState!= PlayerState.stopped){
                     mPlayerView.stopPlayback();
@@ -1331,6 +1331,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
         if(isReporting){
             mReporter.sendPlayWithPosition(position,mMediaId,null);
         }
+        if (mPlayerCallback != null) {
+            mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), PlayerState.playing.ordinal(), "" + position);
+        }
     }
 
 /*
@@ -1341,6 +1344,9 @@ public class PlayerSupportFragment extends Fragment implements OnErrorListener,O
     public void onMediaControllerPause(final long position) {
         if(isReporting){
             mReporter.sendPauseWithPosition(position,mMediaId,null);
+        }
+        if (mPlayerCallback != null) {
+            mPlayerCallback.playerMessage(Constants.Message.status.ordinal(), PlayerState.paused.ordinal(), "" + position);
         }
     }
 

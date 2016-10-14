@@ -75,8 +75,8 @@ class AnalyticsReporter {
         final JsonObject htmlObj = new JsonObject();
         htmlObj.addProperty("embedMode", "Android");
         htmlObj.addProperty("H264", "Probably");
-        //obj.addProperty("htmlCapabilities", htmlObj.toString());//adding as string
-        obj.add("htmlCapabilities", htmlObj);
+        obj.addProperty("htmlCapabilities", htmlObj.toString());//adding as string
+        //obj.add("htmlCapabilities", htmlObj);
         
         final String userAgent = System.getProperty("http.agent");
         obj.addProperty("userAgent", userAgent);

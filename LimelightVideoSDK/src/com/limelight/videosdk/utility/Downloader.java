@@ -54,7 +54,7 @@ public class Downloader {
      * @param saveDirLocation
      * @param callback
      */
-    public void startDownload(final String url,final String mimetype,String saveDirLocation,final String mediaId,final DownLoadCallback callback){
+    public void startDownload(final String url,final String mimetype,String saveDirLocation,final String mediaId,final String uniqueId,final DownLoadCallback callback){
 
         if(Build.VERSION.SDK_INT < 18
                 && mimetype!= null
@@ -88,7 +88,7 @@ public class Downloader {
         }
 
         if(url != null && url.length() > 0 && URLUtil.isValidUrl(url)){
-            final DownloadTask task = new DownloadTask(mimetype,saveDirLocation,callback);
+            final DownloadTask task = new DownloadTask(mimetype,saveDirLocation,callback,uniqueId);
             mDownloadTasks.add(task);
             task.execute(url);
         }
@@ -121,11 +121,13 @@ public class Downloader {
         private File mTempFile;
         private File mFile;
         private String mUrl;
+        private String uniqueId;
 
-        DownloadTask(final String mimetype, final String saveDirLocation, final DownLoadCallback callback) {
+        DownloadTask(final String mimetype, final String saveDirLocation, final DownLoadCallback callback, final String uniqueId) {
             this.mSaveDirLocation = saveDirLocation;
             this.mMimetype = mimetype;
             this.mCallback = callback;
+            this.uniqueId = uniqueId;
         }
 
         @Override
@@ -151,7 +153,7 @@ public class Downloader {
             mUrl = url;
 
             final String filename = getFilenameFromUrl(url,mMimetype);
-            final String fileLocation = String.format("%s/%s", mSaveDirLocation, filename);
+            final String fileLocation = String.format("%s/%s%s", mSaveDirLocation, uniqueId, filename);
             mFile = new File(fileLocation);
 
             if (mFile.exists()) {
